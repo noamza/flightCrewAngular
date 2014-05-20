@@ -27,7 +27,7 @@ flightCrewAppControllers.controller('mapController',['$scope','$http', function(
 	$http.get("ajax/getCrew.php").success(function(data){
         $scope.crew = data;
     });
-
+	
 	$scope.map = {
     	center: {
         	latitude: 45,
