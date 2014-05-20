@@ -1,0 +1,13 @@
+<div class="map">
+	<google-map center="map.center" zoom="map.zoom"></google-map>
+	<br>
+	{{picked}}
+	<br>
+	<ul class="crew">
+		<li ng-repeat="id in crew | filter:query | orderBy:orderProp"
+			<p>{{id.id}}</p>
+		</li>
+	</ul>
+	<br>
+	<p>status:{{status}}</p>
+</div>

@@ -28,3 +28,14 @@
   content: "";
   padding: 0;
 }
+
+#main {
+        
+        
+    }
+
+footer {
+  background-color:"grew";
+}
+
+.angular-google-map-container { height: 400px; }
