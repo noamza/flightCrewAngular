@@ -38,4 +38,7 @@ footer {
   background-color:"grew";
 }
 
-.angular-google-map-container { height: 400px; }
+.angular-google-map-container {
+ /* padding: 0 0 0.5em;  */
+  height: 400px; 
+}

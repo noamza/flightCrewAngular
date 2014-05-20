@@ -28,13 +28,44 @@ flightCrewAppControllers.controller('mapController',['$scope','$http', function(
         $scope.crew = data;
     });
 
+  google.maps.visualRefresh = true;
+  var n210 = {latitude: 37.414468, longitude: -122.056862};
+  var SFO =  {latitude: 37.615223, longitude: -122.389979};
 	$scope.map = {
-    	center: {
-        	latitude: 45,
-        	longitude: -73
-    	},
-    	zoom: 8
+    	center: n210, //{latitude: 37.414468, longitude: -122.056862},
+    	zoom: 8,
+      control: {},
+      dragging: true,
+      bounds: {},
+      envents: {},
+      options: {},
+      markers: [
+        {
+          id: 1,
+          latitude: 37,
+          longitude: -122,
+          showWindow: false,
+          title: 'Marker 1'
+        },
+        {
+          id: 2,
+          latitude: 38,
+          longitude: -121,
+          showWindow: false,
+          title: 'Marker 2'
+        },
+        {
+          id: 3,
+          icon: 'img/plane.png',
+          latitude: 37,
+          longitude: -121,
+          showWindow: false,
+          title: 'Plane'
+        }
+      ] 
 	};
+  //end map
+
 }]);
 
 //about
