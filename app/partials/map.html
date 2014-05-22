@@ -10,29 +10,36 @@
     pan="true" 
     control="map.control"   
 	>
-	<!-- 
-	-->
+	<!---->
+	
 
 		<markers 
 			models="map.markers" 
 			coords="'self'"
-			icon= "'icon'"
-		>
-		<marker-label content="m.title" anchor="22 0" class="marker-labels"/>
+			icon= "'icon'">
+    	
     	</markers>
+
+ 		<markers models="map.dynamicMarkers" coords="'self'" icon="'icon'">
+        </markers>
+
 
 	</google-map>
 
 
 
 	<br>
-	{{picked}}
 	<br>
 	<ul class="crew">
-		<li ng-repeat="id in crew | filter:query | orderBy:orderProp"
-			<p>{{id.id}}</p>
+		<li ng-repeat="i in crewIds | filter:query | orderBy:orderProp"
+			<p>{{i.id}}</p>
 		</li>
 	</ul>
+	<!--ul class="crewText">
+		<li ng-repeat="i in crewText | filter:query | orderBy:orderProp"
+			<p>{{i}}</p>
+		</li>
+	</ul-->
 	<br>
 	<p>status:{{status}}</p>
 </div>
