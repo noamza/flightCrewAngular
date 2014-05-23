@@ -3,51 +3,25 @@
 
 var flightCrewAppControllers = angular.module('FlightCrewApp.controllers');
 
-var crewArr
+function InfoController($scope, $log) {
+   $scope.templateValue = 'hello from the template itself';
+   $scope.clickedButtonInWindow = function () {
+      var msg = 'clicked a window in the template!';
+        $log.info(msg);
+        alert(msg);
+   };
+};
 
-var rndAddToLatLon = function () {
- return Math.floor(((Math.random() < 0.5 ? -1 : 1) * 2) + 1)
+function secToHMS(totalSec) {
+  var hours = parseInt( totalSec / 3600 ) % 24;
+  var minutes = parseInt( totalSec / 60 ) % 60;
+  var seconds = parseInt(totalSec % 60, 10);
+  var hms = hours + ":" + (minutes < 10 ? "0" + minutes : minutes) + ":" + (seconds  < 10 ? "0" + seconds : seconds);
+  return hms;
 }
 
 flightCrewAppControllers.controller('mapController',['$scope','$http','$interval', function($scope, $http, $interval) {
-		//turn into sevice
-   $http.get("ajax/getCrewIDs.php").success(function(data,status,headers,config){
-      $scope.crewIds = data;
-      $scope.status = status;
-      var crewIds = data;
-      var crewArr = [];
-      var crewText = {};
-      console.log('hello');
-        /**/
-      for (var i=0; i<crewIds.length; i++) {
-         //console.log(crew[i].id);
-         $http.get("ajax/getLatestCrew.php?id="+crewIds[i].id).success(function(data,status,headers,config){
-             //console.log('getLatestCrew '+data[0]);
-            var crewMember = data[0];
-            crewArr.push(data);
-            var id = crewMember.id;
-            var eta = crewMember.eta;
-            var route = crewMember.route;
-            var lat = crewMember.latitudeDegree;
-            var lon = crewMember.longitudeDegree;
-            var time = crewMember.timeSecond;
-            console.log(id+" "+eta+" "+lat+" "+lon+" "+time+"");
-            var dateT = new Date(time*1);
-            var contentString = "<div>id: " + id + "<br>lat: " + lat + "<br> lon: " + lon + "<br>time: " + dateT.toLocaleTimeString() + " "+ dateT.toLocaleDateString() + "<br>eta (h:m:s): " + secToHMS(eta) +"</div>";
-            crewText[id] = contentString;
-         }).error(function(data, status, headers, config){
-            $scope.status = status;
-            console.log(data);
-
-         });
-      }
-      $scope.crewArr = crewArr;
-      $scope.crewText = crewText;
-      console.log(crewArr);
-   }).error(function(data, status, headers, config){
-      $scope.status = status;
-      console.log(data);
-   });
+	
 
    google.maps.visualRefresh = true;
    var n210 = {latitude: 37.414468, longitude: -122.056862};
@@ -55,40 +29,130 @@ flightCrewAppControllers.controller('mapController',['$scope','$http','$interval
 
    $scope.map = {
          center: n210 //{latitude: 37.414468, longitude: -122.056862},
-       , zoom: 3
+       , zoom: 7
        , control: {}
        , dragging: true
        , bounds: {}
        , envents: {}
        , options: {}
        , dynamicMarkers: []
-       , markers: //crewArr
-       [
-      {
-         id: 1,
-         latitude: 37,
-         longitude: -122,
-         showWindow: true,
-         title: 'Marker 1',
-         icon: 'img/plane.png'
-      },
-      {
-         id: 2,
-         latitude: 38,
-         longitude: -121,
-         showWindow: true,
-         title: 'Marker 2',
-         icon: 'img/blue_marker.png'
-      }
-      ]
+       , markers:
+        {
+          id: 1,
+          latitude: 38,
+          longitude: -122,
+          showWindow: false,
+          title: 'Marker 1'
+        }
+       , infoWindow: {
+            coords: {
+               latitude: 37.270850,
+               longitude: -122.296875
+            },
+            options: {
+               disableAutoPan: true
+            },
+            show: true
+         }  
    };
 
-   $interval(function () {
+   var onMarkerClicked = function (marker) {
+      marker.showWindow = true;
+      $scope.$apply();
+      //window.alert("Marker: lat: " + marker.latitude + ", lon: " + marker.longitude + " clicked!!")
+   };
 
-    //$scope.map.zoom = $scope.map.zoom +1;
-    genRandomMarkers(3);
+   function updateMarkers(markers){
+      _.each(markers, function (marker) {
+         marker.closeClick = function () {
+            marker.showWindow = false;
+            $scope.$apply();
+         };
+         marker.onClicked = function () {
+            onMarkerClicked(marker);
+         };
+      });
+   }
+
+   function updateMap(){
+      //turn into sevice
+      $http.get("ajax/getCrewIDs.php").success(function(data,status,headers,config){
+         $scope.crewIds = data;
+         $scope.status = status;
+         var crewIds = data;
+         var crewMarkers = [];
+         var crewText = {};
+         console.log('hello');
+           /**/
+         for (var i=0; i<crewIds.length; i++) {
+            //console.log(crew[i].id);
+            $http.get("ajax/getLatestCrew.php?id="+crewIds[i].id).success(function(data,status,headers,config){
+                //console.log('getLatestCrew '+data[0]);
+                data[0];
+               var crewMember = {
+
+                  id : data[0].id,
+                  eta : secToHMS(data[0].eta),
+                  route : data[0].route,
+                  latitude : data[0].latitudeDegree,
+                  longitude : data[0].longitudeDegree,
+                  icon: 'img/blue_marker.png',
+                  showWindow: true,
+                  templateUrl: 'partials/info.html',
+                  templateParameter: { message: 'passed in from the opener'
+                  },
+                  closeClick : function () { showWindow = false;
+                        $scope.$apply();
+                  }
+               }
+               //console.log(id+" "+eta+" "+lat+" "+lon+" "+time+"");
+               var dateT = new Date(data[0].time*1);
+               
+               /*
+               crewMember[html] = "<div>id: " + data[0].id + "<br>lat: " + data[0].lat + "<br> lon: " + data[0].lon + "<br>time: " + dateT.toLocaleTimeString() + " "+ dateT.toLocaleDateString() + "<br>eta (h:m:s): " + secToHMS(data[0].eta) +"</div>";
+               
+               crewMember[time] =  dateT.toLocaleTimeString() + " "+ dateT.toLocaleDateString();
+               */
+               updateMarkers(crewMember);
+               crewMarkers.push(crewMember);
+            }).error(function(data, status, headers, config){
+               $scope.status = status;
+               console.log(data);
+
+            });
+         }
+         /*
+         var ret = {
+         latitude: latitude,
+         longitude: longitude,
+         title: 'm' + i
+         id: i;
+         };
+         ret[idKey] = i;
+         */
+
+         //console.log(crewArr);
+         $scope.map.dynamicMarkers = crewMarkers;
+
+
+      }).error(function(data, status, headers, config){
+         $scope.status = status;
+         console.log(data);
+      });
+   }
+   updateMap();
+   console.log("here");
+   
+
+
+   //update//
+   $interval(function () {
+      
+      //updateMap();
+      //genRandomMarkers(3);
 
    }, 2000);
+
 
    function genRandomMarkers (numberOfMarkers) {
       var markers = [];
@@ -97,6 +161,7 @@ flightCrewAppControllers.controller('mapController',['$scope','$http','$interval
       }
       $scope.map.dynamicMarkers = markers;
    };
+
 
    var createRandomMarker = function (i, bounds, idKey) {
       var lat_min = bounds.southwest.latitude,
