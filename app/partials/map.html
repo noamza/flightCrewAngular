@@ -2,7 +2,7 @@
 	<google-map 
 	center="map.center" 
 	zoom="map.zoom" 
-		draggable="true" 
+	draggable="true" 
     dragging="map.dragging" 
     bounds="map.bounds" 
     events="map.events" 
@@ -10,48 +10,8 @@
     pan="true" 
     control="map.control"   
 	>
-	<!---->
-
-	<window show="map.infoWindow.show" coords="map.infoWindow.coords" options="map.infoWindow.options" ng-cloak>
-				<div ng-controller='InfoController'>
-			    I should not be attached to a
-            	marker.
-                <p>This is an info window at {{ m.latitude | number:4 }}, {{ m.longitude | number:4 }}!</p>
-	            <a class="btn" ng-click="clickedButtonInWindow()">CLICK ME</a>
-            </div>
-        </window>
-
- 		<markers models="map.dynamicMarkers" coords="'self'" icon="'icon'" ng-cloak>
-
- 			<!--windows models="map.dynamicMarkers" show="true" closeClick="'closeClick'" ng-cloak>
-                <div>
-                    <p>Dynamic Marker created via a delay!</p>
-
-                    <p ng-non-bindable>This is an info window at {{ latitude | number:4 }}, {{ longitude | number:4 }}!</p>
-
-                    <p class="muted">My marker will stay open when the window is popped up!</p>
-                </div>
-            </windows-->
-        </markers>
-
-        <!--windows
-        	models="map.dynamicMarkers"
-
-        	coords="'self'"
-        	show="true"
-        	templateUrl="map.dynamicMarkers.templateUrl"
-        	templateParameter="map.dynamicMarkers.templateParameter"
-        	isIconVisibleOnClick="true"
-        	closeClick="map.dynamicMarkers.closeClick'"
-        	ng-cloak>
-                <div>
-                    <p>Dynamic Marker created via a delay!</p>
-                </div>
-        </windows-->
-
-
-    	<marker coords="map.infoWindow.coords"></marker>
-
+	
+	<!--markers models="map.dynamicMarkers" coords="'self'" icon="'icon'" ng-cloak></markers-->
 
 	</google-map>
 

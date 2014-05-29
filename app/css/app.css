@@ -32,7 +32,7 @@
 #main {
         
         
-    }
+}
 
 footer {
   background-color:"grew";
@@ -41,4 +41,18 @@ footer {
 .angular-google-map-container {
  /* padding: 0 0 0.5em;  */
   height: 400px; 
+  width: 600px; 
+  /* border-bottom: 3em solid blue; 
+  margin-bottom: 3em;
+  padding: 3 3 3.5em; */
+}
+
+.late{
+ /* padding: 0 0 0.5em;  */
+  background-color: lightred;
+}
+
+.onTime{
+ /* padding: 0 0 0.5em;  */
+  background-color: lightred;
 }
