@@ -1,4 +1,4 @@
-/* app css stylesheet */
+/* overall app css stylesheet */
 
 .menu {
   list-style: none;
@@ -29,30 +29,13 @@
   padding: 0;
 }
 
-#main {
-        
-        
-}
-
 footer {
-  background-color:"grew";
+  background-color:white;
+  color:grey;
+  float:bottom;
+  width:100%;
+  text-align: center;
 }
-
-.angular-google-map-container {
- /* padding: 0 0 0.5em;  */
-  height: 400px; 
-  width: 600px; 
-  /* border-bottom: 3em solid blue; 
-  margin-bottom: 3em;
-  padding: 3 3 3.5em; */
-}
-
-.late{
- /* padding: 0 0 0.5em;  */
-  background-color: lightred;
-}
-
-.onTime{
- /* padding: 0 0 0.5em;  */
-  background-color: lightred;
+.footer{
+  
 }

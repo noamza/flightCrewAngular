@@ -1,36 +1,66 @@
-<div class="themap">
-	<google-map 
-	center="map.center" 
-	zoom="map.zoom" 
-	draggable="true" 
-    dragging="map.dragging" 
-    bounds="map.bounds" 
-    events="map.events" 
-    options="map.options" 
-    pan="true" 
-    control="map.control"   
-	>
-	
-	<!--markers models="map.dynamicMarkers" coords="'self'" icon="'icon'" ng-cloak></markers-->
 
-	</google-map>
+<div class="" ="mainMapContainer">	
+<link rel="stylesheet" href="css/map.css"/>
 
-	
+	<!--div id="header" style="background-color:yellow;">
+	Map
+	</div-->
 
+	<div class="mapMenu">
+		<b>Crew Members</b>
+		<br>
+		<br> search: 
+		<input ng-model="query.id" sytle="width:39px">
+		<br>
+		<br> Sort by: 
+		<select ng-model="orderProp">
+        	<option value="id">name</option>
+        	<option value="eta">closest</option>
+     	</select>
+		<br> <!--{{query}}-->
+		<br>
+		<table style="width:20em">
+			<tr>
+				<b>
+					<td style="width:10em">ID</td>
+				 	<td>Eta</td> 
+				 	<td>Time of Update</td>
+				 </b>
+			</tr>
+			<tr ng-repeat="i in crewMembers | makeArray | filter:query | orderBy:orderProp" ng-click="crewTableClick(i)" style="color:{{lateColor(i)}}">
+				<td style="width:10em">{{i.id}}</td>
+			 	<td style="width:5em">{{toHMS(i.eta)}}</td> 
+			 	<td style="width:10em">{{i.time | date : short}}</td>
+			</tr>
+		</table>
+		<br>
+		<b style="">Estimated time until crew is ready: {{maxEta()}}</b>
+	</div >
 
+	<div class="theMap">
+		<google-map 
+		center="map.center" 
+		zoom="map.zoom" 
+		draggable="true" 
+	    dragging="map.dragging" 
+	    bounds="map.bounds" 
+	    events="map.events" 
+	    options="map.options" 
+	    pan="true" 
+	    control="map.control"   
+		>
+		<!--markers models="map.dynamicMarkers" coords="'self'" icon="'icon'" ng-cloak></markers-->
+		</google-map>
+	</div>
 
-	<br>
-	<br>
-	<!--ul class="crew">
-		<li ng-repeat="i in crewIds | filter:query | orderBy:orderProp"
-			<p>{{i.id}}</p>
-		</li>
-	</ul -->
-	<!--ul class="crewText">
-		<li ng-repeat="i in crewText | filter:query | orderBy:orderProp"
-			<p>{{i}}</p>
-		</li>
-	</ul-->
-	<br>
-	<p style"">status:{{status}}</p>
+	<!--div id="footer" style="background-color:#FFA500;clear:both;text-align:center;">
+	footer</div-->
+
 </div>
+
+
+
+
+
+
+

@@ -29,7 +29,10 @@ flightCrewAppControllers.controller('mapController',['$scope','$http','$interval
    var mapFirstLoaded = true;
    var gmap;
    var crewMembers = {};
-   //{name:"hn"}; log("first" + crewMembers["name"]);
+   $scope.crewMembers = crewMembers;
+
+   $scope.orderProp = 'id';
+   $scope.toHMS = secToHMS;
 
    google.maps.visualRefresh = true;
    var n210 = {latitude: 37.414468, longitude: -122.056862};
@@ -56,9 +59,36 @@ flightCrewAppControllers.controller('mapController',['$scope','$http','$interval
       
    };
 
+   $scope.colo = 'red';
 
+   $scope.lateColor = function(crewMember){
+      if(crewMember.late){
+         return 'red';
+      }
+      return "green";
+   }
+
+   $scope.maxEta = function(){
+      var max = 0;
+      angular.forEach(crewMembers, function(crewMember, id) {
+         if (crewMember.eta > max) max = crewMember.eta;
+      });
+      return secToHMS(max);
+   }
      /* _.each(markers, function (marker) {
             marker.showWindow = false; } */
+
+   $scope.crewTableClick = function(crewMember){
+
+      if(!crewMember.showWindow){//window is currently closed
+            crewMember.gwindow.open(gmap, crewMember.gmarker);
+            crewMember.showWindow = true;
+      } else { //window is open
+         crewMember.gwindow.close();
+         crewMember.showWindow = false;
+      }
+      log("tableClick more like" + crewMember.showWindow);
+   };
 
    //add error handeling
    function initMarkers(){
@@ -96,37 +126,17 @@ flightCrewAppControllers.controller('mapController',['$scope','$http','$interval
    }
 
 
-   function updateCrewMember(jsonData){
-      var crewMember = crewMembers[jsonData.id];
-      crewMember.latitude = jsonData.latitudeDegree;
-      crewMember.longitude = jsonData.longitudeDegree;
-      crewMember.eta = jsonData.eta;
-      crewMember.route = jsonData.route;
-      crewMember.time=jsonData.timeSecond;
-      var late = false;
-      if(Math.random()<0.5) late = true;
-      var icon = 'img/green_Marker.png';
-      if(late) icon = 'img/red_Marker.png';
-
-      crewMember.gmarker.setPosition(new google.maps.LatLng(
-               jsonData.latitudeDegree, 
-               jsonData.longitudeDegree));
-      crewMember.gmarker.setIcon(icon);
-      crewMember.gwindow.content = makeWindowContent(crewMember, late);
-      if(crewMember.showWindow)crewMember.gwindow.open(gmap, crewMember.gmarker);
-   }
-
-
    function addCrewMember(jsonData){
       var crewMember = {
          id : jsonData.id,
-         eta : jsonData.eta,
+         eta : parseFloat(jsonData.eta),
          route : jsonData.route,
          latitude : jsonData.latitudeDegree,
          longitude : jsonData.longitudeDegree,
          time: jsonData.timeSecond,
          showWindow: false,
-         templateUrl: 'partials/info.html',
+         late:false,
+         /*templateUrl: 'partials/info.html',*/
          gmarker: new google.maps.Marker({
             position: new google.maps.LatLng(
                jsonData.latitudeDegree, 
@@ -138,8 +148,7 @@ flightCrewAppControllers.controller('mapController',['$scope','$http','$interval
                   content: jsonData.id
          }) 
       };
-      //log("gmap " + gmap);
-      //log("gm " + crewMember['gmarker']);
+
       var marker = crewMember.gmarker;
       var infoWindow = crewMember.gwindow;
       google.maps.event.addListener(marker, 'click', function(){
@@ -153,8 +162,26 @@ flightCrewAppControllers.controller('mapController',['$scope','$http','$interval
       });
 
       crewMembers[crewMember.id]=crewMember;
-      //crewMembers["hey"]=crewMember;
-      //log(crewMember['id'] + " ss" + crewMembers[crewMember['id']]['id']);
+   }
+
+
+   function updateCrewMember(jsonData){
+      var crewMember = crewMembers[jsonData.id];
+      crewMember.latitude = jsonData.latitudeDegree;
+      crewMember.longitude = jsonData.longitudeDegree;
+      crewMember.eta = parseFloat(jsonData.eta);
+      crewMember.route = jsonData.route;
+      crewMember.time=jsonData.timeSecond;
+      if(Math.random()<0.2) crewMember.late = !crewMember.late;
+      var icon = 'img/green_Marker.png';
+      if(crewMember.late) icon = 'img/red_Marker.png';
+
+      crewMember.gmarker.setPosition(new google.maps.LatLng(
+               jsonData.latitudeDegree, 
+               jsonData.longitudeDegree));
+      crewMember.gmarker.setIcon(icon);
+      crewMember.gwindow.content = makeWindowContent(crewMember, crewMember.late);
+      if(crewMember.showWindow)crewMember.gwindow.open(gmap, crewMember.gmarker);
    }
 
    function makeWindowContent(crewMember, late){
@@ -171,7 +198,7 @@ flightCrewAppControllers.controller('mapController',['$scope','$http','$interval
              "<br>lon: " + crewMember.longitude + 
              "<br>time of update: " + dateT.toLocaleTimeString() + " "+ dateT.toLocaleDateString() + 
              "<p "+style+">eta: " + secToHMS(crewMember.eta) +"</p></div>";
-      console.log(content);
+      //console.log(content);
       return content;
    //<h2 style="background-color:red;">
    }
@@ -185,17 +212,12 @@ flightCrewAppControllers.controller('mapController',['$scope','$http','$interval
       angular.forEach(crewMembers, function(crewMember, id) {
          crewMember.gmarker.setMap(map);
       });
-      /*
-      for (var i = 0; i < crewMembers.length; i++) {
-            log(crewMembers[i]['id'] + " adding " + crewMembers[i]['gmarker']);
-            crewMembers[i]['gmarker'].setMap(map);
-      } */
    }
 
-   
+
 
    function updateMap(){
-      log("many");
+      //log("many");
       $http.get("ajax/getCrewIDs.php").success(function(crewIds,status,headers,config){
          var deferred = $q.defer();
          var promises = [];
@@ -233,11 +255,11 @@ flightCrewAppControllers.controller('mapController',['$scope','$http','$interval
    $interval(function () {
       updateMap();
       //genRandomMarkers(3);
-   }, 2000);
+   }, 5000);
 
 
 
-
+   /* for debugging.. 
 
    function genRandomMarkers (numberOfMarkers) {
       var markers = [];
@@ -265,7 +287,7 @@ flightCrewAppControllers.controller('mapController',['$scope','$http','$interval
       };
       ret[idKey] = i;
       return ret;
-  };
+  }; */
 
   //end map
 

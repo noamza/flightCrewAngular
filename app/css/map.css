@@ -1,0 +1,46 @@
+/* map page css stylesheet */
+
+.mainmapcontainer {
+	width:100%;
+	height:100%;
+	background-color: pink;
+}
+
+.mapMenu{
+	width:400px; 
+	float:left;
+	background-color: white;
+	margin-left: 1.5em;
+
+}
+
+.theMap{
+	/*
+	background-color: lightgreen;
+	width:100%;
+	height:100%;
+	/*float:left;/**/
+}
+
+
+.angular-google-map-container {
+ /* padding: 0 0 0.5em; */  
+  height: 520px; 
+  margin-right: 1.5em;
+  margin-left: 1.5em;
+  /* 
+  border-bottom: 3em solid blue; 
+  margin-bottom: 3em;
+  padding: 3 3 3.5em; */
+}
+
+
+.late{
+ /* padding: 0 0 0.5em;  */
+  color: red;
+}
+
+.onTime{
+ /* padding: 0 0 0.5em;  */
+ color: green;
+}
