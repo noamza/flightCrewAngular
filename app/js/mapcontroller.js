@@ -51,7 +51,10 @@ flightCrewAppControllers.controller('mapController',['$scope','$http','$interval
          tilesloaded: function (map) {
             $scope.$apply(function () {
                gmap = map;
-               if(mapFirstLoaded)initMarkers();
+               if(mapFirstLoaded) {
+                  initMarkers();
+                  //initAirportMarkers();
+               }
                mapFirstLoaded = false;
             });
          }
@@ -90,9 +93,20 @@ flightCrewAppControllers.controller('mapController',['$scope','$http','$interval
       log("tableClick more like" + crewMember.showWindow);
    };
 
+   function initAirportMarkers() {
+      log("init airport markers");
+      $http.get('data/airportpositions.json').success(function(data) { 
+           //log(data);
+          $.each( data, function( key, item ) {
+               log(data[key][0].latitude);
+               log(data[key][0].longitude);
+          });
+        });
+   }
+
    //add error handeling
    function initMarkers(){
-      log("once");
+      log("init markers once");
       $http.get("ajax/getCrewIDs.php").success(function(crewIds,status,headers,config){
          var deferred = $q.defer();
          var promises = [];
@@ -102,10 +116,11 @@ flightCrewAppControllers.controller('mapController',['$scope','$http','$interval
          }
          $scope.status = status;
          for (var i=0; i<crewIds.length; i++) {
-            //console.log(crew[i].id);
+            //console.log(crewIds[i].id);
             promises.push(
                $http.get("ajax/getLatestCrew.php?id="+crewIds[i].id).success(function(data,status,headers,config){
                   //console.log('getLatestCrew '+data[0]);
+                  //log('crewRoute: ' + data[0].route);
                   $scope.status = status;
                   addCrewMember(data[0]);
                }).error(function(data, status, headers, config){
@@ -125,8 +140,40 @@ flightCrewAppControllers.controller('mapController',['$scope','$http','$interval
       
    }
 
+   //This function will be unnecessary when we update the phone apps to send destination as well
+   function getDestPoint(jsonData) {
+      var dest_route = (jsonData.route).split("|");
+      //log(dest_route);
+      var dest = dest_route[dest_route.length - 1];
+      //log(dest);
+      var point = dest.split(",");
+      //log(point);
+      //var destLat = point[0];
+      //var destLon = point[1];
+      //log("lat" + destLat);
+      //log("lon" + destLon);
+      return point;
+   }
+
+
+   function getPolyPath(jsonData) {
+      var route = (jsonData.route).split("|");
+      var numPoints = route.length;
+      var polyPath = [];
+      for(var i = 0; i < numPoints; i++) {
+         var point = route[i].split(",");
+         //log(point[0]);
+         //log(point[1]);
+         polyPath.push(new google.maps.LatLng(point[0],point[1]));
+         //log(polyPath);
+      }
+      return polyPath;
+   }
 
    function addCrewMember(jsonData){
+      var dest_point = getDestPoint(jsonData);
+      var polyPath = getPolyPath(jsonData);
+      //log(polyPath);
       var crewMember = {
          id : jsonData.id,
          eta : parseFloat(jsonData.eta),
@@ -137,6 +184,7 @@ flightCrewAppControllers.controller('mapController',['$scope','$http','$interval
          showWindow: false,
          late:false,
          /*templateUrl: 'partials/info.html',*/
+         destination : new google.maps.LatLng(dest_point[0], dest_point[1]),
          gmarker: new google.maps.Marker({
             position: new google.maps.LatLng(
                jsonData.latitudeDegree, 
@@ -146,18 +194,32 @@ flightCrewAppControllers.controller('mapController',['$scope','$http','$interval
          }),
          gwindow: new google.maps.InfoWindow({
                   content: jsonData.id
+         }),
+         gpath : new google.maps.Polyline({
+            path : polyPath,
+            strokeColor : '#FF0000',
+            strokeOpacity : 0.7,
+            strokeWeight: 2,
+            clickable: true,
+            draggable: false,
+            editable: false,
+            geodesic: false
          }) 
       };
-
+      //log('crewMemberRoute : ' + crewMember.id + ' == ' + crewMember.route);
+      //log(crewMember.destination);
       var marker = crewMember.gmarker;
       var infoWindow = crewMember.gwindow;
       google.maps.event.addListener(marker, 'click', function(){
             infoWindow.content = makeWindowContent(crewMember, false);
             infoWindow.open(gmap, marker);
             crewMember.showWindow = true;
+            //crewMember.gpath.
+            crewMember.gpath.setMap(gmap);
       });
       google.maps.event.addListener(infoWindow,'closeclick',function(){
          crewMember.showWindow = false;
+         crewMember.gpath.setMap(null);
          log("closing");
       });
 
@@ -166,12 +228,17 @@ flightCrewAppControllers.controller('mapController',['$scope','$http','$interval
 
 
    function updateCrewMember(jsonData){
+      var dest_point = getDestPoint(jsonData);
+      var polyPath = getPolyPath(jsonData);
+
       var crewMember = crewMembers[jsonData.id];
       crewMember.latitude = jsonData.latitudeDegree;
       crewMember.longitude = jsonData.longitudeDegree;
       crewMember.eta = parseFloat(jsonData.eta);
       crewMember.route = jsonData.route;
       crewMember.time=jsonData.timeSecond;
+      crewMember.gpath.setPath(polyPath);
+
       if(Math.random()<0.2) crewMember.late = !crewMember.late;
       var icon = 'img/green_Marker.png';
       if(crewMember.late) icon = 'img/red_Marker.png';
@@ -211,6 +278,7 @@ flightCrewAppControllers.controller('mapController',['$scope','$http','$interval
       //marker.setMap(gmap);
       angular.forEach(crewMembers, function(crewMember, id) {
          crewMember.gmarker.setMap(map);
+         //crewMember.gpath.setMap(map);
       });
    }
 
