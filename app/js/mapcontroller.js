@@ -29,6 +29,7 @@ flightCrewAppControllers.controller('mapController',['$scope','$http','$interval
    var mapFirstLoaded = true;
    var gmap;
    var crewMembers = {};
+   var airports = {};
    $scope.crewMembers = crewMembers;
 
    $scope.orderProp = 'id';
@@ -53,7 +54,7 @@ flightCrewAppControllers.controller('mapController',['$scope','$http','$interval
                gmap = map;
                if(mapFirstLoaded) {
                   initMarkers();
-                  //initAirportMarkers();
+                  initAirportMarkers();
                }
                mapFirstLoaded = false;
             });
@@ -98,8 +99,33 @@ flightCrewAppControllers.controller('mapController',['$scope','$http','$interval
       $http.get('data/airportpositions.json').success(function(data) { 
            //log(data);
           $.each( data, function( key, item ) {
-               log(data[key][0].latitude);
-               log(data[key][0].longitude);
+            log(data[key][0].latitude);
+            log(data[key][0].longitude);
+            log('airport name: ' + key);
+            var airport = {
+               airportId : key,
+               showWindow : false,
+               gwindow : new google.maps.InfoWindow({
+                              content: key}),
+               airportMarker : new google.maps.Marker({
+                                       position: new google.maps.LatLng(
+                                       data[key][0].latitude, 
+                                       data[key][0].longitude),
+                                       title : key,
+                                       icon:'img/plane.png'
+                                    })
+            }
+            var infoWindow = airport.gwindow;
+            var marker = airport.airportMarker;
+            google.maps.event.addListener(marker, 'click', function(){
+               infoWindow.content = makeAirportWindowContent(airport);
+               infoWindow.open(gmap, marker);
+               airport.showWindow = true;
+             });
+            google.maps.event.addListener(infoWindow,'closeclick',function(){
+               airport.showWindow = false;
+            });
+            airports[airport.airportId]=airport;
           });
         });
    }
@@ -270,12 +296,19 @@ flightCrewAppControllers.controller('mapController',['$scope','$http','$interval
    //<h2 style="background-color:red;">
    }
 
+   function makeAirportWindowContent(airport) {
+      var content = "<div class =\"infoWindow\">id: " + airport.airportId;
+      return content;
+   }
    
    //used to add/remove markers, sets map to gmap or null
    function addRemoveAllMarkers(add) {
       var map = null;
       if(add){map = gmap;}
       //marker.setMap(gmap);
+      angular.forEach(airports, function(airport, id) {
+         airport.airportMarker.setMap(map);
+      });
       angular.forEach(crewMembers, function(crewMember, id) {
          crewMember.gmarker.setMap(map);
          //crewMember.gpath.setMap(map);
