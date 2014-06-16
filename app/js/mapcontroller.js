@@ -28,9 +28,15 @@ flightCrewAppControllers.controller('mapController',['$scope','$http','$interval
 	
    var mapFirstLoaded = true;
    var gmap;
+   var PDT;
+   var delay;
+   var flightDelayStatus;
    var crewMembers = {};
    var airports = {};
+   var flights = {};
+
    $scope.crewMembers = crewMembers;
+   $scope.flights = flights;
 
    $scope.orderProp = 'id';
    $scope.toHMS = secToHMS;
@@ -55,6 +61,7 @@ flightCrewAppControllers.controller('mapController',['$scope','$http','$interval
                if(mapFirstLoaded) {
                   initMarkers();
                   initAirportMarkers();
+                  initFlights();
                }
                mapFirstLoaded = false;
             });
@@ -63,13 +70,27 @@ flightCrewAppControllers.controller('mapController',['$scope','$http','$interval
       
    };
 
-   $scope.colo = 'red';
+   $scope.color = 'red';
 
    $scope.lateColor = function(crewMember){
+
       if(crewMember.late){
          return 'red';
       }
       return "green";
+   }
+
+   $scope.delayColor = function(flight)
+   {
+      var status = flight.delayStatus;
+      
+      if(status == "red")
+      {
+         console.log("delayColor"+status);
+         return "red";
+      }
+      return "black";
+
    }
 
    $scope.maxEta = function(){
@@ -164,6 +185,181 @@ flightCrewAppControllers.controller('mapController',['$scope','$http','$interval
 
       });
       
+   }
+
+   function initFlights()
+   {
+      log("init flight date");
+
+      $http.get("ajax/getFlightData.php").success(function(flights,status,headers,config)
+      {
+         var deferred = $q.defer();
+    
+         deferred.resolve(flights);
+
+         for(var i=0; i<flights.length; i++)
+         {
+            console.log(flights[i].flightid); 
+
+            calculatePTD(flights[i]);
+            addFlights(flights[i], PDT, delay, flightDelayStatus);
+         }
+
+      }).error(function(data, status, headers, config){
+
+         deferred.reject(flights);
+
+         console.log("Error in initFlights");
+      });
+
+   }
+
+   function addFlights(jsonData, PDT, delay, flightDelayStatus)
+   {
+      // var day = jsonData.departuretime.slice(0,3);
+      var hours = parseInt(jsonData.departuretime.slice(4,6), 10);
+      var minutes = parseInt(jsonData.departuretime.slice(7,9), 10); //specifying 10 as the base
+      var amPM = jsonData.departuretime.slice(9,11);
+      // var timeSavings = jsonData.departuretime.slice(11,15);
+
+      var hma = formatTime(hours,minutes, amPM);
+
+         var flight = 
+         {
+            flightId : jsonData.flightid,
+            aircraftType : jsonData.aircraftype,
+            departureAirport : jsonData.departureairport,
+            arrivalAirport : jsonData.arrivalairport,
+            departureTime :  hma,
+            arrivalTime : jsonData.arrivaltime,
+            flightPTD : PDT,
+            flightDelay : delay,
+            delayStatus : flightDelayStatus,
+         };
+
+      flights[flight.flightId]=flight;
+      
+   }
+
+   function formatTime(hours, minutes, amPM)
+   {
+      if(minutes >= 60)
+      {
+         minutes = minutes-60;
+
+         /* AM/PM switch */
+         if(hours == 11 && amPM == "AM")
+         {
+            hours = hours+1;
+            amPM = "PM";
+         }
+         else if (hours == 11 && amPM == "PM")
+         {
+            hours = hours+1;
+            amPM = "AM";
+         }
+         else
+         { 
+            hours = hours+1;
+         }
+
+      }
+
+      if(hours > 12)
+      {
+         hours = hours-12;
+      }  
+
+      /*Leading zeroes are inserted back (8:00AM is 08:00AM)*/
+      if(hours < 10)
+      {
+         hours = "0"+hours;
+      }
+      if(minutes < 10)
+      {
+         minutes = "0"+minutes;
+      }
+
+      /*Ignore days and time zones*/
+      var hma = hours+":"+minutes+" "+amPM;
+
+      return hma;
+   }
+
+   function formatDelay(hours,delay)
+   {
+      var delayHours = 0;
+
+      if(delay < 10)
+      {
+         delay = "+00:0"+delay;
+         console.log("Delay < 10: "+delay);
+
+         return delay;
+         
+      }
+      else if(delay >= 10 && delay < 60)
+      {
+         delay = "+00:"+delay;
+         console.log("Delay > 10: "+delay);
+         
+         return delay;
+      }
+      else if (delay >= 60)
+      {
+         delayHours = delayHours+1;
+
+         if(delayHours < 10)
+         {
+            delay = "+0"+delayHours+":"+(delay-60)+"0";
+
+            return delay;
+         }
+         else (delayHours >= 10)
+         {
+            delay = "+"+delayHours+":"+(delay-60)+"0"; 
+            
+            return delay; 
+         }
+      }
+   }
+
+   //Generating dummy PTD values for now
+   function calculatePTD(jsonData)
+   {
+      //Format: Wed 10:49AM EDT
+      var randomValue = Math.floor((Math.random() * 60) + 1); //max delay is 60 minutes
+
+      var hours = parseInt(jsonData.departuretime.slice(4,6), 10);
+      var minutes = parseInt(jsonData.departuretime.slice(7,9), 10); //specifying 10 as the base
+      var amPM = jsonData.departuretime.slice(9,11);
+
+      var oldMinutes = minutes;
+      minutes = minutes+randomValue; //add artificial delay
+      
+      delay = Math.abs(oldMinutes - minutes); //the temporary delay value
+
+      /*Set flight delay status*/
+      if(delay <= 10)
+      {
+         flightDelayStatus = "green";
+      }
+      else if (delay > 10 && delay <= 30)
+      {
+         flightDelayStatus = "yellow";
+      }
+      else
+      {
+         flightDelayStatus = "red";
+      }
+
+      delay = formatDelay(hours, delay);
+
+      var hma = formatTime(hours, minutes, amPM);
+
+      PDT = hma;
+
+      console.log("PDT: "+PDT); 
    }
 
    //This function will be unnecessary when we update the phone apps to send destination as well
@@ -275,6 +471,7 @@ flightCrewAppControllers.controller('mapController',['$scope','$http','$interval
       crewMember.gmarker.setIcon(icon);
       crewMember.gwindow.content = makeWindowContent(crewMember, crewMember.late);
       if(crewMember.showWindow)crewMember.gwindow.open(gmap, crewMember.gmarker);
+
    }
 
    function makeWindowContent(crewMember, late){
