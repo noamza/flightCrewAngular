@@ -112,7 +112,7 @@ flightCrewAppControllers.controller('mapController',['$scope','$http','$interval
                                        data[key][0].latitude, 
                                        data[key][0].longitude),
                                        title : key,
-                                       icon:'img/plane.png'
+                                       icon:'img/Airport-cct.png'
                                     })
             }
             var infoWindow = airport.gwindow;
@@ -297,7 +297,7 @@ flightCrewAppControllers.controller('mapController',['$scope','$http','$interval
    }
 
    function makeAirportWindowContent(airport) {
-      var content = "<div class =\"infoWindow\">id: " + airport.airportId;
+      var content = "<div class =\"infoWindow\"> " + airport.airportId;
       return content;
    }
    
