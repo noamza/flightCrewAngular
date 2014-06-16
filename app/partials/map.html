@@ -1,62 +1,124 @@
 
-<div class="" ="mainMapContainer">	
+<div class = "container-fluid">	
 <link rel="stylesheet" href="css/map.css"/>
+<div class = "row-fluid">
 
-	<!--div id="header" style="background-color:yellow;">
-	Map
-	</div-->
+	<!-- Sidebar -->
+	<div class = "span2">
+		<div class="mapMenu">
+			<b>Crew Members</b>
+			<br>
+			<br> search: 
+			<input ng-model="query.id" sytle="width:39px">
+			<br>
+			<br> Sort by: 
+			<select ng-model="orderProp">
+	        	<option value="id">name</option>
+	        	<option value="eta">closest</option>
+	     	</select>
+			<br> <!--{{query}}-->
+			<br>
+			<table style="width:20em">
+				<tr>
+					<b>
+						<td style="width:10em">ID</td>
+					 	<td>Eta</td> 
+					 	<td>Time of Update</td>
+					 </b>
+				</tr>
+				<tr ng-repeat="i in crewMembers | makeArray | filter:query | orderBy:orderProp" ng-click="crewTableClick(i)" style="color:{{lateColor(i)}}">
+					<td style="width:10em">{{i.id}}</td>
+				 	<td style="width:5em">{{toHMS(i.eta)}}</td> 
+				 	<td style="width:10em">{{i.time | date : short}}</td>
+				</tr>
+			</table>
+			<br>
+			<b style="">Estimated time until crew is ready: {{maxEta()}}</b>
+		</div >
+	</div>	
 
-	<div class="mapMenu">
-		<b>Crew Members</b>
-		<br>
-		<br> search: 
-		<input ng-model="query.id" sytle="width:39px">
-		<br>
-		<br> Sort by: 
-		<select ng-model="orderProp">
-        	<option value="id">name</option>
-        	<option value="eta">closest</option>
-     	</select>
-		<br> <!--{{query}}-->
-		<br>
-		<table style="width:20em">
-			<tr>
-				<b>
-					<td style="width:10em">ID</td>
-				 	<td>Eta</td> 
-				 	<td>Time of Update</td>
-				 </b>
-			</tr>
-			<tr ng-repeat="i in crewMembers | makeArray | filter:query | orderBy:orderProp" ng-click="crewTableClick(i)" style="color:{{lateColor(i)}}">
-				<td style="width:10em">{{i.id}}</td>
-			 	<td style="width:5em">{{toHMS(i.eta)}}</td> 
-			 	<td style="width:10em">{{i.time | date : short}}</td>
-			</tr>
-		</table>
-		<br>
-		<b style="">Estimated time until crew is ready: {{maxEta()}}</b>
-	</div >
+	<!-- Body -->
+	<div class="span10">
+		<div class="theMap">
+			<google-map 
+			center="map.center" 
+			zoom="map.zoom" 
+			draggable="true" 
+		    dragging="map.dragging" 
+		    bounds="map.bounds" 
+		    events="map.events" 
+		    options="map.options" 
+		    pan="true" 
+		    control="map.control"   
+			>
+			<!--markers models="map.dynamicMarkers" coords="'self'" icon="'icon'" ng-cloak></markers-->
+			</google-map>
+		</div>
+	</div>	
 
-	<div class="theMap">
-		<google-map 
-		center="map.center" 
-		zoom="map.zoom" 
-		draggable="true" 
-	    dragging="map.dragging" 
-	    bounds="map.bounds" 
-	    events="map.events" 
-	    options="map.options" 
-	    pan="true" 
-	    control="map.control"   
-		>
-		<!--markers models="map.dynamicMarkers" coords="'self'" icon="'icon'" ng-cloak></markers-->
-		</google-map>
-	</div>
+	<!-- Tabs with Widget Options -->
+    <div class="crewControlPanel" class="ui-widget-content">
+     	
+     	    <div class="row-fluid">
+	    	<div class="span12">
 
-	<!--div id="footer" style="background-color:#FFA500;clear:both;text-align:center;">
-	footer</div-->
+				<wij-tabs id="tabs" sortable="true" collapsible="true">
+					       <ul><li><a href="#tabs-1">Flight List</a> </li>
+					       <li><a href="#tabs-2">Crew Control</a> </li></ul>
+					       <div id="tabs-1">
+					       	<table>
+					       		<thead>
+					       		  <tr><th colspan="6">Flights Departing From Airport X</th></tr>
+					       		  <tr>
+										<td style="width:60em">Status</td>
+									 	<td style="width:60em">ID</td> 
+									 	<td style="width:60em">Dest</td>
+									 	<td style="width:400em">STD</td>
+									 	<td style="width:400em">PDT</td>
+									 	<td style="width:60em">Delay</td>
+								  </tr>
+					       		  </thead>
+					       		  <tr ng-repeat="flight in flights" style="color:{{delayColor(flight)}}">
+						              <td> <img src="img/{{flight.delayStatus}}.png"/> </td>
+						              <td>{{flight.flightId}}&nbsp;</td>
+						              <td>{{flight.arrivalAirport}}&nbsp;</td>
+						              <td>{{flight.departureTime}}&nbsp;</td>
+						              <td>{{flight.flightPTD}}&nbsp;</td>
+						              <td>{{flight.flightDelay}}&nbsp;</td>
+						            </tr>
+					       	</table>	
+					       </div>
+					       <div id="tabs-2">
+					            <!-- FLIGHT CREW TABLE -->
+						        <table>
+						          <thead>
+						            <tr><th colspan="4">Crew For Flight VRD956</th></tr>
+						          </thead>
+						          <tbody>
+						            <tr ng-repeat="crew in crewList">
+						              <td> <img src="img/{{crew.delayStatus}}.png"/> </td>
+						                {{crew.Crew.firstName}}&nbsp;{{crew.Crew.lastName}}&nbsp;
+						              </td>
+						              <td>{{crew.role}}&nbsp;</td>
+						              <td>{{crew.destination}}&nbsp;</td>
+						              <td>{{crew.std}}&nbsp;</td>
+						              <td>{{crew.ptd}}&nbsp;</td>
+						              <td>{{crew.delay}}&nbsp;</td>
+						            </tr>
+						          </tbody>
+						        </table>
+					       </div>
+				</wij-tabs>
+
+	        </div>
+            </div>
+    </div> 
+  
+    <footer></footer>
 
 </div>
+</div>
+
 
 
 

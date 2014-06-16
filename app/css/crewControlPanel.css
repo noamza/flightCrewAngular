@@ -1,0 +1,44 @@
+/* crew control panel css stylesheet */
+.crewControlHeader
+{
+  height:     20px;
+  background: #A30319;
+  color:      white;
+  text-align: center;
+}
+
+.crewControlBody
+{
+  background: white;
+  text-align: center;
+  border: 2px solid;
+
+}
+
+.crewControlPanel
+{
+  width:      600px;
+  margin:     auto;
+  padding-top: 20px;
+
+  font-size: 16px;
+}
+
+.crewControlPanel thead th
+{
+  font-size: 16px;
+  font-weight: bolder;
+  text-align: center;
+  font-color: #000970;
+}
+
+.crewControlPanel thead td
+{
+  font-weight: bolder;
+  font-color: blue;
+}
+
+.crewControlPanel td
+{
+  padding-right: 2px;
+}
