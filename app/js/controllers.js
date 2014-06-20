@@ -68,6 +68,15 @@ flightCrewAppControllers.controller('contactController',['$scope', function($sco
 
 }]);
 
+//contact
+flightCrewAppControllers.controller('contactController',['$scope', function($scope) {
+  $scope.message = 'Contact us';
+
+  setInterval(function() { updateMap();}, 5000); 
+
+
+}]);
+
 
 
 

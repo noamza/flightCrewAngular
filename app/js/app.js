@@ -33,6 +33,12 @@ flightCrewApp.config(['$routeProvider',
 		controller  : 'contactController'
 	})
 
+	/* route for playback */
+	.when('/playback', { 
+		templateUrl : 'partials/historical-playback.html',
+		controller : 'playbackController'
+	})
+
 	.otherwise({ //CHEEECKKK NEEDS CONTROLLER?
 		redirectTo: 'partials/map.html'
 		});

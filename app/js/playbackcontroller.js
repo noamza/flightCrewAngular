@@ -35,7 +35,7 @@ flightCrewAppControllers.controller('playbackController',['$scope','$http','$int
          //id: 'Enter id here'
          //, time: 'Enter time here'
          id: 'sfkee',
-         time: '1000000000000000',
+         time: '1000000000000000000',
          speed: '100'
          , submit: function() {
             //var msg = "ID: " + $scope.form.id + " | Time: " + $scope.form.time;
@@ -119,18 +119,15 @@ flightCrewAppControllers.controller('playbackController',['$scope','$http','$int
 
    
    function getDataAndTraversePath(id, time){
-      //var msg = "ID: " + id + " | Time: " + time;
-      //alert(msg);
-
       var ids = parseID(id.replace(/\s+/g, '')); //removes whitespace from id before parsing...can add commas to query
-      log(ids);
+      //log(ids);
       var queryID = makeQueryID(ids); //generates string to query
-      log(queryID);
+      //log(queryID);
       
       $http.get("ajax/playback.php?" + "id=" +  queryID + "&time=" + time).success(function(pathData, status, headers, config) {
          var msg = "ajax/playback.php?" + "id=" + queryID + "&time=" + time;
-         log(msg);
-         log(pathData);
+         //log(msg);
+         //log(pathData);
          //traversePath(pathData, id); //change to accept multiple IDs
          var trackers = [];
          traversePaths(pathData, trackers, 0, pathData.length);
@@ -160,51 +157,6 @@ flightCrewAppControllers.controller('playbackController',['$scope','$http','$int
       }
       return idArr;  
    }
-
-   /*
-   function traversePath(pathData, id) {
-      //log(pathData);
-      if(pathData.length > 0) {
-         var latitude = pathData[0].latitudeDegree;
-         var longitude = pathData[0].longitudeDegree;
-         var pos = new google.maps.LatLng(latitude, longitude);
-         //log(pos);
-         var polyPath = [];
-         var routePath = getPolyPath(pathData[pathData.length - 1]);
-         polyPath.push(pos);
-         var marker = new google.maps.Marker({
-               position: pos,
-               title : id,
-               icon : 'img/green_Marker.png',
-         });
-         var gpath = new google.maps.Polyline({
-            path : polyPath,
-            strokeColor : '#0033CC',
-            strokeOpacity : 0.7,
-            strokeWeight: 2,
-            clickable: true,
-            draggable: false,
-            editable: false,
-            geodesic: false
-         }); 
-         var route = new google.maps.Polyline({
-            path : routePath,
-            strokeColor : '#FF0000',
-            strokeOpacity : 0.7,
-            strokeWeight: 2,
-            clickable: true,
-            draggable: false,
-            editable: false,
-            geodesic: false
-         }); 
-         marker.setMap(gmap);
-         route.setMap(gmap); //remember to remove after done
-         if(pathData.length > 1) {
-            delayedUpdate(pathData, marker, gpath, 1, pathData.length);
-            gpath.setMap(gmap);
-         }
-      }
-   }*/
 
    function traversePaths(pathData, trackers, i, limit) {
       setTimeout(function() {
@@ -273,7 +225,7 @@ flightCrewAppControllers.controller('playbackController',['$scope','$http','$int
             draggable: false,
             editable: false,
             geodesic: false
-         })
+         }),
          /*
          , route = new google.maps.Polyline({
             path : routePath,
@@ -286,7 +238,11 @@ flightCrewAppControllers.controller('playbackController',['$scope','$http','$int
             geodesic: false
          }), 
          */
+         gwindow : new google.maps.InfoWindow({
+            content : id
+         })
       }
+      var infoWindow = tracker.gwindow;
 
       return tracker;
    }
@@ -302,27 +258,6 @@ flightCrewAppControllers.controller('playbackController',['$scope','$http','$int
       }
       return polyPath;
    }
-
-   /*
-   function delayedUpdate(pathData, marker, gpath, i, limit) {
-      setTimeout(function() {
-         var latitude = pathData[i].latitudeDegree;
-         var longitude = pathData[i].longitudeDegree;
-         moveMarker(latitude, longitude, marker, gpath);
-         i++;
-
-         if(i < limit) { 
-            delayedUpdate(pathData, marker, gpath, i, limit);
-         } else {
-            //log("End of path reached.")
-            setTimeout(function() { 
-               marker.setMap(null);
-               gpath.setMap(null);
-            }, 5000);
-         } 
-      }, $scope.form.speed);
-   }
-   */
 
    function moveMarker(latitude, longitude, marker, gpath){
      var pos = new google.maps.LatLng(latitude, longitude);
