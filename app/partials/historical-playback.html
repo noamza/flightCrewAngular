@@ -1,0 +1,46 @@
+<script script type="text/javascript" src="../js/playbackcontroller.js"></script>
+<div class = "container-fluid">	
+<link rel="stylesheet" href="css/map.css"/>
+<div class = "row-fluid">
+
+	<!-- Sidebar -->
+	<div class = "span2">
+		<div class="mapMenu">
+			<b>Playback Options</b>
+			<br>
+			<br>
+			<form name = "input"  ng-submit="form.submit()">
+			IDs (comma-separated): <input type="text" name="id" ng-model="form.id">
+			<br>
+			<br>
+			Upper Time Bound: <input type="text" name="time" ng-model="form.time">
+			<br>
+			<br>
+			Step Speed (in ms): <input type="text" name="speed" ng-model="form.speed">
+			<br>
+			<br>
+			<input type="submit" value="Playback">
+			<br>
+			<br>
+			</form>
+		</div >
+	</div>	
+
+	<!-- Body -->
+	<div class="span10">
+		<div class="theMap">
+			<google-map 
+			center="map.center" 
+			zoom="map.zoom" 
+			draggable="true" 
+		    dragging="map.dragging" 
+		    bounds="map.bounds" 
+		    events="map.events" 
+		    options="map.options" 
+		    pan="true" 
+		    control="map.control"   
+			>
+			<!--markers models="map.dynamicMarkers" coords="'self'" icon="'icon'" ng-cloak></markers-->
+			</google-map>
+		</div>
+	</div>	
