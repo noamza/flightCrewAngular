@@ -24,17 +24,34 @@ flightCrewAppControllers.controller('playbackController',['$scope','$http','$int
    var crewMembers = {};
    var airports = {};
    var flights = {};
+   var flightids = [];
 
    $scope.crewMembers = crewMembers;
    $scope.flights = flights;
+   $scope.flightids = flightids;
 
    $scope.orderProp = 'id';
    $scope.toHMS = secToHMS;
 
+   $scope.trackFlight = function(flightid) {
+     $http.get("ajax/getCrewFromFlight.php?flightid=" + flightid).success(function(jsonData, status, headers, config) {
+         var crewids = [];
+         for(var i = 0; i < jsonData.length; i++) {
+            crewids.push(jsonData[i].id);
+         }
+         $scope.form.id = crewids.toString();
+         //log(flightid + ": " + crewids.toString());
+         getDataAndTraversePath($scope.form.id, $scope.form.time);
+      }).error(function(data, status, headers, config) {
+         console.log("Error gleaning crew ids data");
+      });
+   }
+
+
    $scope.form = {
          //id: 'Enter id here'
          //, time: 'Enter time here'
-         id: 'sfkee',
+         id: 'sfkee_1669, gano_1669, gano2_1669',
          time: '1000000000000000000',
          speed: '100'
          , submit: function() {
@@ -62,8 +79,7 @@ flightCrewAppControllers.controller('playbackController',['$scope','$http','$int
             $scope.$apply(function () {
                gmap = map;
                if(mapFirstLoaded) {
-                  initAirportMarkers();
-                  //initFlights();
+                  initFlights();
                }
                mapFirstLoaded = false;
             });
@@ -126,9 +142,6 @@ flightCrewAppControllers.controller('playbackController',['$scope','$http','$int
       
       $http.get("ajax/playback.php?" + "id=" +  queryID + "&time=" + time).success(function(pathData, status, headers, config) {
          var msg = "ajax/playback.php?" + "id=" + queryID + "&time=" + time;
-         //log(msg);
-         //log(pathData);
-         //traversePath(pathData, id); //change to accept multiple IDs
          var trackers = [];
          traversePaths(pathData, trackers, 0, pathData.length);
       }).error(function(data, status, headers, config) {
@@ -165,7 +178,7 @@ flightCrewAppControllers.controller('playbackController',['$scope','$http','$int
          var id = pathData[i].id;
 
          var tracker = getTracker(id, trackers);
-         moveMarker(latitude, longitude, tracker.marker, tracker.gpath);
+         moveMarker(latitude, longitude, tracker);
          //log(tracker.gpath);
 
          i++;
@@ -239,10 +252,14 @@ flightCrewAppControllers.controller('playbackController',['$scope','$http','$int
          }), 
          */
          gwindow : new google.maps.InfoWindow({
-            content : id
+            content : "ID: " + id + "<br> Position: " + pos
          })
       }
       var infoWindow = tracker.gwindow;
+      var marker = tracker.marker;
+      google.maps.event.addListener(marker, 'click', function(){
+               infoWindow.open(gmap, marker);
+      });
 
       return tracker;
    }
@@ -259,12 +276,31 @@ flightCrewAppControllers.controller('playbackController',['$scope','$http','$int
       return polyPath;
    }
 
-   function moveMarker(latitude, longitude, marker, gpath){
+   function moveMarker(latitude, longitude, tracker){
+     var marker = tracker.marker;
      var pos = new google.maps.LatLng(latitude, longitude);
-     var path = gpath.getPath();
+     var path = tracker.gpath.getPath();
+     var infoWindow = tracker.gwindow;
+     infoWindow.content = "ID: " + tracker.id + "<br> Position: " + marker.position;
      marker.setPosition(pos);
      path.push(pos);
      //log(pos);
+   }
+
+   function initFlights() {
+      var flightids = $scope.flightids;
+      $http.get("ajax/getFlightIDs.php").success(function(flightiddata, status, headers, config) {
+         for(var i = 0; i < flightiddata.length; i++) {
+            flightids.push(flightiddata[i].flightid);
+         }
+         //log(flightids.toString());
+      }).error(function(data, status, headers, config) {
+         console.log("Error gleaning flightids data");
+      });
+   }
+
+   function setCrewIDsAsID(flightid) {
+      
    }
 
 }]); //end map controller

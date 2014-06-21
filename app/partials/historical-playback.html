@@ -16,7 +16,8 @@
 			Upper Time Bound: <input type="text" name="time" ng-model="form.time">
 			<br>
 			<br>
-			Step Speed (in ms): <input type="text" name="speed" ng-model="form.speed">
+			Step Speed (in ms): <input type="range" min="1" max="3000" name="speed" ng-model="form.speed">
+			{{form.speed}}
 			<br>
 			<br>
 			<input type="submit" value="Playback">
@@ -44,3 +45,34 @@
 			</google-map>
 		</div>
 	</div>	
+
+	<!-- Tabs with Widget Options -->
+    <div class="crewControlPanel" class="ui-widget-content">
+     	
+     	    <div class="row-fluid">
+	    	<div class="span12"> 
+
+				<wij-tabs id="tabs" sortable="true" collapsible="true">
+					       <div id="tabs-1">
+					       	<table>
+					       		<thead>
+					       		  <tr><th colspan="6">Flight IDs</th></tr>
+					       		  <tr>
+									 	<td style="width:60em" align="center">(Click to Playback)</td> 
+								  </tr>
+					       		  </thead>
+					       		  <tr ng-repeat="flightid in flightids" ng-click="trackFlight(flightid)"> 
+						              <td align="center">{{flightid}}</td>
+						          </tr>
+					       	</table>	
+					       </div>
+				</wij-tabs>
+
+	        </div>
+            </div>
+    </div> 
+  
+    <footer></footer>
+
+</div>
+</div>
