@@ -1,3 +1,4 @@
+
 <script script type="text/javascript" src="../js/playbackcontroller.js"></script>
 <div class = "container-fluid">	
 <link rel="stylesheet" href="css/map.css"/>
@@ -6,6 +7,23 @@
 	<!-- Sidebar -->
 	<div class = "span2">
 		<div class="mapMenu">
+
+	<!-- Tabs with Widget Options -->
+    <div class="crewControlPanel">
+		<table width="300">
+				<thead>
+				<tr><th colspan="6">Flight IDs</th></tr>
+				<tr>
+					<td style="width:60em" align="center">(Click to Playback)</td> 
+				</tr>
+			</thead>
+			<tr ng-repeat="flightid in flightids" ng-click="trackFlight(flightid)"> 
+				<td align="center">{{flightid}}</td>
+			</tr>
+		</table>	
+    </div> 
+    		<br>
+    		<br>
 			<b>Playback Options</b>
 			<br>
 			<br>
@@ -45,32 +63,6 @@
 			</google-map>
 		</div>
 	</div>	
-
-	<!-- Tabs with Widget Options -->
-    <div class="crewControlPanel" class="ui-widget-content">
-     	
-     	    <div class="row-fluid">
-	    	<div class="span12"> 
-
-				<wij-tabs id="tabs" sortable="true" collapsible="true">
-					       <div id="tabs-1">
-					       	<table>
-					       		<thead>
-					       		  <tr><th colspan="6">Flight IDs</th></tr>
-					       		  <tr>
-									 	<td style="width:60em" align="center">(Click to Playback)</td> 
-								  </tr>
-					       		  </thead>
-					       		  <tr ng-repeat="flightid in flightids" ng-click="trackFlight(flightid)"> 
-						              <td align="center">{{flightid}}</td>
-						          </tr>
-					       	</table>	
-					       </div>
-				</wij-tabs>
-
-	        </div>
-            </div>
-    </div> 
   
     <footer></footer>
 

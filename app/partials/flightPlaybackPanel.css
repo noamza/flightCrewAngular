@@ -1,0 +1,44 @@
+/* flight playback panel spreadsheet */
+.flightPlaybackHeader
+{
+  height:     20px;
+  background: #A30319;
+  color:      white;
+  text-align: center;
+}
+
+.flightPlaybackBody
+{
+  background: white;
+  text-align: center;
+  border: 2px solid;
+
+}
+
+.flightPlaybackPanel
+{
+  width:      600px;
+  margin:     auto;
+  padding-top: 20px;
+
+  font-size: 16px;
+}
+
+.flightPlaybackPanel thead th
+{
+  font-size: 16px;
+  font-weight: bolder;
+  text-align: center;
+  font-color: #000970;
+}
+
+.flightPlaybackPanel thead td
+{
+  font-weight: bolder;
+  font-color: blue;
+}
+
+.flightPlaybackPanel td
+{
+  padding-right: 2px;
+}

@@ -87,52 +87,6 @@ flightCrewAppControllers.controller('playbackController',['$scope','$http','$int
       }
       
    };
-
-   $scope.color = 'red';
-
-   $scope.lateColor = function(crewMember){
-
-      if(crewMember.late){
-         return 'red';
-      }
-      return "green";
-   }
-
-   $scope.delayColor = function(flight)
-   {
-      var status = flight.delayStatus;
-      
-      if(status == "red")
-      {
-         console.log("delayColor"+status);
-         return "red";
-      }
-      return "black";
-
-   }
-
-   $scope.maxEta = function(){
-      var max = 0;
-      angular.forEach(crewMembers, function(crewMember, id) {
-         if (crewMember.eta > max) max = crewMember.eta;
-      });
-      return secToHMS(max);
-   }
-     /* _.each(markers, function (marker) {
-            marker.showWindow = false; } */
-
-   $scope.crewTableClick = function(crewMember){
-
-      if(!crewMember.showWindow){//window is currently closed
-            crewMember.gwindow.open(gmap, crewMember.gmarker);
-            crewMember.showWindow = true;
-      } else { //window is open
-         crewMember.gwindow.close();
-         crewMember.showWindow = false;
-      }
-      log("tableClick more like" + crewMember.showWindow);
-   };
-
    
    function getDataAndTraversePath(id, time){
       var ids = parseID(id.replace(/\s+/g, '')); //removes whitespace from id before parsing...can add commas to query
@@ -143,7 +97,11 @@ flightCrewAppControllers.controller('playbackController',['$scope','$http','$int
       $http.get("ajax/playback.php?" + "id=" +  queryID + "&time=" + time).success(function(pathData, status, headers, config) {
          var msg = "ajax/playback.php?" + "id=" + queryID + "&time=" + time;
          var trackers = [];
-         traversePaths(pathData, trackers, 0, pathData.length, 0);
+         if(pathData != "null") {
+            traversePaths(pathData, trackers, 0, pathData.length, 0);
+         } else {
+            alert("No data found for IDs: \"" + ids + "\"")
+         }
       }).error(function(data, status, headers, config) {
          console.log("Error gleaning path data");
       });
@@ -224,22 +182,37 @@ flightCrewAppControllers.controller('playbackController',['$scope','$http','$int
       var polyPath = [];
       var routePath = []; //maybe find route outside of fct then pass it in?
 
+      var lineSymbol = {
+        path : google.maps.SymbolPath.FORWARD_CLOSED_ARROW,
+        strokeColor: 'white',
+        strokeOpacity: 1.0,
+        strokeWeight: 2,
+        fillColor: '#0033CC',
+        fillOpacity: 1.0,
+        scale: 3.5
+      }
+
       var tracker = {
          id: id,
          marker : new google.maps.Marker({
                position: pos,
                title : id,
                icon : 'img/green_Marker.png',
+               //icon : 'null',
          }),
          gpath : new google.maps.Polyline({
             path : polyPath,
             strokeColor : '#0033CC',
             strokeOpacity : 0.7,
-            strokeWeight: 2,
+            strokeWeight: 3,
             clickable: true,
             draggable: false,
             editable: false,
-            geodesic: false
+            geodesic: false,
+            icons: [{
+              icon : lineSymbol,
+              offset : '100%'
+            }]
          }),     
          route : new google.maps.Polyline({
             path : routePath,
