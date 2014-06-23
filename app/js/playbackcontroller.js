@@ -100,7 +100,7 @@ flightCrewAppControllers.controller('playbackController',['$scope','$http','$int
          if(pathData != "null") {
             traversePaths(pathData, trackers, 0, pathData.length, 0);
          } else {
-            alert("No data found for IDs: \"" + ids + "\"")
+            alert("No data found for IDs: \"" + ids + "\" before time " + $scope.form.time + ".")
          }
       }).error(function(data, status, headers, config) {
          console.log("Error gleaning path data");
@@ -194,11 +194,14 @@ flightCrewAppControllers.controller('playbackController',['$scope','$http','$int
 
       var tracker = {
          id: id,
-         marker : new google.maps.Marker({
+         marker : new MarkerWithLabel({
                position: pos,
                title : id,
-               icon : 'img/green_Marker.png',
-               //icon : 'null',
+               //icon : 'img/green_Marker.png',
+               icon : 'img/blank.png',
+               labelContent : id,
+               labelClass : "labels",
+               labelInBackground : false
          }),
          gpath : new google.maps.Polyline({
             path : polyPath,
