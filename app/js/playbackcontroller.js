@@ -51,7 +51,7 @@ flightCrewAppControllers.controller('playbackController',['$scope','$http','$int
    $scope.form = {
          //id: 'Enter id here'
          //, time: 'Enter time here'
-         id: 'sfkee_1669, gano_1669, gano2_1669',
+         id: 'Enter IDs',
          time: '1000000000000000000',
          speed: '100'
          , submit: function() {
@@ -143,7 +143,7 @@ flightCrewAppControllers.controller('playbackController',['$scope','$http','$int
       $http.get("ajax/playback.php?" + "id=" +  queryID + "&time=" + time).success(function(pathData, status, headers, config) {
          var msg = "ajax/playback.php?" + "id=" + queryID + "&time=" + time;
          var trackers = [];
-         traversePaths(pathData, trackers, 0, pathData.length);
+         traversePaths(pathData, trackers, 0, pathData.length, 0);
       }).error(function(data, status, headers, config) {
          console.log("Error gleaning path data");
       });
@@ -171,20 +171,21 @@ flightCrewAppControllers.controller('playbackController',['$scope','$http','$int
       return idArr;  
    }
 
-   function traversePaths(pathData, trackers, i, limit) {
+   function traversePaths(pathData, trackers, i, limit, timeDiff) {
       setTimeout(function() {
          var latitude = pathData[i].latitudeDegree;
          var longitude = pathData[i].longitudeDegree;
-         var id = pathData[i].id;
-
+         var id = pathData[i].id
+         var currTime = pathData[i].timeSecond;
          var tracker = getTracker(id, trackers);
-         moveMarker(latitude, longitude, tracker);
+         updateMarker(pathData[i], tracker);
          //log(tracker.gpath);
 
          i++;
 
-         if(i < limit) { 
-            traversePaths(pathData, trackers, i, limit);
+         if(i < limit) {
+            //log(pathData[i].timeSecond - pathData[i-1].timeSecond);
+            traversePaths(pathData, trackers, i, limit, pathData[i].timeSecond-pathData[i-1].timeSecond);
          } else {
             log("All paths finished.")
             setTimeout(function() { 
@@ -192,14 +193,14 @@ flightCrewAppControllers.controller('playbackController',['$scope','$http','$int
             }, 5000);
          } 
 
-      }, $scope.form.speed);
+      }, timeDiff/$scope.form.speed);
    }
 
    function clearMap(trackers) {
       for(var i = 0; i < trackers.length; i++) {
          trackers[i].marker.setMap(null);
          trackers[i].gpath.setMap(null);
-         //trackers[i].route.setMap(null);
+         trackers[i].route.setMap(null);
       }
    }
 
@@ -212,6 +213,7 @@ flightCrewAppControllers.controller('playbackController',['$scope','$http','$int
       trackers.push(tracker);
       tracker.marker.setMap(gmap);
       tracker.gpath.setMap(gmap);
+      tracker.route.setMap(gmap);
       return tracker; 
    }
 
@@ -220,7 +222,7 @@ flightCrewAppControllers.controller('playbackController',['$scope','$http','$int
       var pos = new google.maps.LatLng(null, null);
       //log(pos);
       var polyPath = [];
-      //var routePath = getPolyPath(pathData[pathData.length - 1]); //maybe find route outside of fct then pass it in?
+      var routePath = []; //maybe find route outside of fct then pass it in?
 
       var tracker = {
          id: id,
@@ -238,9 +240,8 @@ flightCrewAppControllers.controller('playbackController',['$scope','$http','$int
             draggable: false,
             editable: false,
             geodesic: false
-         }),
-         /*
-         , route = new google.maps.Polyline({
+         }),     
+         route : new google.maps.Polyline({
             path : routePath,
             strokeColor : '#FF0000',
             strokeOpacity : 0.7,
@@ -249,8 +250,7 @@ flightCrewAppControllers.controller('playbackController',['$scope','$http','$int
             draggable: false,
             editable: false,
             geodesic: false
-         }), 
-         */
+         }),          
          gwindow : new google.maps.InfoWindow({
             content : "ID: " + id + "<br> Position: " + pos
          })
@@ -276,14 +276,17 @@ flightCrewAppControllers.controller('playbackController',['$scope','$http','$int
       return polyPath;
    }
 
-   function moveMarker(latitude, longitude, tracker){
+   function updateMarker(pointData, tracker){
      var marker = tracker.marker;
-     var pos = new google.maps.LatLng(latitude, longitude);
+     var pos = new google.maps.LatLng(pointData.latitudeDegree, pointData.longitudeDegree);
      var path = tracker.gpath.getPath();
      var infoWindow = tracker.gwindow;
+     var newRoute = getPolyPath(pointData);
+
      infoWindow.content = "ID: " + tracker.id + "<br> Position: " + marker.position;
      marker.setPosition(pos);
      path.push(pos);
+     tracker.route.setPath(newRoute);
      //log(pos);
    }
 
@@ -303,5 +306,5 @@ flightCrewAppControllers.controller('playbackController',['$scope','$http','$int
       
    }
 
-}]); //end map controller
+}]); //end playback controller
 
