@@ -33,6 +33,7 @@ flightCrewAppControllers.controller('playbackController',['$scope','$http','$int
    $scope.orderProp = 'id';
    $scope.toHMS = secToHMS;
 
+   /* Tracks the paths for all crew members of a particular flight. */
    $scope.trackFlight = function(flightid) {
      $http.get("ajax/getCrewFromFlight.php?flightid=" + flightid).success(function(jsonData, status, headers, config) {
          var crewids = [];
@@ -47,13 +48,21 @@ flightCrewAppControllers.controller('playbackController',['$scope','$http','$int
       });
    }
 
+   /*
+   $scope.tableParams = new ngTableParams({
+      //fill in when have more info
+   },
+   {
+   });
+  */
 
+  /* Angular data for the forms. Initial values are set to double-bind. */
    $scope.form = {
          //id: 'Enter id here'
          //, time: 'Enter time here'
          id: 'Enter IDs',
          time: '1000000000000000000',
-         speed: '100'
+         speed: '1'
          , submit: function() {
             //var msg = "ID: " + $scope.form.id + " | Time: " + $scope.form.time;
             //alert(msg);
@@ -88,6 +97,7 @@ flightCrewAppControllers.controller('playbackController',['$scope','$http','$int
       
    };
    
+   /* Queries the path data associated with the id string, then plays back the paths which correspond to the IDs */
    function getDataAndTraversePath(id, time){
       var ids = parseID(id.replace(/\s+/g, '')); //removes whitespace from id before parsing...can add commas to query
       //log(ids);
@@ -108,6 +118,8 @@ flightCrewAppControllers.controller('playbackController',['$scope','$http','$int
       
    }
 
+
+   /* Generates the id portion of the query to get the pathData */
    function makeQueryID(ids) {
       var queryID = "'" + ids[0] + "'";
       for(var i = 1; i < ids.length; i++) {
@@ -117,6 +129,7 @@ flightCrewAppControllers.controller('playbackController',['$scope','$http','$int
       return queryID;
    }
 
+   /* Returns an array which contains all the IDs (is this even necessary...?)  */
    function parseID(id) {
       var idArr = [];
       var lastComma = -1; //since we get the substring after the comma, technically the comma is at the -1th index.
@@ -129,6 +142,7 @@ flightCrewAppControllers.controller('playbackController',['$scope','$http','$int
       return idArr;  
    }
 
+   /* Given the pathData queried according to the pathData.php script, traverses paths with a calculated pause time of timeDiff*/
    function traversePaths(pathData, trackers, i, limit, timeDiff) {
       setTimeout(function() {
          var latitude = pathData[i].latitudeDegree;
@@ -151,9 +165,10 @@ flightCrewAppControllers.controller('playbackController',['$scope','$http','$int
             }, 5000);
          } 
 
-      }, timeDiff/$scope.form.speed);
+      }, timeDiff/$scope.form.speed); //simulated delay = realtime difference (in ms) divided by user-specified multiplier
    }
 
+   /* Clears the map of all markers and polyLines */
    function clearMap(trackers) {
       for(var i = 0; i < trackers.length; i++) {
          trackers[i].marker.setMap(null);
@@ -162,6 +177,7 @@ flightCrewAppControllers.controller('playbackController',['$scope','$http','$int
       }
    }
 
+   /* Returns the tracker that corresponds to the id, or makes a new tracker if one does not exist. */
    function getTracker(id, trackers) {
       for(var i = 0; i < trackers.length; i++) {
          if(trackers[i].id == id)
@@ -175,7 +191,7 @@ flightCrewAppControllers.controller('playbackController',['$scope','$http','$int
       return tracker; 
    }
 
-
+   /* Makes a new tracker associated to the given id. */
    function makeNewTracker(id) {
       var pos = new google.maps.LatLng(null, null);
       //log(pos);
@@ -240,6 +256,7 @@ flightCrewAppControllers.controller('playbackController',['$scope','$http','$int
       return tracker;
    }
 
+   /* Returns the polypath associated to a single line of queried path data. */
    function getPolyPath(jsonData) {
       var route = (jsonData.route).split("|");
       var numPoints = route.length;
@@ -252,6 +269,7 @@ flightCrewAppControllers.controller('playbackController',['$scope','$http','$int
       return polyPath;
    }
 
+   /* Relocates and updates the tracker (marker, polyLines) given a single line of data from the pathData */
    function updateMarker(pointData, tracker){
      var marker = tracker.marker;
      var pos = new google.maps.LatLng(pointData.latitudeDegree, pointData.longitudeDegree);
@@ -266,6 +284,7 @@ flightCrewAppControllers.controller('playbackController',['$scope','$http','$int
      //log(pos);
    }
 
+   /* Gets all the flight IDs */
    function initFlights() {
       var flightids = $scope.flightids;
       $http.get("ajax/getFlightIDs.php").success(function(flightiddata, status, headers, config) {
@@ -276,10 +295,6 @@ flightCrewAppControllers.controller('playbackController',['$scope','$http','$int
       }).error(function(data, status, headers, config) {
          console.log("Error gleaning flightids data");
       });
-   }
-
-   function setCrewIDsAsID(flightid) {
-      
    }
 
 }]); //end playback controller

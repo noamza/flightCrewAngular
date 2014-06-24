@@ -21,8 +21,8 @@
 		<div class="mapMenu">
 
 	<!-- Tabs with Widget Options -->
-    <div class="crewControlPanel">
-		<table width="300">
+    <div class="crewControlPanel" style = "height:275px; width:350px; overflow-y: scroll;">
+		<table ng-table="tableParams" width="300">
 				<thead>
 				<tr><th colspan="6">Flight IDs</th></tr>
 				<tr>
@@ -35,7 +35,6 @@
 		</table>	
     </div> 
     		<br>
-    		<br>
 			<b>Playback Options</b>
 			<br>
 			<br>
@@ -46,8 +45,8 @@
 			Upper Time Bound: <input type="text" name="time" ng-model="form.time">
 			<br>
 			<br>
-			Speed (higher is faster; 1 is real-time): <input type="range" min="1" max="15000" name="speed" ng-model="form.speed">
-			{{form.speed}}
+			Playback Speed: <input type="range" min="1" max="15000" name="speed" ng-model="form.speed">
+			{{form.speed}}x
 			<br>
 			<br>
 			<input type="submit" value="Playback">
