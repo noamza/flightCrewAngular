@@ -45,6 +45,7 @@ flightCrewAppControllers.controller('mapController',['$scope','$http','$interval
    var specificCrew = {};
    var specificCrewMember;
    var counter = 0;
+   var showAirports = false;
 
    $scope.crewMembers = crewMembers;
    $scope.flights = flights;
@@ -179,6 +180,7 @@ flightCrewAppControllers.controller('mapController',['$scope','$http','$interval
             airports[airport.airportId]=airport;
           });
         });
+    $scope.showAirports = true;
    }
 
    //add error handeling
@@ -666,6 +668,19 @@ flightCrewAppControllers.controller('mapController',['$scope','$http','$interval
       globalCrewIDs.push(crewMember.id);
 
    }
+
+  $scope.toggleAirportVisibility = function() {
+    log("clicked button");
+    var map = null;
+    $scope.showAirports = !$scope.showAirports;
+    if($scope.showAirports) {
+      map = gmap;
+    }
+    angular.forEach(airports, function(airport) {
+      airport.airportMarker.setMap(map);
+    });
+  }
+
 
    function initPrevPath(crewMember) {
       $http.get("ajax/getPrevPath.php?id=" + crewMember.id).success(function(pathData, status, headers, config) {
