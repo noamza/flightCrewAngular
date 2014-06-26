@@ -3,70 +3,10 @@
 <link rel="stylesheet" href="css/map.css"/>
 <div class = "row-fluid">
 
-	<!-- Sidebar -->
 	<div class = "span2">
-		<div class="mapMenu">
-			<b>Crew Members</b>
-			<br>
-			<br> search: 
-			<input ng-model="query.id" sytle="width:39px">
-			<br>
-			<br> Sort by: 
-			<select ng-model="orderProp">
-	        	<option value="id">name</option>
-	        	<option value="eta">closest</option>
-	     	</select>
-			<br> <!--{{query}}-->
-			<br>
-			<table style="width:20em">
-				<tr>
-					<b>
-						<td style="width:10em">ID</td>
-					 	<td>Eta</td> 
-					 	<td>Time of Update</td>
-					 </b>
-				</tr>
-				<tr ng-repeat="i in crewMembers | makeArray | filter:query | orderBy:orderProp" ng-click="crewTableClick(i)" style="color:{{lateColor(i)}}">
-					<td style="width:10em">{{i.id}}</td>
-				 	<td style="width:5em">{{toHMS(i.eta)}}</td> 
-				 	<td style="width:10em">{{i.time | date : short}}</td>
-				</tr>
-			</table>
-			<br>
-			<b style="">Estimated time until crew is ready: {{maxEta()}}</b>
-		</div >
-	</div>	
-
-	<!-- Body -->
-	<div class="span10">
-		<div class="theMap">
-			<google-map 
-			center="map.center" 
-			zoom="map.zoom" 
-			draggable="true" 
-		    dragging="map.dragging" 
-		    bounds="map.bounds" 
-		    events="map.events" 
-		    options="map.options" 
-		    pan="true" 
-		    control="map.control"   
-			>
-			<!--markers models="map.dynamicMarkers" coords="'self'" icon="'icon'" ng-cloak></markers-->
-			</google-map>
-		</div>
-	</div>	
-
-	<!-- Tabs with Widget Options -->
-    <div class="crewControlPanel" class="ui-widget-content">
-     	
-     	    <div class="row-fluid">
-	    	<div class="span12">
-
-				<wij-tabs id="tabs" sortable="true" collapsible="true">
-					       <ul><li><a href="#tabs-1">Flight List</a> </li>
-					       <li><a href="#tabs-2">Crew Control</a> </li></ul>
-					       <div id="tabs-1">
-					       	<table>
+	<div class="mapMenu">
+							<!-- FLIGHT LIST TABLE -->
+					       	<table id="flightControl">
 					       		<thead>
 					       		  <tr><th colspan="6">Flights Departing From Airport X</th></tr>
 					       		  <tr>
@@ -87,33 +27,94 @@
 						              <td>{{flight.flightDelay}}&nbsp;</td>
 						            </tr>
 					       	</table>	
-					       </div>
-					       <div id="tabs-2">
-					            <!-- FLIGHT CREW TABLE -->
-						        <table>
+ 							<!-- CREW CONTROL TABLE -->
+						        <table id="crewControl">
 						          <thead>
-						            <tr><th colspan="4">Crew For Flight VRD956</th></tr>
+						          	<tr> 
+						          		<div class="crewControlMenu">
+						          			<b>Select a flight:
+								      	  	<select ng-change="getSelectedFlight()" ng-model="selectedFlights"
+								      	  		ng-options="flight for flight in allFlights">
+								      	  	</select>
+								      	</div>
+								    <!--   	  	Value Selected is: {{selectedFlights}} -->
+							        </tr>
+						            <tr>
+										<td style="width:60em">Status</td>
+									 	<td style="width:60em">ID</td> 
+									 	<td style="width:60em">Delay</td>
+									 	<td style="width:400em">Distance</td>
+									 	<td style="width:400em">FAR-117</td>
+									 	<td style="width:400em">Flight ID</td>
+								    </tr>
 						          </thead>
-						          <tbody>
-						            <tr ng-repeat="crew in crewList">
-						              <td> <img src="img/{{crew.delayStatus}}.png"/> </td>
-						                {{crew.Crew.firstName}}&nbsp;{{crew.Crew.lastName}}&nbsp;
-						              </td>
-						              <td>{{crew.role}}&nbsp;</td>
-						              <td>{{crew.destination}}&nbsp;</td>
-						              <td>{{crew.std}}&nbsp;</td>
-						              <td>{{crew.ptd}}&nbsp;</td>
-						              <td>{{crew.delay}}&nbsp;</td>
+						          <tbody id="crewControlBody">
+						            <tr ng-repeat="crew in specificCrew | makeArray | orderBy:['crewFlightId']">
+						              <td> <img src="img/{{crew.delayStatus}}.png"/></td>
+						              <td>{{crew.id}}&nbsp;</td>
+						              <td>{{toHMS(crew.eta)}}&nbsp;</td>   <!-- crew delay = crew.eta -->
+						              <td>{{crew.distanceToDest}}&nbsp;</td>
+						              <td>{{crew.far}}&nbsp;</td>
+						              <td>{{crew.crewFlightId}}&nbsp;</td>
 						            </tr>
 						          </tbody>
 						        </table>
-					       </div>
-				</wij-tabs>
+	</div>
+	</div>
+	<!-- Noam's Sidebar -->
+<!-- 	<div class = "span2">
+		<div class="mapMenu">
+			<b>Crew Members</b>
+			<br>
+			<br> search: 
+			<input ng-model="query.id" sytle="width:39px">
+			<br>
+			<br> Sort by: 
+			<select ng-model="orderProp">
+	        	<option value="id">name</option>
+	        	<option value="eta">closest</option>
+	     	</select>
+			<br> 
+			<br>
+			<table style="width:20em">
+				<tr>
+					<b>
+						<td style="width:10em">ID</td>
+					 	<td>Eta</td> 
+					 	<td>Time of Update</td>
+					 </b>
+				</tr>
+				<tr ng-repeat="i in crewMembers | makeArray | filter:query | orderBy:orderProp" ng-click="crewTableClick(i)" style="color:{{lateColor(i)}}">
+					<td style="width:10em">{{i.id}}</td>
+				 	<td style="width:5em">{{toHMS(i.eta)}}</td> 
+				 	<td style="width:10em">{{i.time | date : short}}</td>
+				</tr>
+			</table>
+			<br>
+			<b style="">Estimated time until crew is ready: {{maxEta()}}</b>
+		</div >
+	</div>	 -->
 
-	        </div>
-            </div>
-    </div> 
-  
+	<!-- Body -->
+	<div class="span10">
+		<div class="theMap">
+			<google-map 
+			center="map.center" 
+			zoom="map.zoom" 
+			draggable="true" 
+		    dragging="map.dragging" 
+		    bounds="map.bounds" 
+		    events="map.events" 
+		    options="map.options" 
+		    pan="true" 
+		    control="map.control"   
+			>
+			<!--markers models="map.dynamicMarkers" coords="'self'" icon="'icon'" ng-cloak></markers-->
+			</google-map>
+		</div>
+	</div>	
+
+	
     <footer></footer>
 
 </div>

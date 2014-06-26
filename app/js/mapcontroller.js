@@ -126,7 +126,7 @@ flightCrewAppControllers.controller('mapController',['$scope','$http','$interval
       if(counter != 0)
       {
         //log("reset: " + counter);
-        $("tbody td").empty();
+        $("#crewControl tbody td").empty();
       }
       
       counter = counter +1;
