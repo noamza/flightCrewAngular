@@ -30,16 +30,29 @@ flightCrewAppControllers.controller('mapController',['$scope','$http','$interval
    var gmap;
    var PDT;
    var delay;
+   var crewDelay;
    var flightDelayStatus;
+   var crewDelayStatus;
+   var distance;
+   var farValue;
    var crewMembers = {};
    var airports = {};
    var flights = {};
+   var matchingFlights = {};
+   var selectedFlight;
+   var globalCrewIDs = [];
+   var saveCrewIDs = [];
+   var specificCrew = {};
+   var specificCrewMember;
+   var counter = 0;
 
    $scope.crewMembers = crewMembers;
    $scope.flights = flights;
-
+   $scope.matchingFlights = matchingFlights;
+   $scope.allFlights = [];
    $scope.orderProp = 'id';
    $scope.toHMS = secToHMS;
+   $scope.specificCrew = specificCrew;
 
    google.maps.visualRefresh = true;
    var n210 = {latitude: 37.414468, longitude: -122.056862};
@@ -62,6 +75,7 @@ flightCrewAppControllers.controller('mapController',['$scope','$http','$interval
                   initMarkers();
                   initAirportMarkers();
                   initFlights();
+                  getMatchingFlights();
                }
                mapFirstLoaded = false;
             });
@@ -86,7 +100,7 @@ flightCrewAppControllers.controller('mapController',['$scope','$http','$interval
       
       if(status == "red")
       {
-         console.log("delayColor"+status);
+         //console.log("delayColor"+status);
          return "red";
       }
       return "black";
@@ -96,12 +110,28 @@ flightCrewAppControllers.controller('mapController',['$scope','$http','$interval
    $scope.maxEta = function(){
       var max = 0;
       angular.forEach(crewMembers, function(crewMember, id) {
-         if (crewMember.eta > max) max = crewMember.eta;
+         if (crewMember.eta > max) 
+         {
+            max = crewMember.eta;
+         }
       });
       return secToHMS(max);
    }
-     /* _.each(markers, function (marker) {
-            marker.showWindow = false; } */
+   
+   $scope.selectedFlights = $scope.allFlights[0];
+
+   function reset() 
+   {
+
+      if(counter != 0)
+      {
+        //log("reset: " + counter);
+        $("tbody td").empty();
+      }
+      
+      counter = counter +1;
+      //log("check reset" + counter);
+   }
 
    $scope.crewTableClick = function(crewMember){
 
@@ -199,7 +229,6 @@ flightCrewAppControllers.controller('mapController',['$scope','$http','$interval
 
          for(var i=0; i<flights.length; i++)
          {
-            console.log(flights[i].flightid); 
 
             calculatePTD(flights[i]);
             addFlights(flights[i], PDT, delay, flightDelayStatus);
@@ -211,7 +240,6 @@ flightCrewAppControllers.controller('mapController',['$scope','$http','$interval
 
          console.log("Error in initFlights");
       });
-
    }
 
    function addFlights(jsonData, PDT, delay, flightDelayStatus)
@@ -239,6 +267,87 @@ flightCrewAppControllers.controller('mapController',['$scope','$http','$interval
 
       flights[flight.flightId]=flight;
       
+   }
+
+   function getMatchingFlights()
+   {
+      $http.get("ajax/matchFlights.php").success(function(matchFlights,status,headers,config){
+         var deferred = $q.defer();
+         var promises = [];
+
+         function lastTask()
+         {
+            deferred.resolve();       
+         }
+
+         $scope.status = status;
+
+         for(var i=0; i<matchFlights.length; i++) 
+         {
+            matchingFlights[i] = { id:matchFlights[i].flightID};
+          
+            $scope.allFlights.push(matchingFlights[i].id);
+         
+            console.log("Matching flights: " + matchingFlights[i].id);
+         }
+         
+         //only called when all asynchrounous calls are finished
+         $q.all(promises).then(lastTask);
+
+      }).error(function(data, status, headers, config){
+         $scope.status = status;
+         console.log("Error in getMatchingFlights " + data);
+      });
+   }
+
+   $scope.getSelectedFlight = function()
+   {
+     
+      selectedFlight = $scope.selectedFlights;
+
+      console.log("Flight selected:" + selectedFlight);
+
+      getSpecificCrew();
+
+      reset();
+
+   }
+
+   function getSpecificCrew()
+   {
+     
+      for(var i=0; i<globalCrewIDs.length; i++) 
+      {
+         specificCrewMember = crewMembers[globalCrewIDs[i]];
+
+         farValue = calculateFAR();
+
+         if(specificCrewMember.crewFlightId == selectedFlight)
+         {
+            calculateDistance(specificCrewMember.latitude,specificCrewMember.longitude,37.615223,-122.389979);
+            log("dist" + distance);
+
+            specificCrewMember = 
+            {
+                  id: specificCrewMember.id,  
+                  eta : specificCrewMember.eta,
+                  route : specificCrewMember.route,
+                  crewFlightId : specificCrewMember.crewFlightId,
+                  crewDelay : specificCrewMember.crewDelay,
+                  delayStatus : specificCrewMember.delayStatus,
+                  far : farValue,
+                  distanceToDest : distance
+            }
+
+            specificCrew[specificCrewMember.id] = specificCrewMember;  
+
+            //log("check crew id and flight id: " + specificCrewMember.id + " " + specificCrewMember.crewFlightId);
+
+         }
+      }
+
+      saveCrewIDs = globalCrewIDs.slice(0); //copies contents to saveCrewIDs
+
    }
 
    function formatTime(hours, minutes, amPM)
@@ -286,6 +395,7 @@ flightCrewAppControllers.controller('mapController',['$scope','$http','$interval
       return hma;
    }
 
+   /*Max delay is 1 hour; changes necessary if delay > 1 hour*/
    function formatDelay(hours,delay)
    {
       var delayHours = 0;
@@ -293,7 +403,7 @@ flightCrewAppControllers.controller('mapController',['$scope','$http','$interval
       if(delay < 10)
       {
          delay = "+00:0"+delay;
-         console.log("Delay < 10: "+delay);
+         //console.log("Delay < 10: "+delay);
 
          return delay;
          
@@ -301,7 +411,7 @@ flightCrewAppControllers.controller('mapController',['$scope','$http','$interval
       else if(delay >= 10 && delay < 60)
       {
          delay = "+00:"+delay;
-         console.log("Delay > 10: "+delay);
+         //console.log("Delay > 10: "+delay);
          
          return delay;
       }
@@ -359,8 +469,90 @@ flightCrewAppControllers.controller('mapController',['$scope','$http','$interval
 
       PDT = hma;
 
-      console.log("PDT: "+PDT); 
+      //console.log("PDT: "+PDT); 
    }
+
+   function calculateDistance(originLat, originLong, destLat, destLong)
+   {
+        /* http://maps.googleapis.com/maps/api/distancematrix/json?origins=34.0500,-118.2500&destinations=37.615223,-122.389979 */
+        var service = new google.maps.DistanceMatrixService();  
+        var origin = new google.maps.LatLng(originLat, originLong);
+        var destination = new google.maps.LatLng(destLat, destLong); //SFO for now
+
+        service.getDistanceMatrix(
+        {
+           origins: [origin],
+           destinations: [destination],
+           travelMode: google.maps.TravelMode.DRIVING,
+           unitSystem: google.maps.UnitSystem.IMPERIAL,
+           avoidHighways: false,
+           avoidTolls: false,
+         }, callback);
+
+   }
+   function callback(response, status) 
+   {
+      if(status == google.maps.DistanceMatrixStatus.OK) 
+      {
+       var origins = response.originAddresses;
+       var destinations = response.destinationAddresses;
+
+         for (var i = 0; i < origins.length; i++) 
+         {
+            var results = response.rows[i].elements;
+            
+            for (var j = 0; j < results.length; j++) 
+            {
+              var element = results[j];
+              distance = element.distance.text;
+              //var duration = element.duration.text;
+              //var from = origins[i];
+              //var to = destinations[j];
+
+              $scope.distance = distance;
+              console.log("distance check: " + distance);
+            }
+         }
+      }
+    }
+
+   /*FAR-117 limit for 2-pilot crews is 9 hours*/
+   function calculateFAR()
+   {
+      /*9 hours = 540 minutes */
+      farValue = Math.floor((Math.random() * 540) + 1);
+
+      var farHours = 0;
+      var farMin = 0;
+
+      if(farValue < 60)
+      {
+         farValue = "00:"+farValue;
+         
+         return farValue;
+      }
+      else if (farValue >= 60)
+      {
+         farHours = Math.floor(farValue/60);
+         var temp = farHours*60;
+         farMin = parseInt(farValue - temp);
+
+         if(farMin < 10)
+         {
+             farValue = "0"+farHours+":"+"0"+farMin;
+             //console.log("farValue: " + farValue);
+
+             return farValue;
+         }
+         else if (farMin >= 10)
+         {
+             farValue = "0"+farHours+":"+farMin;
+             //console.log("farValue: " + farValue);
+
+             return farValue;
+         }  
+      }
+   }  
 
    //This function will be unnecessary when we update the phone apps to send destination as well
    function getDestPoint(jsonData) {
@@ -395,6 +587,9 @@ flightCrewAppControllers.controller('mapController',['$scope','$http','$interval
    function addCrewMember(jsonData){
       var dest_point = getDestPoint(jsonData);
       var polyPath = getPolyPath(jsonData);
+ 
+      //farValue = calculateFAR();
+
       //log(polyPath);
       var crewMember = {
          id : jsonData.id,
@@ -403,6 +598,10 @@ flightCrewAppControllers.controller('mapController',['$scope','$http','$interval
          latitude : jsonData.latitudeDegree,
          longitude : jsonData.longitudeDegree,
          time: jsonData.timeSecond,
+         crewFlightId : jsonData.flightid,
+         crewDelay : crewDelay,
+         delayStatus : crewDelayStatus,
+         //far : farValue,
          showWindow: false,
          late:false,
          /*templateUrl: 'partials/info.html',*/
@@ -428,8 +627,11 @@ flightCrewAppControllers.controller('mapController',['$scope','$http','$interval
             geodesic: false
          }) 
       };
-      //log('crewMemberRoute : ' + crewMember.id + ' == ' + crewMember.route);
-      //log(crewMember.destination);
+
+      /*Temporarily set crew delay equal to ETA*/       
+      crewDelay = secToHMS(crewMember.eta);
+      parseCrewDelay(crewDelay, crewMember); 
+
       var marker = crewMember.gmarker;
       var infoWindow = crewMember.gwindow;
       google.maps.event.addListener(marker, 'click', function(){
@@ -446,13 +648,19 @@ flightCrewAppControllers.controller('mapController',['$scope','$http','$interval
       });
 
       crewMembers[crewMember.id]=crewMember;
+
+      /*check for duplicates here */
+      globalCrewIDs.push(crewMember.id);
+
    }
 
 
    function updateCrewMember(jsonData){
       var dest_point = getDestPoint(jsonData);
       var polyPath = getPolyPath(jsonData);
-
+    
+      //calculateDistance(jsonData.latitudeDegree,jsonData.longitudeDegree,37.615223,-122.389979); //calculate distance to SFO
+      
       var crewMember = crewMembers[jsonData.id];
       crewMember.latitude = jsonData.latitudeDegree;
       crewMember.longitude = jsonData.longitudeDegree;
@@ -460,6 +668,8 @@ flightCrewAppControllers.controller('mapController',['$scope','$http','$interval
       crewMember.route = jsonData.route;
       crewMember.time=jsonData.timeSecond;
       crewMember.gpath.setPath(polyPath);
+      crewMember.crewFlightId = jsonData.flightid;
+      //crewMember.distanceToDest = distance;
 
       if(Math.random()<0.2) crewMember.late = !crewMember.late;
       var icon = 'img/green_Marker.png';
@@ -471,6 +681,33 @@ flightCrewAppControllers.controller('mapController',['$scope','$http','$interval
       crewMember.gmarker.setIcon(icon);
       crewMember.gwindow.content = makeWindowContent(crewMember, crewMember.late);
       if(crewMember.showWindow)crewMember.gwindow.open(gmap, crewMember.gmarker);
+
+   }
+
+   function parseCrewDelay(crewDelay, crewMember)
+   {
+      var parsedDelay = crewDelay.slice(0,8);
+      //console.log("parsed crew delay: " + parsedDelay);
+
+      var parsedMinutes = parseInt(crewDelay.slice(5,8));
+      //console.log("parsed minutes: " + parsedMinutes);
+
+      /*Set crew delay status*/
+      if(parsedMinutes <= 10)
+      {
+         crewMember.delayStatus = "green";
+         crewDelayStatus = crewMember.delayStatus;
+      }
+      else if(crewDelay > 10 && crewDelay <= 30)
+      {
+         crewMember.delayStatus = "yellow";
+         crewDelayStatus = crewMember.delayStatus;
+      }
+      else
+      {
+         crewMember.delayStatus = "red";
+         crewDelayStatus = crewMember.delayStatus;
+      }
 
    }
 
@@ -488,9 +725,9 @@ flightCrewAppControllers.controller('mapController',['$scope','$http','$interval
              "<br>lon: " + crewMember.longitude + 
              "<br>time of update: " + dateT.toLocaleTimeString() + " "+ dateT.toLocaleDateString() + 
              "<p "+style+">eta: " + secToHMS(crewMember.eta) +"</p></div>";
+
       //console.log(content);
       return content;
-   //<h2 style="background-color:red;">
    }
 
    function makeAirportWindowContent(airport) {
@@ -512,10 +749,8 @@ flightCrewAppControllers.controller('mapController',['$scope','$http','$interval
       });
    }
 
-
-
    function updateMap(){
-      //log("many");
+  
       $http.get("ajax/getCrewIDs.php").success(function(crewIds,status,headers,config){
          var deferred = $q.defer();
          var promises = [];
@@ -524,13 +759,14 @@ flightCrewAppControllers.controller('mapController',['$scope','$http','$interval
             //addRemoveAllMarkers(true);
          }
          $scope.status = status;
+         
          for (var i=0; i<crewIds.length; i++) {
             //console.log(crew[i].id);
             promises.push(
                $http.get("ajax/getLatestCrew.php?id="+crewIds[i].id).success(function(data,status,headers,config){
-                  //console.log('getLatestCrew '+data[0]);
-                  $scope.status = status;
+                  $scope.status = status;    
                   updateCrewMember(data[0]);
+
                }).error(function(data, status, headers, config){
                   $scope.status = status;
                   console.log(data);
