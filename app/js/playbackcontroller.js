@@ -18,9 +18,6 @@ flightCrewAppControllers.controller('playbackController',['$scope','$http','$int
    
    var mapFirstLoaded = true;
    var gmap;
-   var PDT;
-   var delay;
-   var flightDelayStatus;
    var crewMembers = {};
    var airports = {};
    var flights = {};
@@ -29,9 +26,6 @@ flightCrewAppControllers.controller('playbackController',['$scope','$http','$int
    $scope.crewMembers = crewMembers;
    $scope.flights = flights;
    $scope.flightids = flightids;
-
-   $scope.orderProp = 'id';
-   $scope.toHMS = secToHMS;
 
    /* Tracks the paths for all crew members of a particular flight. */
    $scope.trackFlight = function(flightid) {
