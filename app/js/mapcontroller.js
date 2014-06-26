@@ -170,17 +170,75 @@ flightCrewAppControllers.controller('mapController',['$scope','$http','$interval
             var infoWindow = airport.gwindow;
             var marker = airport.airportMarker;
             google.maps.event.addListener(marker, 'click', function(){
-               infoWindow.content = makeAirportWindowContent(airport);
-               infoWindow.open(gmap, marker);
-               airport.showWindow = true;
+              angular.forEach(airports, function(airport) {
+                airport.gwindow.close();
+              });
+              infoWindow.content = makeAirportWindowContent(airport);
+              infoWindow.open(gmap, marker);
+              airport.showWindow = true;
+              //hideOtherAirports(marker.title);
+              showCrewForAirport(marker.title);
              });
             google.maps.event.addListener(infoWindow,'closeclick',function(){
                airport.showWindow = false;
+               //showHideAirportMarkers($scope.showAirports); //messes up the window for some reason
+               showHideAllCrew(false);
             });
             airports[airport.airportId]=airport;
           });
         });
     $scope.showAirports = true;
+   }
+
+   function hideOtherAirports(id) {
+    //log(id);
+    showHideAirportMarkers(false);
+    angular.forEach(airports, function(airport) {
+      if(airport.airportId == id) {
+        airport.airportMarker.setMap(gmap);
+      }
+    });
+   }
+
+   function showCrewForAirport(id) {
+      var localCrew = getCrewIDsForAirport(id);
+      //log(localCrew.toString());
+      hideOtherCrew(localCrew);
+   }
+
+   function hideOtherCrew(ids) {
+      showHideAllCrew(false);
+
+      /* REDO THIS SECTION IF POSSIBLE; THIS IS O(mn) */
+      angular.forEach(ids, function(id) {
+
+        angular.forEach(crewMembers, function(crewMember) {
+          if(crewMember.id==id)
+            crewMember.gmarker.setMap(gmap);
+        });
+      });
+   }
+
+   function getCrewIDsForAirport(id) {
+      var localCrew = [];
+      angular.forEach(flights, function(flight) {
+      if(flight.departureAirport== "K" + id) {
+        for(var i = 0; i < flight.crew.length; i++)
+          if(flight.crew[i])
+            localCrew.push(flight.crew[i]);
+        }
+      });
+      return localCrew;
+   }
+
+   function getFlightIDsForAirport(id) {
+      var localFlights = [];
+      angular.forEach(flights, function(flight) {
+      if(flight.departureAirport== "K" + id) {
+        localFlights.push(flight.flightId);
+      }
+      });
+      return localFlights;
    }
 
    //add error handeling
@@ -191,7 +249,8 @@ flightCrewAppControllers.controller('mapController',['$scope','$http','$interval
          var promises = [];
          function lastTask(){
             deferred.resolve();
-            addRemoveAllMarkers(true);
+            //addRemoveAllMarkers(true);
+            showHideAirportMarkers(true);
          }
          $scope.status = status;
          for (var i=0; i<crewIds.length; i++) {
@@ -254,6 +313,8 @@ flightCrewAppControllers.controller('mapController',['$scope','$http','$interval
 
       var hma = formatTime(hours,minutes, amPM);
 
+      var crewIDs = [];
+
          var flight = 
          {
             flightId : jsonData.flightid,
@@ -265,10 +326,23 @@ flightCrewAppControllers.controller('mapController',['$scope','$http','$interval
             flightPTD : PDT,
             flightDelay : delay,
             delayStatus : flightDelayStatus,
+            crew: crewIDs
          };
 
+      addCrewIDs(flight);
       flights[flight.flightId]=flight;
       
+   }
+
+  function addCrewIDs(flight) {
+    $http.get("ajax/getCrewFromFlight.php?flightid=" + flight.flightId).success(function(jsonData, status, headers, config) {
+         for(var i = 0; i < jsonData.length; i++) {
+            flight.crew.push(jsonData[i].id);
+         }
+         //log(flight.flightId + ": " + flight.crew.toString());
+      }).error(function(data, status, headers, config) {
+         console.log("Error gleaning crew ids data");
+      });
    }
 
    function getMatchingFlights()
@@ -548,7 +622,7 @@ flightCrewAppControllers.controller('mapController',['$scope','$http','$interval
          }
          else if (farMin >= 10)
          {
-             farValue = "0"+farHours+":"+farMin;
+             farValue = "0"+farHours+":"+farMin; 
              //console.log("farValue: " + farValue);
 
              return farValue;
@@ -670,12 +744,15 @@ flightCrewAppControllers.controller('mapController',['$scope','$http','$interval
    }
 
   $scope.toggleAirportVisibility = function() {
-    log("clicked button");
     var map = null;
     $scope.showAirports = !$scope.showAirports;
-    if($scope.showAirports) {
-      map = gmap;
-    }
+    showHideAirportMarkers($scope.showAirports);
+  }
+
+  function showHideAirportMarkers(bool) {
+    var map = null;
+    if(bool)
+        map = gmap;
     angular.forEach(airports, function(airport) {
       airport.airportMarker.setMap(map);
     });
@@ -782,6 +859,7 @@ flightCrewAppControllers.controller('mapController',['$scope','$http','$interval
    //used to add/remove markers, sets map to gmap or null
    function addRemoveAllMarkers(add) {
       var map = null;
+      /*
       if(add){map = gmap;}
       //marker.setMap(gmap);
       angular.forEach(airports, function(airport, id) {
@@ -791,6 +869,18 @@ flightCrewAppControllers.controller('mapController',['$scope','$http','$interval
          crewMember.gmarker.setMap(map);
          //crewMember.gpath.setMap(map);
       });
+      */
+      showHideAirportMarkers(add);
+      showHideAllCrew(add);
+   }
+
+   function showHideAllCrew(bool) {
+    var map = null;
+    if(bool) {map = gmap;}
+    angular.forEach(crewMembers, function(crewMember, id) {
+         crewMember.gmarker.setMap(map);
+         //crewMember.gpath.setMap(map);
+    });
    }
 
    function updateMap(){
