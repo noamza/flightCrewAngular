@@ -587,7 +587,7 @@ flightCrewAppControllers.controller('mapController',['$scope','$http','$interval
    function addCrewMember(jsonData){
       var dest_point = getDestPoint(jsonData);
       var polyPath = getPolyPath(jsonData);
- 
+      var prevPath = [];
       //farValue = calculateFAR();
 
       //log(polyPath);
@@ -625,6 +625,16 @@ flightCrewAppControllers.controller('mapController',['$scope','$http','$interval
             draggable: false,
             editable: false,
             geodesic: false
+         }),
+         prevPath : new google.maps.Polyline({
+            path : prevPath,
+            strokeColor : '#0033CC',
+            strokeOpacity : 0.7,
+            strokeWeight: 2,
+            clickable: true,
+            draggable: false,
+            editable: false,
+            geodesic: false
          }) 
       };
 
@@ -640,12 +650,15 @@ flightCrewAppControllers.controller('mapController',['$scope','$http','$interval
             crewMember.showWindow = true;
             //crewMember.gpath.
             crewMember.gpath.setMap(gmap);
+            crewMember.prevPath.setMap(gmap);
       });
       google.maps.event.addListener(infoWindow,'closeclick',function(){
          crewMember.showWindow = false;
          crewMember.gpath.setMap(null);
+         crewMember.prevPath.setMap(null);
          log("closing");
       });
+      initPrevPath(crewMember);
 
       crewMembers[crewMember.id]=crewMember;
 
@@ -653,6 +666,22 @@ flightCrewAppControllers.controller('mapController',['$scope','$http','$interval
       globalCrewIDs.push(crewMember.id);
 
    }
+
+   function initPrevPath(crewMember) {
+      $http.get("ajax/getPrevPath.php?id=" + crewMember.id).success(function(pathData, status, headers, config) {
+         var path = [];
+         for(var i = 0; i < pathData.length; i++) {
+            var latitude = pathData[i].latitudeDegree;
+            var longitude = pathData[i].longitudeDegree;
+            var point = new google.maps.LatLng(latitude, longitude);
+            path.push(point);
+         }
+         crewMember.prevPath.setPath(path);
+      }).error(function(data, status, headers, config) {
+         console.log("Error gleaning path data");
+      });
+   }
+
 
 
    function updateCrewMember(jsonData){
