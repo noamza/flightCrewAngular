@@ -42,7 +42,7 @@ flightCrewAppControllers.controller('playbackController',['$scope','$http','$int
          }
          $scope.form.id = crewids.toString();
          //log(flightid + ": " + crewids.toString());
-         getDataAndTraversePath($scope.form.id, $scope.form.time);
+         getDataAndTraversePath($scope.form.id, $scope.form.timeUpper, $scope.form.timeLower);
       }).error(function(data, status, headers, config) {
          console.log("Error gleaning crew ids data");
       });
@@ -61,12 +61,13 @@ flightCrewAppControllers.controller('playbackController',['$scope','$http','$int
          //id: 'Enter id here'
          //, time: 'Enter time here'
          id: 'Enter IDs',
-         time: '1000000000000000000',
+         timeLower: '0',
+         timeUpper: '1000000000000000000',
          speed: '1'
          , submit: function() {
             //var msg = "ID: " + $scope.form.id + " | Time: " + $scope.form.time;
             //alert(msg);
-            getDataAndTraversePath($scope.form.id, $scope.form.time);
+            getDataAndTraversePath($scope.form.id, $scope.form.timeUpper, $scope.form.timeLower);
          }
    }
 
@@ -98,14 +99,14 @@ flightCrewAppControllers.controller('playbackController',['$scope','$http','$int
    };
    
    /* Queries the path data associated with the id string, then plays back the paths which correspond to the IDs */
-   function getDataAndTraversePath(id, time){
+   function getDataAndTraversePath(id, timeUpper, timeLower){
       var ids = parseID(id.replace(/\s+/g, '')); //removes whitespace from id before parsing...can add commas to query
       //log(ids);
       var queryID = makeQueryID(ids); //generates string to query
       //log(queryID);
       
-      $http.get("ajax/playback.php?" + "id=" +  queryID + "&time=" + time).success(function(pathData, status, headers, config) {
-         var msg = "ajax/playback.php?" + "id=" + queryID + "&time=" + time;
+      $http.get("ajax/playback.php?" + "id=" +  queryID + "&timeUpper=" + timeUpper + "&timeLower=" + timeLower).success(function(pathData, status, headers, config) {
+         var msg = "ajax/playback.php?" + "id=" + queryID + "&time=" + timeUpper + "&timeLower=" + timeLower;
          var trackers = [];
          if(pathData != "null") {
             traversePaths(pathData, trackers, 0, pathData.length, 0);

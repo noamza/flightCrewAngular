@@ -42,10 +42,13 @@
 			IDs (comma-separated): <input type="text" name="id" ng-model="form.id">
 			<br>
 			<br>
-			Upper Time Bound: <input type="text" name="time" ng-model="form.time">
+			Lower Time Bound: <input type="text" name="time" ng-model="form.timeLower"> 
 			<br>
 			<br>
-			Playback Speed: <input type="range" min="1" max="15000" name="speed" ng-model="form.speed">
+			Upper Time Bound: <input type="text" name="time" ng-model="form.timeUpper">
+			<br>
+			<br>
+			Playback Speed: <input type="range" min="1" max="15000" name="speed" ng-model="form.speed" style="width:350px;">
 			{{form.speed}}x
 			<br>
 			<br>
