@@ -9,6 +9,7 @@
 	<br>
 	<br>
 							<!-- FLIGHT LIST TABLE -->
+							<div class = "flightTable" style = "height:275px; width:400px; overflow-y: scroll;">
 					       	<table id="flightControl">
 					       		<thead>
 					       		  <tr><th colspan="6">Flights Departing From {{currAirport}}</th></tr>
@@ -21,7 +22,7 @@
 									 	<td style="width:60em">Delay</td>
 								  </tr>
 					       		  </thead>
-					       		  <tr ng-repeat="flight in localFlights" style="color:{{delayColor(flight)}}">
+					       		  <tr ng-repeat="flight in localFlights" style="color:{{delayColor(flight)}}" ng-click="populateCrewTable(flight)">
 						              <td> <img src="img/{{flight.delayStatus}}.png"/> </td>
 						              <td>{{flight.flightId}}&nbsp;</td>
 						              <td>{{flight.arrivalAirport}}&nbsp;</td>
@@ -29,16 +30,16 @@
 						              <td>{{flight.flightPTD}}&nbsp;</td>
 						              <td>{{flight.flightDelay}}&nbsp;</td>
 						            </tr>
-					       	</table>	
+					       	</table>
+					       	</div>	
+					       	<br>
+					       	<br>
  							<!-- CREW CONTROL TABLE -->
 						        <table id="crewControl">
 						          <thead>
 						          	<tr> 
 						          		<div class="crewControlMenu">
-						          			<b>Select a flight:
-								      	  	<select ng-change="getSelectedFlight()" ng-model="selectedFlights"
-								      	  		ng-options="flight for flight in localFlightIDs">
-								      	  	</select>
+						          			<b>Crew information for flight: {{selectedFlights}}
 								      	</div>
 								    <!--   	  	Value Selected is: {{selectedFlights}} -->
 							        </tr>
