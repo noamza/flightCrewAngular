@@ -208,6 +208,8 @@ flightCrewAppControllers.controller('mapController',['$scope','$http','$interval
             var infoWindow = airport.gwindow;
             var marker = airport.airportMarker;
             google.maps.event.addListener(marker, 'click', function(){
+              $scope.selectedFlights = "";
+              $scope.specificCrew.length = 0;
               gmap.panTo(marker.position);
               gmap.setZoom(8);
               angular.forEach(airports, function(airport) {
