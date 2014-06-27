@@ -58,10 +58,11 @@ flightCrewAppControllers.controller('mapController',['$scope','$http','$interval
    google.maps.visualRefresh = true;
    var n210 = {latitude: 37.414468, longitude: -122.056862};
    var SFO =  {latitude: 37.615223, longitude: -122.389979};
+   var USCenter = {latitude: 32.8282, longitude: -98.5795};
 
    $scope.map = {
-         center: n210 //{latitude: 37.414468, longitude: -122.056862},
-       , zoom: 7
+         center: USCenter //{latitude: 37.414468, longitude: -122.056862},
+       , zoom: 4
        , control: {}
        , dragging: true
        , bounds: {}
@@ -170,6 +171,8 @@ flightCrewAppControllers.controller('mapController',['$scope','$http','$interval
             var infoWindow = airport.gwindow;
             var marker = airport.airportMarker;
             google.maps.event.addListener(marker, 'click', function(){
+              gmap.setCenter(marker.position);
+              gmap.setZoom(8);
               angular.forEach(airports, function(airport) {
                 airport.gwindow.close();
               });
