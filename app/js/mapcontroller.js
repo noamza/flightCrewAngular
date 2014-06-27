@@ -54,11 +54,15 @@ flightCrewAppControllers.controller('mapController',['$scope','$http','$interval
    $scope.orderProp = 'id';
    $scope.toHMS = secToHMS;
    $scope.specificCrew = specificCrew;
+   $scope.localFlights = flights;
+   $scope.localFlightIDs = [];
+   $scope.currAirport = "";
 
    google.maps.visualRefresh = true;
    var n210 = {latitude: 37.414468, longitude: -122.056862};
    var SFO =  {latitude: 37.615223, longitude: -122.389979};
    var USCenter = {latitude: 32.8282, longitude: -98.5795};
+   var USLatLng = new google.maps.LatLng(32.8282, -98.5795);
 
    $scope.map = {
          center: USCenter //{latitude: 37.414468, longitude: -122.056862},
@@ -146,6 +150,15 @@ flightCrewAppControllers.controller('mapController',['$scope','$http','$interval
       }
       log("tableClick more like" + crewMember.showWindow);
    };
+   
+   $scope.trackCrewMember = function(crew) {
+    log("clicked " + crew.id);
+    var tempCrew = [];
+    tempCrew.push[crew.id];
+    log(tempCrew.toString());
+    gmap.panTo(crew.position);
+    gmap.setZoom(9);
+   }
 
    function initAirportMarkers() {
       log("init airport markers");
@@ -171,7 +184,7 @@ flightCrewAppControllers.controller('mapController',['$scope','$http','$interval
             var infoWindow = airport.gwindow;
             var marker = airport.airportMarker;
             google.maps.event.addListener(marker, 'click', function(){
-              gmap.setCenter(marker.position);
+              gmap.panTo(marker.position);
               gmap.setZoom(8);
               angular.forEach(airports, function(airport) {
                 airport.gwindow.close();
@@ -179,18 +192,35 @@ flightCrewAppControllers.controller('mapController',['$scope','$http','$interval
               infoWindow.content = makeAirportWindowContent(airport);
               infoWindow.open(gmap, marker);
               airport.showWindow = true;
+              $scope.localFlights = getFlightsForAirport(marker.title); 
+              $scope.localFlightIDs = getFlightIDsFromFlights($scope.localFlights);
               //hideOtherAirports(marker.title);
+              $scope.currAirport = marker.title;
               showCrewForAirport(marker.title);
              });
             google.maps.event.addListener(infoWindow,'closeclick',function(){
                airport.showWindow = false;
                //showHideAirportMarkers($scope.showAirports); //messes up the window for some reason
                showHideAllCrew(false);
+               gmap.panTo(USLatLng);
+               gmap.setZoom(4);        
+               $scope.currAirport="";
+               $scope.localFlights = flights;
+               $scope.localFlightIDs = [];
+               $scope.specificCrew = {};
             });
             airports[airport.airportId]=airport;
           });
         });
     $scope.showAirports = true;
+   }
+
+   function getFlightIDsFromFlights(flights) {
+      var flightIDs = [];
+      for(var i = 0; i < flights.length; i++) {
+        flightIDs.push(flights[i].flightId);
+      }
+      return flightIDs;
    }
 
    function hideOtherAirports(id) {
@@ -204,7 +234,7 @@ flightCrewAppControllers.controller('mapController',['$scope','$http','$interval
    }
 
    function showCrewForAirport(id) {
-      var localCrew = getCrewIDsForAirport(id);
+      var localCrew = getCrewIDsForAirport(id); //should be changed to iterate over localFlights
       //log(localCrew.toString());
       hideOtherCrew(localCrew);
    }
@@ -234,11 +264,11 @@ flightCrewAppControllers.controller('mapController',['$scope','$http','$interval
       return localCrew;
    }
 
-   function getFlightIDsForAirport(id) {
+   function getFlightsForAirport(id) {
       var localFlights = [];
       angular.forEach(flights, function(flight) {
       if(flight.departureAirport== "K" + id) {
-        localFlights.push(flight.flightId);
+        localFlights.push(flight);
       }
       });
       return localFlights;
@@ -394,7 +424,7 @@ flightCrewAppControllers.controller('mapController',['$scope','$http','$interval
 
    function getSpecificCrew()
    {
-     
+      showHideAllCrew(false); 
       for(var i=0; i<globalCrewIDs.length; i++) 
       {
          specificCrewMember = crewMembers[globalCrewIDs[i]];
@@ -403,7 +433,9 @@ flightCrewAppControllers.controller('mapController',['$scope','$http','$interval
 
          if(specificCrewMember.crewFlightId == selectedFlight)
          {
-            calculateDistance(specificCrewMember.latitude,specificCrewMember.longitude,37.615223,-122.389979);
+            var latitude = specificCrewMember.latitude;
+            var longitude = specificCrewMember.longitude;
+            calculateDistance(latitude, longitude,37.615223,-122.389979);
             log("dist" + distance);
 
             specificCrewMember = 
@@ -415,7 +447,8 @@ flightCrewAppControllers.controller('mapController',['$scope','$http','$interval
                   crewDelay : specificCrewMember.crewDelay,
                   delayStatus : specificCrewMember.delayStatus,
                   far : farValue,
-                  distanceToDest : distance
+                  distanceToDest : distance,
+                  position : new google.maps.LatLng(latitude, longitude)
             }
 
             specificCrew[specificCrewMember.id] = specificCrewMember;  
@@ -424,9 +457,20 @@ flightCrewAppControllers.controller('mapController',['$scope','$http','$interval
 
          }
       }
-
+      var currFlight = getFlightByID(selectedFlight);
+      hideOtherCrew(currFlight.crew);
       saveCrewIDs = globalCrewIDs.slice(0); //copies contents to saveCrewIDs
 
+   } 
+
+   function getFlightByID(id) {
+    var currFlight = null;
+    angular.forEach(flights, function(flight) {
+      if(flight.flightId==id) {
+        currFlight = flight;
+      }
+    });
+    return currFlight;
    }
 
    function formatTime(hours, minutes, amPM)
@@ -750,6 +794,10 @@ flightCrewAppControllers.controller('mapController',['$scope','$http','$interval
     var map = null;
     $scope.showAirports = !$scope.showAirports;
     showHideAirportMarkers($scope.showAirports);
+    if($scope.showAirports) {
+      gmap.panTo(USLatLng);
+      gmap.setZoom(4);     
+    }
   }
 
   function showHideAirportMarkers(bool) {
