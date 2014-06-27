@@ -172,7 +172,9 @@ flightCrewAppControllers.controller('mapController',['$scope','$http','$interval
    }
 
    /*
-      When a flight is clicked, populates the crew table at the bottom.
+      When a flight is clicked, populates the crew table at the bottom. 
+      NOTE: The click events are linked to the "ng-click" things in the actual
+      HTML.
    */
    $scope.populateCrewTable = function(flight) {
     specificCrew = {}; //clears out old entries in case there is something already there
@@ -219,7 +221,7 @@ flightCrewAppControllers.controller('mapController',['$scope','$http','$interval
               $scope.currAirport = marker.title;
               showCrewForAirport(marker.title);
              });
-            google.maps.event.addListener(infoWindow,'closeclick',function(){
+            google.maps.event.addListener(infoWindow,'closeclick',function(){ //resets the view when the window is closed.
                airport.showWindow = false;
                //showHideAirportMarkers($scope.showAirports); //messes up the window for some reason
                showHideAllCrew(false);
@@ -228,7 +230,7 @@ flightCrewAppControllers.controller('mapController',['$scope','$http','$interval
                $scope.currAirport="";
                $scope.localFlights = flights;
                $scope.selectedFlights="";
-               $scope.specificCrew = {};
+               $scope.specificCrew = {}; //I don't know if this is necessary, but just to be safe...
             });
             airports[airport.airportId]=airport;
           });
@@ -460,7 +462,7 @@ flightCrewAppControllers.controller('mapController',['$scope','$http','$interval
       });
    }
 
-   $scope.getSelectedFlight = function()
+   $scope.getSelectedFlight = function() 
    {
      
       selectedFlight = $scope.selectedFlights;
@@ -515,7 +517,7 @@ flightCrewAppControllers.controller('mapController',['$scope','$http','$interval
    } 
 
    /*
-    Obtains the flight struct that corresponds to the input ID.
+    Obtains the flight struct that corresponds to the input ID (i.e. flight.flightID == id).
    */
    function getFlightByID(id) {
     var currFlight = null;
@@ -911,10 +913,14 @@ flightCrewAppControllers.controller('mapController',['$scope','$http','$interval
       var icon = 'img/green_Marker.png';
       if(crewMember.late) icon = 'img/red_Marker.png';
 
-      crewMember.gmarker.setPosition(new google.maps.LatLng(
+      var currPos = new google.maps.LatLng(
                jsonData.latitudeDegree, 
-               jsonData.longitudeDegree));
+               jsonData.longitudeDegree);
+
+      crewMember.gmarker.setPosition(currPos);
       crewMember.gmarker.setIcon(icon);
+      var prevPath = crewMember.prevPath.getPath(); //these two lines push the new point into the traversed data
+      prevPath.push(currPos);
       crewMember.gwindow.content = makeWindowContent(crewMember, crewMember.late);
       if(crewMember.showWindow)crewMember.gwindow.open(gmap, crewMember.gmarker);
 

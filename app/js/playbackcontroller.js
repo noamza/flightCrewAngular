@@ -2,14 +2,6 @@
 
 var flightCrewAppControllers = angular.module('FlightCrewApp.controllers');
 
-function secToHMS(totalSec) {
-  var hours = parseInt( totalSec / 3600 ) % 24;
-  var minutes = parseInt( totalSec / 60 ) % 60;
-  var seconds = parseInt(totalSec % 60, 10);
-  var hms = hours + ":" + (minutes < 10 ? "0" + minutes : minutes) + ":" + (seconds  < 10 ? "0" + seconds : seconds);
-  return hms;
-}
-
 function log(s){
    console.log(s);
 }
