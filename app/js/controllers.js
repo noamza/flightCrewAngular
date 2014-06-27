@@ -1,6 +1,6 @@
 'use strict';
 
-var flightCrewAppControllers = angular.module('FlightCrewApp.controllers', ["wijmo"]);
+var flightCrewAppControllers = angular.module('FlightCrewApp.controllers', []);
 // create the controller and inject Angular's $scope
 flightCrewAppControllers.controller('mainController', ['$scope', function($scope) {
 // create a message to display in our view

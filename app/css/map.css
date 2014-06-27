@@ -10,8 +10,7 @@
 	width:400px; 
 	float:left;
 	background-color: white;
-	margin-left: 1.5em;
-
+	margin-right: 10em;
 }
 
 .theMap{
@@ -25,9 +24,7 @@
 
 .angular-google-map-container {
  /* padding: 0 0 0.5em; */  
-  height: 540px; 
-  margin-right: 1.5em;
-  margin-left: 1.5em;
+  height: 100vh; 
   /* 
   border-bottom: 3em solid blue; 
   margin-bottom: 3em;

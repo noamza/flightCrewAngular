@@ -24,7 +24,7 @@ function log(s){
    console.log(s);
 }
 
-flightCrewAppControllers.controller('mapController',['$scope','$http','$interval', '$q',function($scope, $http, $interval, $q) {
+flightCrewAppControllers.controller('mapController',['$scope','$http','$interval', '$q', function($scope, $http, $interval, $q) {
 	
    var mapFirstLoaded = true;
    var gmap;
@@ -46,6 +46,11 @@ flightCrewAppControllers.controller('mapController',['$scope','$http','$interval
    var specificCrewMember;
    var counter = 0;
    var showAirports = false;
+   var numFlights;
+   var filteredFlights = [];
+   var data = [[],[]];
+   var crewData = [[],[]];
+
 
    $scope.crewMembers = crewMembers;
    $scope.flights = flights;
@@ -54,6 +59,22 @@ flightCrewAppControllers.controller('mapController',['$scope','$http','$interval
    $scope.orderProp = 'id';
    $scope.toHMS = secToHMS;
    $scope.specificCrew = specificCrew;
+   $scope.currentPage = 0;
+   $scope.pageSize = 10;
+   $scope.data = data;
+   $scope.crewData = crewData;
+    
+   $scope.numberOfPages=function()
+   {
+        //log("check data length: " + data.length);
+        return Math.ceil(data.length/$scope.pageSize);               
+   }
+
+   $scope.numberOfPagesCrew=function()
+   {
+        //log("check data length: " + data.length);
+        return Math.ceil(crewData.length/$scope.pageSize);               
+   }
 
    google.maps.visualRefresh = true;
    var n210 = {latitude: 37.414468, longitude: -122.056862};
@@ -121,6 +142,7 @@ flightCrewAppControllers.controller('mapController',['$scope','$http','$interval
    
    $scope.selectedFlights = $scope.allFlights[0];
 
+  /*Used to reset selected flights */
    function reset() 
    {
 
@@ -133,6 +155,8 @@ flightCrewAppControllers.controller('mapController',['$scope','$http','$interval
       counter = counter +1;
       //log("check reset" + counter);
    }
+
+
 
    $scope.crewTableClick = function(crewMember){
 
@@ -244,6 +268,7 @@ flightCrewAppControllers.controller('mapController',['$scope','$http','$interval
       });
    }
 
+
    function addFlights(jsonData, PDT, delay, flightDelayStatus)
    {
       // var day = jsonData.departuretime.slice(0,3);
@@ -267,6 +292,11 @@ flightCrewAppControllers.controller('mapController',['$scope','$http','$interval
             delayStatus : flightDelayStatus,
          };
 
+      if(flight !== null)
+      {   
+        $scope.data.push(flight); //data array is used in pagination
+        log("Test data array: " + data.length);
+      }
       flights[flight.flightId]=flight;
       
    }
@@ -311,7 +341,7 @@ flightCrewAppControllers.controller('mapController',['$scope','$http','$interval
 
       getSpecificCrew();
 
-      reset();
+      //reset();
 
    }
 
@@ -661,6 +691,12 @@ flightCrewAppControllers.controller('mapController',['$scope','$http','$interval
          log("closing");
       });
       initPrevPath(crewMember);
+
+      if(crewMember !== null)
+      {   
+        $scope.crewData.push(crewMember); //data array is used in pagination
+        log("Test crew array: " + crewData.length);
+      }
 
       crewMembers[crewMember.id]=crewMember;
 

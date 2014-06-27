@@ -1,12 +1,7 @@
 /* crew control panel css stylesheet */
-.flightControl
-{
-  height: 100px;
-}
 
-
-.crewControl
-{
-  height: 100px;
+.table {
+    width: 500px;
+    padding: 0 20px;
 }
 
