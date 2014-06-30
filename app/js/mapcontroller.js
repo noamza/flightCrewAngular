@@ -173,9 +173,9 @@ flightCrewAppControllers.controller('mapController',['$scope','$http','$interval
             crewMember.showWindow = true;
       } else { //window is open
          //crewMember.gwindow.close();
-         //closeclick doesn't actually work
-         google.maps.event.trigger(crewMember.gmarker, 'closeclick');
-         crewMember.showWindow = false;
+         markerCloseClick(crewMember);
+         //google.maps.event.trigger(crewMember.gmarker, 'closeclick');
+         //crewMember.showWindow = false;
       }
       log("tableClick more like" + crewMember.showWindow);
    };
@@ -889,6 +889,12 @@ flightCrewAppControllers.controller('mapController',['$scope','$http','$interval
 
    }
 
+   function markerCloseClick(crewMember) {
+      crewMember.gwindow.close();
+      crewMember.gpath.setMap(null);
+      crewMember.prevPath.setMap(null);
+      crewMember.showWindow = false;
+   }
    /*
     When the button "Show/Hide Airport Visibility" is clicked, shows the airports
     if they're hidden (and resets the zoom), or hides them if they're shown.
