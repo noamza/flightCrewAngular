@@ -2,14 +2,6 @@
 
 var flightCrewAppControllers = angular.module('FlightCrewApp.controllers');
 
-function secToHMS(totalSec) {
-  var hours = parseInt( totalSec / 3600 ) % 24;
-  var minutes = parseInt( totalSec / 60 ) % 60;
-  var seconds = parseInt(totalSec % 60, 10);
-  var hms = hours + ":" + (minutes < 10 ? "0" + minutes : minutes) + ":" + (seconds  < 10 ? "0" + seconds : seconds);
-  return hms;
-}
-
 function log(s){
    console.log(s);
 }
@@ -19,12 +11,9 @@ flightCrewAppControllers.controller('playbackController',['$scope','$http','$int
    var mapFirstLoaded = true;
    var gmap;
    var crewMembers = {};
-   var airports = {};
-   var flights = {};
    var flightids = [];
 
    $scope.crewMembers = crewMembers;
-   $scope.flights = flights;
    $scope.flightids = flightids;
 
    /* Tracks the paths for all crew members of a particular flight. */
@@ -67,7 +56,6 @@ flightCrewAppControllers.controller('playbackController',['$scope','$http','$int
 
    google.maps.visualRefresh = true;
    var n210 = {latitude: 37.414468, longitude: -122.056862};
-   var SFO =  {latitude: 37.615223, longitude: -122.389979};
 
    $scope.map = {
          center: n210 //{latitude: 37.414468, longitude: -122.056862},
