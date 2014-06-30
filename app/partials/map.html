@@ -22,7 +22,8 @@
 								  </tr>
 					       		  </thead>
 					       		  <tbody id="flightControlBody">
-						       		  <tr ng-repeat="flight in data | startFrom:currentPage*pageSize | limitTo:pageSize" style="color:{{delayColor(flight)}}">
+						       		  <tr ng-repeat="flight in data | startFrom:currentPage*pageSize | limitTo:pageSize" style="color:{{delayColor(flight)}}"
+						       		  ng-show="flight">
 							              <td> <img src="img/{{flight.delayStatus}}.png"/> </td>
 							              <td>{{flight.flightId}}&nbsp;</td>
 							              <td>{{flight.arrivalAirport}}&nbsp;</td>
@@ -60,7 +61,7 @@
 						          </thead>
 						          <tbody id="crewControlBody">
 							            <!-- <tr ng-repeat="crew in crewData | startFrom:currentPage*pageSize | limitTo:pageSize| makeArray | orderBy:['crewFlightId']"> -->
-							            <tr ng-repeat="crew in crewData | startFrom:currentPage*pageSize | limitTo:pageSize ">
+							            <tr ng-repeat="crew in crewData | startFrom:currentPage*pageSize | limitTo:pageSize " ng-show="crew">
 							              <td> <img src="img/{{crew.delayStatus}}.png"/></td>
 							              <td>{{crew.id}}&nbsp;</td>
 							              <td>{{toHMS(crew.eta)}}&nbsp;</td>   <!-- crew delay = crew.eta -->
