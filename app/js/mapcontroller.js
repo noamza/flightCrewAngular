@@ -163,13 +163,18 @@ flightCrewAppControllers.controller('mapController',['$scope','$http','$interval
 
 
 
-   $scope.crewTableClick = function(crewMember){
-
+   $scope.crewTableClick = function(selectedCrewMember){
+      //log(selectedCrewMember.id);
+      var crewMember = crewMembers[selectedCrewMember.id];
+      //log(crewMember);
       if(!crewMember.showWindow){//window is currently closed
-            crewMember.gwindow.open(gmap, crewMember.gmarker);
+            //crewMember.gwindow.open(gmap, crewMember.gmarker);
+            google.maps.event.trigger(crewMember.gmarker, 'click');
             crewMember.showWindow = true;
       } else { //window is open
-         crewMember.gwindow.close();
+         //crewMember.gwindow.close();
+         //closeclick doesn't actually work
+         google.maps.event.trigger(crewMember.gmarker, 'closeclick');
          crewMember.showWindow = false;
       }
       log("tableClick more like" + crewMember.showWindow);

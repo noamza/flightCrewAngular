@@ -65,7 +65,7 @@
 								    </tr>
 						          </thead>
 						          <tbody id="crewControlBody">
-						            <tr ng-repeat="crew in specificCrew | makeArray | orderBy:['crewFlightId']">
+						            <tr ng-repeat="crew in specificCrew | makeArray | orderBy:['crewFlightId']" ng-click="crewTableClick(crew)">
 						              <td> <img src="img/{{crew.delayStatus}}.png"/></td>
 						              <td>{{crew.id}}&nbsp;</td>
 						              <td>{{toHMS(crew.eta)}}&nbsp;</td>   <!-- crew delay = crew.eta -->
