@@ -60,6 +60,7 @@ flightCrewAppControllers.controller('mapController',['$scope','$http','$interval
    $scope.toHMS = secToHMS;
    $scope.specificCrew = specificCrew;
    $scope.currentPage = 0;
+   $scope.currentPageCrew = 0;
    $scope.pageSize = 10;
    $scope.data = data;
    $scope.crewData = crewData;

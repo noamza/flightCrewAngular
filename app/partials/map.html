@@ -61,18 +61,18 @@
 						          </thead>
 						          <tbody id="crewControlBody">
 							            <!-- <tr ng-repeat="crew in crewData | startFrom:currentPage*pageSize | limitTo:pageSize| makeArray | orderBy:['crewFlightId']"> -->
-							            <tr ng-repeat="crew in crewData | startFrom:currentPage*pageSize | limitTo:pageSize " ng-show="crew">
+							            <tr ng-repeat="crew in crewData | startFrom:currentPageCrew*pageSize | limitTo:pageSize " ng-show="crew">
 							              <td> <img src="img/{{crew.delayStatus}}.png"/></td>
 							              <td>{{crew.id}}&nbsp;</td>
 							              <td>{{toHMS(crew.eta)}}&nbsp;</td>   <!-- crew delay = crew.eta -->
 							              <td>{{crew.distanceToDest}}&nbsp;</td>
 							              <td>{{crew.far}}&nbsp;</td>
 							              <td>{{crew.crewFlightId}}&nbsp;</td>
-							              <button ng-disabled="currentPage == 0" ng-click="currentPage=currentPage-1">
+							              <button ng-disabled="currentPageCrew == 0" ng-click="currentPageCrew=currentPageCrew-1">
 	        								Previous
 										  </button>
-										    {{currentPage+1}}/{{numberOfPagesCrew()}}
-										  <button ng-disabled="currentPage >= crewData.length/pageSize - 1" ng-click="currentPage=currentPage+1">
+										    {{currentPageCrew+1}}/{{numberOfPagesCrew()}}
+										  <button ng-disabled="currentPageCrew >= crewData.length/pageSize - 1" ng-click="currentPageCrew=currentPageCrew+1">
 										    Next
 										  </button>
 							            </tr>
