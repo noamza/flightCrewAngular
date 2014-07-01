@@ -49,8 +49,8 @@ flightCrewAppControllers.controller('mapController',['$scope','$http','$interval
    var numFlights;
    var filteredFlights = [];
    var data = [[],[]];
-   var crewData = [[],[]];
-
+   var crewCounter = 0;
+   var crewData = [];
 
    $scope.crewMembers = crewMembers;
    $scope.flights = flights;
@@ -63,8 +63,10 @@ flightCrewAppControllers.controller('mapController',['$scope','$http','$interval
    $scope.currAirport = "";
    $scope.currentPage = 0;
    $scope.currentPageCrew = 0;
-   $scope.pageSize = 10;
+   $scope.pageSize = 5;
    $scope.data = data;
+   $scope.data.length = 0;
+   $scope.crewCounter = crewCounter;
    $scope.crewData = crewData;
     
    $scope.numberOfPages=function()
@@ -75,8 +77,8 @@ flightCrewAppControllers.controller('mapController',['$scope','$http','$interval
 
    $scope.numberOfPagesCrew=function()
    {
-        //log("check data length: " + data.length);
-        return Math.ceil(crewData.length/$scope.pageSize);               
+        return Math.ceil(crewData.length/$scope.pageSize);
+        //return Math.ceil(crewCounter/$scope.pageSize);               
    }
 
    google.maps.visualRefresh = true;
@@ -166,6 +168,7 @@ flightCrewAppControllers.controller('mapController',['$scope','$http','$interval
    $scope.crewTableClick = function(selectedCrewMember){
       //log(selectedCrewMember.id);
       var crewMember = crewMembers[selectedCrewMember.id];
+
       //log(crewMember);
       if(!crewMember.showWindow){//window is currently closed
             //crewMember.gwindow.open(gmap, crewMember.gmarker);
@@ -208,7 +211,10 @@ flightCrewAppControllers.controller('mapController',['$scope','$http','$interval
    */
    $scope.populateCrewTable = function(flight) {
     specificCrew = {}; //clears out old entries in case there is something already there
-    log(flight.flightId + ": " + flight.crew);
+    $scope.crewData = [];
+
+    log("clear crew table: " + flight.flightId + ": " + flight.crew);
+    
     $scope.selectedFlights=flight.flightId;
     selectedFlight = flight.flightId;
     getSpecificCrew();
@@ -352,6 +358,9 @@ flightCrewAppControllers.controller('mapController',['$scope','$http','$interval
         localFlights.push(flight);
       }
       });
+
+      $scope.data.length = localFlights.length;
+  
       return localFlights;
    }
 
@@ -445,11 +454,6 @@ flightCrewAppControllers.controller('mapController',['$scope','$http','$interval
          };
 
       addCrewIDs(flight);
-      if(flight !== null)
-      {   
-        $scope.data.push(flight); //data array is used in pagination
-        log("Test data array: " + data.length);
-      }
       flights[flight.flightId]=flight;
       
    }
@@ -524,10 +528,11 @@ flightCrewAppControllers.controller('mapController',['$scope','$http','$interval
 
          if(specificCrewMember.crewFlightId == selectedFlight)
          {
+            crewCounter++;
             var latitude = specificCrewMember.latitude;
             var longitude = specificCrewMember.longitude;
             calculateDistance(latitude, longitude,37.615223,-122.389979);
-            log("dist" + distance);
+            //log("specific crew distance: " + distance);
 
             specificCrewMember = 
             {
@@ -543,14 +548,21 @@ flightCrewAppControllers.controller('mapController',['$scope','$http','$interval
             }
 
             specificCrew[specificCrewMember.id] = specificCrewMember;  
+            
+            $scope.crewData.push(specificCrewMember); //for pagination in the crew control table
+            log("check crewData length: " + crewData.length + " id: " + specificCrewMember.id);
 
             //log("check crew id and flight id: " + specificCrewMember.id + " " + specificCrewMember.crewFlightId);
          }
       }
       $scope.specificCrew = specificCrew;
+
       var currFlight = getFlightByID(selectedFlight);
       hideOtherCrew(currFlight.crew);
       saveCrewIDs = globalCrewIDs.slice(0); //copies contents to saveCrewIDs
+
+      $scope.crewCounter = crewCounter; 
+      log("Number of crew members: " + crewCounter);
 
    } 
 
@@ -727,7 +739,7 @@ flightCrewAppControllers.controller('mapController',['$scope','$http','$interval
               //var to = destinations[j];
 
               $scope.distance = distance;
-              console.log("distance check: " + distance);
+              //console.log("distance check: " + distance);
             }
          }
       }
@@ -805,7 +817,7 @@ flightCrewAppControllers.controller('mapController',['$scope','$http','$interval
       var dest_point = getDestPoint(jsonData);
       var polyPath = getPolyPath(jsonData);
       var prevPath = [];
-      //farValue = calculateFAR();
+      farValue = calculateFAR();
 
       //log(polyPath);
       var crewMember = {
@@ -818,7 +830,7 @@ flightCrewAppControllers.controller('mapController',['$scope','$http','$interval
          crewFlightId : jsonData.flightid,
          crewDelay : crewDelay,
          delayStatus : crewDelayStatus,
-         //far : farValue,
+         far : farValue,
          showWindow: false,
          late:false,
          /*templateUrl: 'partials/info.html',*/
@@ -875,13 +887,7 @@ flightCrewAppControllers.controller('mapController',['$scope','$http','$interval
          crewMember.prevPath.setMap(null);
       });
       initPrevPath(crewMember);
-
-      if(crewMember !== null)
-      {   
-        $scope.crewData.push(crewMember); //data array is used in pagination
-        log("Test crew array: " + crewData.length);
-      }
-
+  
       crewMembers[crewMember.id]=crewMember;
 
       /*check for duplicates here */
@@ -941,7 +947,7 @@ flightCrewAppControllers.controller('mapController',['$scope','$http','$interval
       var dest_point = getDestPoint(jsonData);
       var polyPath = getPolyPath(jsonData);
     
-      //calculateDistance(jsonData.latitudeDegree,jsonData.longitudeDegree,37.615223,-122.389979); //calculate distance to SFO
+      calculateDistance(jsonData.latitudeDegree,jsonData.longitudeDegree,37.615223,-122.389979); //calculate distance to SFO
       
       var crewMember = crewMembers[jsonData.id];
       crewMember.latitude = jsonData.latitudeDegree;
@@ -951,7 +957,7 @@ flightCrewAppControllers.controller('mapController',['$scope','$http','$interval
       crewMember.time=jsonData.timeSecond;
       crewMember.gpath.setPath(polyPath);
       crewMember.crewFlightId = jsonData.flightid;
-      //crewMember.distanceToDest = distance;
+      crewMember.distanceToDest = distance;
 
       if(Math.random()<0.2) crewMember.late = !crewMember.late;
       var icon = 'img/green_Marker.png';

@@ -5,3 +5,28 @@
     padding: 0 20px;
 }
 
+.crewTable
+{
+	height: 300px; 
+	width:  520px; 
+	overflow-y: auto;
+}
+
+.flightTable
+{
+	height: 300px; 
+	width:  520px; 
+	overflow-y: auto;
+}
+
+.playbackControlPanel
+{
+	height:275px; 
+	width:350px; 
+	overflow-y: auto;
+}
+
+body.ng-scope
+{
+	font-size: 12px; 
+}

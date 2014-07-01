@@ -9,8 +9,8 @@
 	<br>
 	<br>
 							<!-- FLIGHT LIST TABLE -->
-							<div class = "flightTable" style = "height:275px; width:400px; overflow-y: scroll;">
-					       	<table id="flightControl">
+							<div class="flightTable">
+					       	<table id="flightControl" class="table">
 					       		<thead>
 					       		  <tr><th colspan="6">Flights Departing From {{currAirport}}</th></tr>
 					       		  <tr>
@@ -23,8 +23,7 @@
 								  </tr>
 					       		  </thead>
 					       		  <tbody id="flightControlBody">
-					       		  	<!--<tr ng-repeat="flight in data | startFrom:currentPage*pageSize | limitTo:pageSize" -->
-					       		  		<tr ng-repeat="flight in localFlights | startFrom:currentPage*pageSize | limitTo:pageSize"
+					       		  	  <tr ng-repeat="flight in localFlights | startFrom:currentPage*pageSize | limitTo:pageSize"
 						       		  style="color:{{delayColor(flight)}}"
 						       		  ng-show="flight" ng-click="populateCrewTable(flight)">
 							              <td> <img src="img/{{flight.delayStatus}}.png"/> </td>
@@ -37,7 +36,7 @@
         								Previous
 									  </button>
 									    {{currentPage+1}}/{{numberOfPages()}}
-									  <button ng-disabled="currentPage >= data.length/pageSize - 1" ng-click="currentPage=currentPage+1">
+									  <button ng-disabled="currentPage >= localFlights.length/pageSize - 1" ng-click="currentPage=currentPage+1">
 									    Next
 									  </button>
 							          </tr>
@@ -46,15 +45,12 @@
 					       	</div>	
 					       	<br>
 					       	<br>
- 							<!-- CREW CONTROL TABLE -->
-						        <table id="crewControl" class="table">
+
+					       	<!-- CREW CONTROL TABLE -->
+					       	<div class= "crewTable">
+                            <table id="crewControl" class="table">
 						          <thead>
-						          	<tr> 
-						          		<div class="crewControlMenu">
-						          			<b>Crew information for flight: {{selectedFlights}}
-								      	</div>
-								    <!--   	  	Value Selected is: {{selectedFlights}} -->
-							        </tr>
+						          	<tr><th colspan="6">Crew information for flight: {{selectedFlights}}</th></tr>
 						            <tr>
 										<td style="width:60em">Status</td>
 									 	<td style="width:60em">ID</td> 
@@ -65,16 +61,25 @@
 								    </tr>
 						          </thead>
 						          <tbody id="crewControlBody">
-						            <tr ng-repeat="crew in specificCrew | makeArray | orderBy:['crewFlightId']" ng-click="crewTableClick(crew)">
-						              <td> <img src="img/{{crew.delayStatus}}.png"/></td>
-						              <td>{{crew.id}}&nbsp;</td>
-						              <td>{{toHMS(crew.eta)}}&nbsp;</td>   <!-- crew delay = crew.eta -->
-						              <td>{{crew.distanceToDest}}&nbsp;</td>
-						              <td>{{crew.far}}&nbsp;</td>
-						              <td>{{crew.crewFlightId}}&nbsp;</td>
+						            <tr ng-repeat="crew in crewData | startFrom:currentPageCrew*pageSize | limitTo:pageSize | orderBy:['crewFlightId']" 
+						            ng-click="crewTableClick(crew)" ng-show="crew">
+							              <td> <img src="img/{{crew.delayStatus}}.png"/></td>
+							              <td>{{crew.id}}&nbsp;</td>
+							              <td>{{toHMS(crew.eta)}}&nbsp;</td>   <!-- crew delay = crew.eta -->
+							              <td>{{crew.distanceToDest}}&nbsp;</td>
+							              <td>{{crew.far}}&nbsp;</td>
+							              <td>{{crew.crewFlightId}}&nbsp;</td>
+						              <button ng-disabled="currentPageCrew == 0" ng-click="currentPageCrew=currentPageCrew-1">
+	        						  	   Previous
+								      </button>
+									  	  {{currentPageCrew+1}}/{{numberOfPagesCrew()}}
+									  <button ng-disabled="currentPageCrew >= crewData.length/pageSize - 1" ng-click="currentPageCrew=currentPageCrew+1">
+									  	   Next
+									  </button>
 						            </tr>
 						          </tbody>
 						        </table>
+						    </div>
 	</div>
 	</div>
 	<!-- Noam's Sidebar -->
