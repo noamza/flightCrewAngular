@@ -12,12 +12,28 @@
 	overflow-y: auto;
 }
 
+.crewTable thead th
+{
+	background-color: #C9C9C9;
+    border-radius:6px;
+    -moz-border-radius:6px;
+}
+
+
 .flightTable
 {
 	height: 300px; 
 	width:  520px; 
 	overflow-y: auto;
 }
+
+.flightTable thead th
+{
+	background-color: #C9C9C9;
+	border-radius:6px;
+    -moz-border-radius:6px;
+}
+
 
 .playbackControlPanel
 {

@@ -24,23 +24,26 @@
 					       		  </thead>
 					       		  <tbody id="flightControlBody">
 					       		  	  <tr ng-repeat="flight in localFlights | startFrom:currentPage*pageSize | limitTo:pageSize"
-						       		  style="color:{{delayColor(flight)}}"
 						       		  ng-show="flight" ng-click="populateCrewTable(flight)">
 							              <td> <img src="img/{{flight.delayStatus}}.png"/> </td>
 							              <td>{{flight.flightId}}&nbsp;</td>
 							              <td>{{flight.arrivalAirport}}&nbsp;</td>
 							              <td>{{flight.departureTime}}&nbsp;</td>
 							              <td>{{flight.flightPTD}}&nbsp;</td>
-							              <td>{{flight.flightDelay}}&nbsp;</td>
-							          <button ng-disabled="currentPage == 0" ng-click="currentPage=currentPage-1">
-        								Previous
-									  </button>
-									    {{currentPage+1}}/{{numberOfPages()}}
-									  <button ng-disabled="currentPage >= localFlights.length/pageSize - 1" ng-click="currentPage=currentPage+1">
-									    Next
-									  </button>
+							              <td style="color:{{delayColor(flight)}}">{{flight.flightDelay}}&nbsp;</td>
 							          </tr>
-						       	 </tbody>
+							       </tbody>   
+							       <tfoot>    
+							          <tr>
+	  									<button ng-disabled="currentPage == 0" ng-click="currentPage=currentPage-1">
+	        								Previous
+									    </button>
+										    {{currentPage+1}}/{{numberOfPages()}}
+									    <button ng-disabled="currentPage >= localFlights.length/pageSize - 1" ng-click="currentPage=currentPage+1">
+										    Next
+									    </button>
+							          </tr>
+							       </tfoot>  
 					       	</table>
 					       	</div>	
 					       	<br>
@@ -69,15 +72,19 @@
 							              <td>{{crew.distanceToDest}}&nbsp;</td>
 							              <td>{{crew.far}}&nbsp;</td>
 							              <td>{{crew.crewFlightId}}&nbsp;</td>
-						              <button ng-disabled="currentPageCrew == 0" ng-click="currentPageCrew=currentPageCrew-1">
-	        						  	   Previous
-								      </button>
-									  	  {{currentPageCrew+1}}/{{numberOfPagesCrew()}}
-									  <button ng-disabled="currentPageCrew >= crewData.length/pageSize - 1" ng-click="currentPageCrew=currentPageCrew+1">
-									  	   Next
-									  </button>
-						            </tr>
-						          </tbody>
+							          </tr>
+							       </tbody>  
+							         <tfoot>
+								         <tr>     
+							              <button ng-disabled="currentPageCrew == 0" ng-click="currentPageCrew=currentPageCrew-1">
+		        						  	   Previous
+									      </button>
+										  	  {{currentPageCrew+1}}/{{numberOfPagesCrew()}}
+										  <button ng-disabled="currentPageCrew >= crewData.length/pageSize - 1" ng-click="currentPageCrew=currentPageCrew+1">
+										  	   Next
+										  </button>
+							              </tr>
+						          	  </tfoot>
 						        </table>
 						    </div>
 	</div>
