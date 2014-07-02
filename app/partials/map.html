@@ -12,7 +12,7 @@
 							<div class="flightTable">
 					       	<table id="flightControl" class="table">
 					       		<thead>
-					       		  <tr><th colspan="6">Flights Departing From {{currAirport}}</th></tr>
+					       		  <tr><th colspan="6">Flights departing from: {{currAirport}}</th></tr>
 					       		  <tr>
 										<td style="width:60em">Status</td>
 									 	<td style="width:60em">ID</td> 
@@ -48,7 +48,7 @@
 					       	</div>	
 					       	<br>
 					       	<br>
-
+					
 					       	<!-- CREW CONTROL TABLE -->
 					       	<div class= "crewTable">
                             <table id="crewControl" class="table">
@@ -87,6 +87,7 @@
 						          	  </tfoot>
 						        </table>
 						    </div>
+                            <button type="button" ng-click="toggleCrewVisibility()">Hide Crew</button>
 	</div>
 	</div>
 	<!-- Noam's Sidebar -->

@@ -51,6 +51,8 @@ flightCrewAppControllers.controller('mapController',['$scope','$http','$interval
    var data = [[],[]];
    var crewCounter = 0;
    var crewData = [];
+   var showSpecificCrewMembers = false;
+   var rememberCrewMember;
 
    $scope.crewMembers = crewMembers;
    $scope.flights = flights;
@@ -68,6 +70,7 @@ flightCrewAppControllers.controller('mapController',['$scope','$http','$interval
    $scope.data.length = 0;
    $scope.crewCounter = crewCounter;
    $scope.crewData = crewData;
+   $scope.rememberCrewMember = rememberCrewMember;
     
    $scope.numberOfPages=function()
    {
@@ -180,7 +183,7 @@ flightCrewAppControllers.controller('mapController',['$scope','$http','$interval
          //google.maps.event.trigger(crewMember.gmarker, 'closeclick');
          //crewMember.showWindow = false;
       }
-      log("tableClick more like" + crewMember.showWindow);
+      log("tableClick more like " + crewMember.showWindow);
    };
    
    /* Centers the map on a crewmember and zooms in. Only applies when the 
@@ -217,6 +220,8 @@ flightCrewAppControllers.controller('mapController',['$scope','$http','$interval
     
     $scope.selectedFlights=flight.flightId;
     selectedFlight = flight.flightId;
+
+    $scope.rememberCrewMember = flight.crew;
     getSpecificCrew();
    }
 
@@ -544,7 +549,16 @@ flightCrewAppControllers.controller('mapController',['$scope','$http','$interval
                   delayStatus : specificCrewMember.delayStatus,
                   far : farValue,
                   distanceToDest : distance,
-                  position : new google.maps.LatLng(latitude, longitude)
+                  position : new google.maps.LatLng(latitude, longitude),
+                  latitudeDegree : specificCrewMember.latitude,
+                  longitudeDegree : specificCrewMember.longitude,
+                  gmarker: new google.maps.Marker({
+                  position: new google.maps.LatLng(
+                     specificCrewMember.latitude, 
+                     specificCrewMember.longitude),
+                  title:specificCrewMember.id,
+                  icon:'img/green_Marker.png'
+               }),
             }
 
             specificCrew[specificCrewMember.id] = specificCrewMember;  
@@ -917,6 +931,15 @@ flightCrewAppControllers.controller('mapController',['$scope','$http','$interval
     }
   }
 
+  $scope.toggleCrewVisibility = function(){
+  
+    $scope.showSpecificCrewMembers = !$scope.showSpecificCrewMembers;
+    
+    showHideAllCrew(false);
+    //showHideSpecificCrew($scope.showSpecificCrewMembers);
+
+  }
+
   /*
     Puts all airport markers on the map if bool == true, or removes them if bool == false.
   */
@@ -929,6 +952,19 @@ flightCrewAppControllers.controller('mapController',['$scope','$http','$interval
     });
   }
 
+  /* Shows/hides crew for selected flight */
+  function showHideSpecificCrew(bool)
+  {
+    var map = null;
+    if(bool)
+        map = gmap;
+  
+    angular.forEach(specificCrew, function(specificCrewMember, id) 
+    {
+        specificCrewMember.gmarker.setMap(map);
+    });
+
+  }
 
   /*
     Generates the prevPath field for a particular crewMember (i.e. all data logged for said crew member)
