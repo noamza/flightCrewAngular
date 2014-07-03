@@ -557,7 +557,7 @@ flightCrewAppControllers.controller('mapController',['$scope','$http','$interval
                      specificCrewMember.latitude, 
                      specificCrewMember.longitude),
                   title:specificCrewMember.id,
-                  icon:'img/green_Marker.png'
+                  icon:'img/carIcon.png'
                }),
             }
 
@@ -854,7 +854,7 @@ flightCrewAppControllers.controller('mapController',['$scope','$http','$interval
                jsonData.latitudeDegree, 
                jsonData.longitudeDegree),
             title:jsonData.id,
-            icon:'img/green_Marker.png'
+            icon:'img/carIcon.png'
          }),
          gwindow: new google.maps.InfoWindow({
                   content: jsonData.id
@@ -1002,8 +1002,8 @@ flightCrewAppControllers.controller('mapController',['$scope','$http','$interval
       crewMember.distanceToDest = distance;
 
       if(Math.random()<0.2) crewMember.late = !crewMember.late;
-      var icon = 'img/green_Marker.png';
-      if(crewMember.late) icon = 'img/red_Marker.png';
+      var icon = 'img/carIcon.png';
+      if(crewMember.late) icon = 'img/carIcon.png';
 
       var currPos = new google.maps.LatLng(
                jsonData.latitudeDegree, 
