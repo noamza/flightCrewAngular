@@ -39,3 +39,25 @@ footer {
 .footer{
   
 }
+
+nav.navbar.navbar-default
+{
+  background-color: #660000;
+}
+
+nav.navbar.navbar-default a
+{
+  color: white;
+  font-size: 20px;
+  font-family: Century Gothic;
+}
+nav.navbar.navbar-default a:hover
+{
+  color: yellow;
+}
+
+div.container
+{
+  font-size: 20px;
+  font-family: Century Gothic;
+}

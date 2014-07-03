@@ -3,11 +3,15 @@
 .table {
     width: 500px;
     padding: 0 20px;
+    border: 1px solid;
+	border-radius: 6px;
+	border-color: #C9C9C9;
+	box-shadow: 5px 5px 5px 5px #888888;
 }
 
 .crewTable
 {
-	height: 300px; 
+	height: 500px; 
 	width:  520px; 
 	overflow-y: auto;
 }
@@ -18,7 +22,6 @@
     border-radius:6px;
     -moz-border-radius:6px;
 }
-
 
 .flightTable
 {
@@ -33,7 +36,6 @@
 	border-radius:6px;
     -moz-border-radius:6px;
 }
-
 
 .playbackControlPanel
 {

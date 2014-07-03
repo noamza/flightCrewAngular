@@ -10,10 +10,11 @@
 	width:400px; 
 	float:left;
 	background-color: white;
-	margin-right: 10em;
+	margin-right: 12em;
 }
 
-.theMap{
+.theMap
+{
 	/*
 	background-color: lightgreen;
 	width:100%;
@@ -22,15 +23,13 @@
 }
 
 
-.angular-google-map-container {
- /* padding: 0 0 0.5em; */  
-  height: 100vh; 
-  /* 
-  border-bottom: 3em solid blue; 
-  margin-bottom: 3em;
-  padding: 3 3 3.5em; */
+.angular-google-map-container 
+{
+  height: 90vh; 
+  border: 2px solid;
+  border-color: #C9C9C9;
+  box-shadow: 5px 5px 5px 5px #888888;
 }
-
 
 .late{
  /* padding: 0 0 0.5em;  */
@@ -41,3 +40,4 @@
  /* padding: 0 0 0.5em;  */
  color: green;
 }
+

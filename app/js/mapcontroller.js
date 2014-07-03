@@ -52,7 +52,6 @@ flightCrewAppControllers.controller('mapController',['$scope','$http','$interval
    var crewCounter = 0;
    var crewData = [];
    var showSpecificCrewMembers = false;
-   var rememberCrewMember;
 
    $scope.crewMembers = crewMembers;
    $scope.flights = flights;
@@ -70,7 +69,6 @@ flightCrewAppControllers.controller('mapController',['$scope','$http','$interval
    $scope.data.length = 0;
    $scope.crewCounter = crewCounter;
    $scope.crewData = crewData;
-   $scope.rememberCrewMember = rememberCrewMember;
     
    $scope.numberOfPages=function()
    {
@@ -212,7 +210,9 @@ flightCrewAppControllers.controller('mapController',['$scope','$http','$interval
       NOTE: The click events are linked to the "ng-click" things in the actual
       HTML.
    */
+
    $scope.populateCrewTable = function(flight) {
+
     specificCrew = {}; //clears out old entries in case there is something already there
     $scope.crewData = [];
 
@@ -221,9 +221,9 @@ flightCrewAppControllers.controller('mapController',['$scope','$http','$interval
     $scope.selectedFlights=flight.flightId;
     selectedFlight = flight.flightId;
 
-    $scope.rememberCrewMember = flight.crew;
     getSpecificCrew();
    }
+ 
 
    function initAirportMarkers() {
       log("init airport markers");
@@ -931,15 +931,6 @@ flightCrewAppControllers.controller('mapController',['$scope','$http','$interval
     }
   }
 
-  $scope.toggleCrewVisibility = function(){
-  
-    $scope.showSpecificCrewMembers = !$scope.showSpecificCrewMembers;
-    
-    showHideAllCrew(false);
-    //showHideSpecificCrew($scope.showSpecificCrewMembers);
-
-  }
-
   /*
     Puts all airport markers on the map if bool == true, or removes them if bool == false.
   */
@@ -950,20 +941,6 @@ flightCrewAppControllers.controller('mapController',['$scope','$http','$interval
     angular.forEach(airports, function(airport) {
       airport.airportMarker.setMap(map);
     });
-  }
-
-  /* Shows/hides crew for selected flight */
-  function showHideSpecificCrew(bool)
-  {
-    var map = null;
-    if(bool)
-        map = gmap;
-  
-    angular.forEach(specificCrew, function(specificCrewMember, id) 
-    {
-        specificCrewMember.gmarker.setMap(map);
-    });
-
   }
 
   /*
