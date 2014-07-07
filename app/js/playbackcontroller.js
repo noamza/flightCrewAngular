@@ -6,8 +6,29 @@ function log(s){
    console.log(s);
 }
 
-flightCrewAppControllers.controller('playbackController',['$scope','$http','$interval', '$q',function($scope, $http, $interval, $q) {
-   
+flightCrewAppControllers.controller('playbackController',['$scope','$http','$interval', '$q', function($scope, $http, $interval, $q) {
+  
+  /* For date pickers */
+
+  $scope.dtlower = new Date();
+  $scope.dtlower.setTime(0); //sets the lower bound as low as possible
+  $scope.dtupper = new Date(); //upper bound is the current times
+
+  $scope.open = function($event) {
+    $event.preventDefault();
+    $event.stopPropagation();
+    $scope.opened = true;
+  };
+
+  /* Duplicated function to open/close both datepickers independently */
+  $scope.open2 = function($event) {
+    $event.preventDefault();
+    $event.stopPropagation();
+    $scope.opened2 = true;
+  };
+
+  //end date picker stuff
+
    var mapFirstLoaded = true;
    var gmap;
    var crewMembers = {};
@@ -25,27 +46,17 @@ flightCrewAppControllers.controller('playbackController',['$scope','$http','$int
          }
          $scope.form.id = crewids.toString();
          //log(flightid + ": " + crewids.toString());
-         getDataAndTraversePath($scope.form.id, $scope.form.timeUpper, $scope.form.timeLower);
+         getDataAndTraversePath($scope.form.id, $scope.dtupper.getTime(), $scope.dtlower.getTime());
       }).error(function(data, status, headers, config) {
          console.log("Error gleaning crew ids data");
       });
    }
-
-   /*
-   $scope.tableParams = new ngTableParams({
-      //fill in when have more info
-   },
-   {
-   });
-  */
 
   /* Angular data for the forms. Initial values are set to double-bind. */
    $scope.form = {
          //id: 'Enter id here'
          //, time: 'Enter time here'
          id: 'Enter IDs',
-         timeLower: '0',
-         timeUpper: '1000000000000000000',
          speed: '1'
          , submit: function() {
             //var msg = "ID: " + $scope.form.id + " | Time: " + $scope.form.time;
@@ -93,7 +104,7 @@ flightCrewAppControllers.controller('playbackController',['$scope','$http','$int
          if(pathData != "null") {
             traversePaths(pathData, trackers, 0, pathData.length, 0);
          } else {
-            alert("No data found for IDs: \"" + ids + "\" before time " + $scope.form.time + ".")
+            alert("No data found for IDs: \"" + ids + "\" between time " + $scope.dtlower + " and " + $scope.dtupper + ".")
          }
       }).error(function(data, status, headers, config) {
          console.log("Error gleaning path data");

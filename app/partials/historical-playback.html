@@ -1,7 +1,12 @@
-
-<script script type="text/javascript" src="../js/playbackcontroller.js"></script>
-<div class = "container-fluid">	
-<link rel="stylesheet" href="css/map.css"/>
+<html ng-app="flightCrewApp">
+<head>
+	<script script type="text/javascript" src="../js/playbackcontroller.js"></script>
+	<div class = "container-fluid">	
+	<link rel="stylesheet" href="css/map.css"/>
+	<script src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.10/angular.js"></script>
+    <script src="//angular-ui.github.io/bootstrap/ui-bootstrap-tpls-0.11.0.js"></script>
+    <link href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css" rel="stylesheet">
+</head>
 
  <style type="text/css">
    .labels {
@@ -12,6 +17,12 @@
      white-space: nowrap;
      text-shadow: 2px 2px white;
    }
+   #datepicker {
+ 	position: relative; 
+ 	float: left;
+ 	width: 50%;
+    top: 35px;
+	}
  </style>
 
 <div class = "row-fluid">
@@ -24,40 +35,69 @@
     <div class="playbackControlPanel">
 		<table ng-table="tableParams" width="300">
 				<thead>
-				<tr><th colspan="6">Flight IDs</th></tr>
-				<tr>
-					<td style="width:60em" align="center">(Click to Playback)</td> 
-				</tr>
+				<tr><th colspan="6">Flight IDs (Click to Playback):<hr /><br></th></tr>
 			</thead>
 			<tr ng-repeat="flightid in flightids" ng-click="trackFlight(flightid)"> 
 				<td align="center">{{flightid}}</td>
 			</tr>
 		</table>	
     </div> 
-    		<br>
-			<b>Playback Options</b>
-			<br>
+    <div>
+			<b>Playback Options:</b>
+			<hr />
 			<br>
 			<form name = "input"  ng-submit="form.submit()">
 			IDs (comma-separated): <input type="text" name="id" ng-model="form.id">
 			<br>
-			<br>
-			Lower Time Bound: <input type="text" name="time" ng-model="form.timeLower"> 
-			<br>
-			<br>
-			Upper Time Bound: <input type="text" name="time" ng-model="form.timeUpper">
-			<br>
+			<hr />
 			<br>
 			Playback Speed: <input type="range" min="1" max="15000" name="speed" ng-model="form.speed" style="width:350px;">
 			{{form.speed}}x
+			<hr />
+			<br>
+			<div>
+    			Lower Time Bound: <em>{{dtlower | date:'short' }} {{test}}</em>
+
+	    		<div class="row">
+	    			<div class="col-md-6" id = "timepicker">
+	    				<timepicker ng-model="dtlower" show-meridian="false"></timepicker>
+	    			</div>
+	        		<div class="col-md-6" id = "datepicker">
+	            		<p class="input-group">
+			              	<input type="text" class="form-control" datepicker-popup="{{format}}" ng-model="dtlower" is-open="opened2" date-disabled="disabled(date, mode)" ng-required="true" close-text="Close" />
+			              	<span class="input-group-btn">
+			                	<button type="button" class="btn btn-default" ng-click="open2($event)"><i class="glyphicon glyphicon-calendar"></i></button>
+			             	</span>
+			            </p>
+	        		</div>
+	    		</div>
+			</div>
+			<hr />
+			<br>
+			<div>
+    			Upper Time Bound: <em>{{dtupper | date:'short' }}</em>
+
+	    		<div class="row">
+	    			<div class="col-md-6" id = "timepicker">
+	    				<timepicker ng-model="dtupper" show-meridian="false"></timepicker>
+	    			</div>
+	        		<div class="col-md-6" id = "datepicker">
+	            		<p class="input-group">
+			              	<input type="text" class="form-control" datepicker-popup="{{format}}" ng-model="dtupper" is-open="opened" date-disabled="disabled(date, mode)" ng-required="true" close-text="Close" />
+			              	<span class="input-group-btn">
+			                	<button type="button" class="btn btn-default" ng-click="open($event)"><i class="glyphicon glyphicon-calendar"></i></button>
+			             	</span>
+			            </p>
+	        		</div>
+	    		</div>
+			</div>
 			<br>
 			<br>
 			<input type="submit" value="Playback">
-			<br>
-			<br>
 			</form>
 		</div >
-	</div>	
+	</div>
+</div>
 
 	<!-- Body -->
 	<div class="span10">
@@ -77,8 +117,11 @@
 			</google-map>
 		</div>
 	</div>	
+
+
   
     <footer></footer>
 
 </div>
 </div>
+</html>
