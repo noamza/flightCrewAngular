@@ -194,10 +194,10 @@ flightCrewAppControllers.controller('playbackController',['$scope','$http','$int
 
       var lineSymbol = {
         path : google.maps.SymbolPath.FORWARD_CLOSED_ARROW,
-        strokeColor: 'white',
+        strokeColor: 'blue',
         strokeOpacity: 1.0,
-        strokeWeight: 2,
-        fillColor: '#0033CC',
+        strokeWeight: 2.5,
+        fillColor: 'white',
         fillOpacity: 1.0,
         scale: 3.5
       }
@@ -215,7 +215,7 @@ flightCrewAppControllers.controller('playbackController',['$scope','$http','$int
          }),
          gpath : new google.maps.Polyline({
             path : polyPath,
-            strokeColor : '#0033CC',
+            strokeColor : 'blue',
             strokeOpacity : 0.7,
             strokeWeight: 3,
             clickable: true,
@@ -229,7 +229,7 @@ flightCrewAppControllers.controller('playbackController',['$scope','$http','$int
          }),     
          route : new google.maps.Polyline({
             path : routePath,
-            strokeColor : '#FF0000',
+            strokeColor : 'red',
             strokeOpacity : 0.7,
             strokeWeight: 2,
             clickable: true,
