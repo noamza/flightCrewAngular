@@ -187,9 +187,9 @@ flightCrewAppControllers.controller('mapController',['$scope','$http','$interval
    /* Centers the map on a crewmember and zooms in. Only applies when the 
       row corresponding to the crewmember on the map table is clicked */
    $scope.trackCrewMember = function(crew) { //maybe open window here?
-    gmap.panTo(crew.position);
-    gmap.setZoom(9);
-    //var crewMember = getCrewFromID(crew.id);
+    // gmap.panTo(crew.position);
+    // gmap.setZoom(9);
+    //var crewMember = getCrewFromID(crew.id;
     //can add stuff to zoom in + open infowindow/path info on crew.
    }
 
@@ -557,7 +557,7 @@ flightCrewAppControllers.controller('mapController',['$scope','$http','$interval
                      specificCrewMember.latitude, 
                      specificCrewMember.longitude),
                   title:specificCrewMember.id,
-                  icon:'img/carIcon.png'
+                  icon:'img/mapIconSmall.svg'
                }),
             }
 
@@ -854,7 +854,7 @@ flightCrewAppControllers.controller('mapController',['$scope','$http','$interval
                jsonData.latitudeDegree, 
                jsonData.longitudeDegree),
             title:jsonData.id,
-            icon:'img/carIcon.png'
+            icon:'img/mapIconSmall.svg'
          }),
          gwindow: new google.maps.InfoWindow({
                   content: jsonData.id
@@ -979,8 +979,8 @@ flightCrewAppControllers.controller('mapController',['$scope','$http','$interval
       crewMember.distanceToDest = distance;
 
       if(Math.random()<0.2) crewMember.late = !crewMember.late;
-      var icon = 'img/carIcon.png';
-      if(crewMember.late) icon = 'img/carIcon.png';
+      var icon = 'img/mapIconSmall.svg';
+      if(crewMember.late) icon = 'img/mapIconSmall.svg';
 
       var currPos = new google.maps.LatLng(
                jsonData.latitudeDegree, 
