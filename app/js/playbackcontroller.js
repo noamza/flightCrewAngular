@@ -31,7 +31,7 @@ flightCrewAppControllers.controller('playbackController',['$scope','$http','$int
 
    var mapFirstLoaded = true;
    var gmap;
-   var crewMembers = {};
+   var crewMembers = [];
    var flightids = [];
 
    $scope.crewMembers = crewMembers;
@@ -83,6 +83,7 @@ flightCrewAppControllers.controller('playbackController',['$scope','$http','$int
                gmap = map;
                if(mapFirstLoaded) {
                   initFlights();
+                  initCrew();
                }
                mapFirstLoaded = false;
             });
@@ -97,9 +98,7 @@ flightCrewAppControllers.controller('playbackController',['$scope','$http','$int
       var queryID = makeQueryID(ids); //generates string to query
       
       $http.get("ajax/playback.php?" + "id=" +  queryID + "&timeUpper=" + $scope.dtupper.getTime() + "&timeLower=" + $scope.dtlower.getTime()).success(function(pathData, status, headers, config) {
-         var msg = "ajax/playback.php?" + "id=" + queryID + "&time=" + $scope.dtlower + "&timeUpper=" + $scope.dtupper;
          var trackers = [];
-         log(msg); //weird bug with underfined column
          if(pathData != "null") {
             traversePaths(pathData, trackers, 0, pathData.length, 0);
          } else {
@@ -285,6 +284,19 @@ flightCrewAppControllers.controller('playbackController',['$scope','$http','$int
             flightids.push(flightiddata[i].flightid);
          }
          //log(flightids.toString());
+      }).error(function(data, status, headers, config) {
+         console.log("Error gleaning flightids data");
+      });
+   }
+
+   /* Gets all the crewmembers */
+   function initCrew() {
+      var crew = $scope.crewMembers;
+      $http.get("ajax/getCrewIDs.php").success(function(crewiddata, status, headers, config) {
+         for(var i = 0; i < crewiddata.length; i++) {
+            crew.push(crewiddata[i].id);
+         }
+         //log(crew.toString());
       }).error(function(data, status, headers, config) {
          console.log("Error gleaning flightids data");
       });

@@ -33,7 +33,7 @@
 		<div class="mapMenu">
 
 	<!-- Tabs with Widget Options -->
-    <div class="playbackControlPanel">
+    <div class="flightList" style="height:200px; overflow:scroll;">
 		<table ng-table="tableParams" width="300">
 				<thead>
 				<tr><th colspan="6">Flight IDs (Click to Playback):<hr /><br></th></tr>
@@ -43,12 +43,13 @@
 			</tr>
 		</table>	
     </div> 
+    <br>
     <div>
 			<b>Playback Options:</b>
 			<hr />
 			<br>
 			<form name = "input"  ng-submit="form.submit()">
-			IDs (comma-separated): <input type="text" name="id" ng-model="form.id">
+			IDs (comma-separated): <input type="text" name="id" ng-model="form.id"typeahead="crew for crew in crewMembers | filter:$viewValue">
 			<br>
 			<hr />
 			<br>
