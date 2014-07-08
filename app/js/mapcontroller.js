@@ -52,6 +52,9 @@ flightCrewAppControllers.controller('mapController',['$scope','$http','$interval
    var crewCounter = 0;
    var crewData = [];
    var showSpecificCrewMembers = false;
+   var directionsDisplay;
+   var directionsService = new google.maps.DirectionsService();
+   var googleRoute;
 
    $scope.crewMembers = crewMembers;
    $scope.flights = flights;
@@ -69,6 +72,7 @@ flightCrewAppControllers.controller('mapController',['$scope','$http','$interval
    $scope.data.length = 0;
    $scope.crewCounter = crewCounter;
    $scope.crewData = crewData;
+   $scope.googleRoute = googleRoute;
     
    $scope.numberOfPages=function()
    {
@@ -227,6 +231,9 @@ flightCrewAppControllers.controller('mapController',['$scope','$http','$interval
 
    function initAirportMarkers() {
       log("init airport markers");
+      directionsDisplay = new google.maps.DirectionsRenderer();
+      directionsDisplay.setMap(gmap);
+      
       $http.get('data/airportpositions.json').success(function(data) { 
            //log(data);
           $.each( data, function( key, item ) {
@@ -251,8 +258,8 @@ flightCrewAppControllers.controller('mapController',['$scope','$http','$interval
             google.maps.event.addListener(marker, 'click', function(){
               $scope.selectedFlights = "";
               $scope.specificCrew.length = 0;
-              gmap.panTo(marker.position);
-              gmap.setZoom(8);
+              // gmap.panTo(marker.position);
+              // gmap.setZoom(8);
               angular.forEach(airports, function(airport) {
                 airport.gwindow.close();
               });
@@ -268,8 +275,8 @@ flightCrewAppControllers.controller('mapController',['$scope','$http','$interval
                airport.showWindow = false;
                //showHideAirportMarkers($scope.showAirports); //messes up the window for some reason
                showHideAllCrew(false);
-               gmap.panTo(USLatLng);
-               gmap.setZoom(4);        
+               // gmap.panTo(USLatLng);
+               // gmap.setZoom(4);        
                $scope.currAirport="";
                $scope.localFlights = flights;
                $scope.selectedFlights="";
@@ -805,10 +812,11 @@ flightCrewAppControllers.controller('mapController',['$scope','$http','$interval
       //log(dest);
       var point = dest.split(",");
       //log(point);
-      //var destLat = point[0];
-      //var destLon = point[1];
-      //log("lat" + destLat);
-      //log("lon" + destLon);
+      // var destLat = point[0];
+      // var destLon = point[1];
+      // log("lat: " + destLat);
+      // log("lon: " + destLon);
+
       return point;
    }
 
@@ -817,6 +825,7 @@ flightCrewAppControllers.controller('mapController',['$scope','$http','$interval
       var route = (jsonData.route).split("|");
       var numPoints = route.length;
       var polyPath = [];
+
       for(var i = 0; i < numPoints; i++) {
          var point = route[i].split(",");
          //log(point[0]);
@@ -824,20 +833,29 @@ flightCrewAppControllers.controller('mapController',['$scope','$http','$interval
          polyPath.push(new google.maps.LatLng(point[0],point[1]));
          //log(polyPath);
       }
+
       return polyPath;
    }
-
-   function addCrewMember(jsonData){
+   
+   function addCrewMember(jsonData)
+   {
       var dest_point = getDestPoint(jsonData);
+
+      calculateRoute(jsonData, dest_point, function(result)
+      {
+          log("Google route: " + result);
+      });
+
+      
       var polyPath = getPolyPath(jsonData);
+      //log("polyPath: " + polyPath);
       var prevPath = [];
       farValue = calculateFAR();
 
-      //log(polyPath);
       var crewMember = {
          id : jsonData.id,
          eta : parseFloat(jsonData.eta),
-         route : jsonData.route,
+         route :  jsonData.route,
          latitude : jsonData.latitudeDegree,
          longitude : jsonData.longitudeDegree,
          time: jsonData.timeSecond,
@@ -907,6 +925,62 @@ flightCrewAppControllers.controller('mapController',['$scope','$http','$interval
       /*check for duplicates here */
       globalCrewIDs.push(crewMember.id);
 
+   }
+
+   /*Calculates the route using Google Maps*/
+   function calculateRoute(jsonData, dest_point, callback)
+   {
+     
+     var start = new google.maps.LatLng(jsonData.latitudeDegree, jsonData.longitudeDegree);
+     var end = new google.maps.LatLng(dest_point[0], dest_point[1]); 
+
+     // var polyline = new google.maps.Polyline({
+     //    path: [],
+     //    strokeColor: '#FF0000',
+     //    strokeWeight: 3
+     // });
+      
+     // var bounds = new google.maps.LatLngBounds();
+     var request = 
+     {
+        origin:start,
+        destination:end,
+        travelMode: google.maps.TravelMode.DRIVING
+     };
+     
+     directionsService.route(request, function(result, status) 
+     {
+      if(status == google.maps.DirectionsStatus.OK) 
+      {
+          //directionsDisplay.setDirections(result);
+          for(var i = 0; i < result.routes[0].legs.length; i++) 
+          {
+              $scope.googleRoute = result.routes[0].overview_path;
+              //log("Route: " + $scope.googleRoute);
+
+              var getRoute = function(){
+                callback($scope.googleRoute);
+              };
+
+              getRoute(); 
+              // var legs = result.routes[0].legs;
+
+              // for (i=0;i<legs.length;i++) {
+              //   var steps = legs[i].steps;
+              //   for (j=0;j<steps.length;j++) {
+              //     var nextSegment = steps[j].path;
+              //     for (k=0;k<nextSegment.length;k++) {
+              //       polyline.getPath().push(nextSegment[k]);
+              //       bounds.extend(nextSegment[k]);
+              //     }
+              //   }
+              // }
+
+              // polyline.setMap(gmap);
+              // gmap.fitBounds(bounds);
+          }
+       }
+      });
    }
 
    function markerCloseClick(crewMember) {
