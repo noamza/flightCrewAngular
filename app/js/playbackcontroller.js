@@ -94,13 +94,12 @@ flightCrewAppControllers.controller('playbackController',['$scope','$http','$int
    /* Queries the path data associated with the id string, then plays back the paths which correspond to the IDs */
    function getDataAndTraversePath(id, timeUpper, timeLower){
       var ids = parseID(id.replace(/\s+/g, '')); //removes whitespace from id before parsing...can add commas to query
-      //log(ids);
       var queryID = makeQueryID(ids); //generates string to query
-      //log(queryID);
       
-      $http.get("ajax/playback.php?" + "id=" +  queryID + "&timeUpper=" + timeUpper + "&timeLower=" + timeLower).success(function(pathData, status, headers, config) {
-         var msg = "ajax/playback.php?" + "id=" + queryID + "&time=" + timeUpper + "&timeLower=" + timeLower;
+      $http.get("ajax/playback.php?" + "id=" +  queryID + "&timeUpper=" + $scope.dtupper.getTime() + "&timeLower=" + $scope.dtlower.getTime()).success(function(pathData, status, headers, config) {
+         var msg = "ajax/playback.php?" + "id=" + queryID + "&time=" + $scope.dtlower + "&timeUpper=" + $scope.dtupper;
          var trackers = [];
+         log(msg); //weird bug with underfined column
          if(pathData != "null") {
             traversePaths(pathData, trackers, 0, pathData.length, 0);
          } else {
