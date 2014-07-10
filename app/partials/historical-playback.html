@@ -33,16 +33,17 @@
 		<div class="mapMenu">
 
 	<!-- Tabs with Widget Options -->
-    <div class="flightList" style="height:200px; overflow:scroll;">
+	<accordion>
+    <accordion-group heading="Flights (Click to Expand)">
+    <div class="flightList" style="height:100px; overflow:scroll;">
 		<table ng-table="tableParams" width="300">
-				<thead>
-				<tr><th colspan="6">Flight IDs (Click to Playback):<hr /><br></th></tr>
-			</thead>
 			<tr ng-repeat="flightid in flightids" ng-click="trackFlight(flightid)"> 
 				<td align="center"><u><font color="blue">{{flightid}}</font></u></td>
 			</tr>
-		</table>	
-    </div> 
+		</table>
+	</div> 
+	</accordion-group>
+	</accordion>	
     <br>
     <div>
 			<b>Playback Options:</b>
