@@ -24,6 +24,10 @@
  	width: 50%;
     top: 35px;
 	}
+	#span2 {
+		margin: auto;
+		display: inline-block;
+	}
  </style>
 
 <div class = "row-fluid">
@@ -57,11 +61,11 @@
 
 			Playback Speed: <input type="range" min="1" max="15000" name="speed" ng-model="form.speed" style="width:350px;">
 			<div class="btn-group">
-        		<label class="btn btn-success" ng-model="form.speed" btn-radio="'1'">Real-Time</label>
-        		<label class="btn btn-success" ng-model="form.speed" btn-radio="'10'">Slow</label>
-       			<label class="btn btn-success" ng-model="form.speed" btn-radio="'100'">Medium</label>
+        		<label class="btn btn-primary" ng-model="form.speed" btn-radio="'1'">Real-Time</label>
+        		<label class="btn btn-danger" ng-model="form.speed" btn-radio="'10'">Slow</label>
+       			<label class="btn btn-warning" ng-model="form.speed" btn-radio="'100'">Medium</label>
         		<label class="btn btn-success" ng-model="form.speed" btn-radio="'1000'">Fast</label>
-        		<label class="btn btn-success" ng-model="form.speed" btn-radio="'15000'">Warp</label>
+        		<label class="btn btn-info" ng-model="form.speed" btn-radio="'15000'">Warp</label>
     		</div>
 			{{form.speed}}x
 			<hr />
