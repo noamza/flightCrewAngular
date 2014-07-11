@@ -103,12 +103,15 @@ flightCrewAppControllers.controller('playbackController',['$scope','$http','$int
       $scope.isPlaying = true;
       var ids = parseID(id.replace(/\s+/g, '')); //removes whitespace from id before parsing...can add commas to query
       var queryID = makeQueryID(ids); //generates string to query
-      
       $http.get("ajax/playback.php?" + "id=" +  queryID + "&timeUpper=" + $scope.dtupper.getTime() + "&timeLower=" + $scope.dtlower.getTime()).success(function(pathData, status, headers, config) {
          if(pathData != "null") {
             traversePaths(pathData, 0, pathData.length, 0);
+            //$scope.form.id="";
          } else {
             alert("No data found for IDs: \"" + ids + "\" between time " + $scope.dtlower + " and " + $scope.dtupper + ".")
+            $scope.isPlaying=false;
+            $scope.form.speed=null;
+            $scope.form.id="";
          }
       }).error(function(data, status, headers, config) {
          console.log("Error gleaning path data");
