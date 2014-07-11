@@ -843,12 +843,12 @@ flightCrewAppControllers.controller('mapController',['$scope','$http','$interval
 
       calculateRoute(jsonData, dest_point, function(result)
       {
-          log("Google route: " + result);
+          //log("Google route: " + result);
       });
 
-      
+      //var polyPath = readGoogleRouteFromDB(); //overwrite polyPath variable
+
       var polyPath = getPolyPath(jsonData);
-      //log("polyPath: " + polyPath);
       var prevPath = [];
       farValue = calculateFAR();
 
@@ -927,6 +927,11 @@ flightCrewAppControllers.controller('mapController',['$scope','$http','$interval
 
    }
 
+   function readGoogleRouteFromDB()
+   {
+    
+   }
+
    /*Calculates the route using Google Maps*/
    function calculateRoute(jsonData, dest_point, callback)
    {
@@ -934,13 +939,8 @@ flightCrewAppControllers.controller('mapController',['$scope','$http','$interval
      var start = new google.maps.LatLng(jsonData.latitudeDegree, jsonData.longitudeDegree);
      var end = new google.maps.LatLng(dest_point[0], dest_point[1]); 
 
-     // var polyline = new google.maps.Polyline({
-     //    path: [],
-     //    strokeColor: '#FF0000',
-     //    strokeWeight: 3
-     // });
-      
-     // var bounds = new google.maps.LatLngBounds();
+     var latLon = [];
+     
      var request = 
      {
         origin:start,
@@ -950,37 +950,74 @@ flightCrewAppControllers.controller('mapController',['$scope','$http','$interval
      
      directionsService.route(request, function(result, status) 
      {
+
       if(status == google.maps.DirectionsStatus.OK) 
       {
           //directionsDisplay.setDirections(result);
           for(var i = 0; i < result.routes[0].legs.length; i++) 
           {
-              $scope.googleRoute = result.routes[0].overview_path;
-              //log("Route: " + $scope.googleRoute);
 
-              var getRoute = function(){
-                callback($scope.googleRoute);
+              var pointsArray = result.routes[0].overview_path;
+              var path = [];
+              var i = 0;
+              var j = 0;
+              
+              for(j = 0; j < pointsArray.length; j++)
+              {
+                latLon[i] = pointsArray[j].lat();
+                i++;
+                latLon[i] = pointsArray[j].lng();
+                i++;
+
+                path.push(pointsArray[j].lat(),pointsArray[j].lng());
+              }
+
+              $scope.googleRoute = path;
+
+              var getRoute = function()
+              {
+                  callback($scope.googleRoute);
               };
 
               getRoute(); 
-              // var legs = result.routes[0].legs;
 
-              // for (i=0;i<legs.length;i++) {
-              //   var steps = legs[i].steps;
-              //   for (j=0;j<steps.length;j++) {
-              //     var nextSegment = steps[j].path;
-              //     for (k=0;k<nextSegment.length;k++) {
-              //       polyline.getPath().push(nextSegment[k]);
-              //       bounds.extend(nextSegment[k]);
-              //     }
-              //   }
-              // }
+              writeRouteToDatabase(jsonData, $scope.googleRoute);
 
-              // polyline.setMap(gmap);
-              // gmap.fitBounds(bounds);
           }
-       }
+      }
+
       });
+   }
+
+   /* Write the id, timeSecond and the route to the database */
+   function writeRouteToDatabase(jsonData, route)
+   {
+      log("DB data: " + jsonData.id + " " + jsonData.timeSecond + " " + $scope.googleRoute);
+
+      var input = 
+      {
+            id:jsonData.id,
+            timeSecond:jsonData.timeSecond,
+            route:$scope.googleRoute
+      }
+
+      $http.post("ajax/recordRoute.php", input).success(function(data, status, headers, config) 
+      {
+          console.log('post success');
+          console.log('data');
+          console.log(data);
+          console.log('status');
+          console.log(status);
+
+      }).error(function(data, status, headers, config) 
+      {
+          console.log('post error');
+          console.log('data');
+          console.log(data);
+          console.log('status');
+          console.log(status);
+    });
+
    }
 
    function markerCloseClick(crewMember) {

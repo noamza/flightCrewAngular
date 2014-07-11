@@ -9,7 +9,10 @@ var flightCrewApp = angular.module('FlightCrewApp', [
   'FlightCrewApp.directives', 
   'FlightCrewApp.controllers',
   'google-maps',
+<<<<<<< HEAD
   'ui.bootstrap'
+]);
+=======
 ], 
   function($httpProvider) 
   {
@@ -59,6 +62,7 @@ var flightCrewApp = angular.module('FlightCrewApp', [
   }];
   
 });      
+>>>>>>> 56d9b7a1e675b8662f7e4d0b738c02bfe52b57b7
 
 flightCrewApp.config(['$routeProvider', 
 	function($routeProvider) {
