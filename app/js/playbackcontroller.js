@@ -45,7 +45,7 @@ flightCrewAppControllers.controller('playbackController',['$scope','$http','$int
          for(var i = 0; i < jsonData.length; i++) {
             crewids.push(jsonData[i].id);
          }
-         if($scope.form.id != null) {
+         if($scope.form.id != "") {
           $scope.form.id += "," + crewids.toString();
          } else {
           $scope.form.id = crewids.toString();
@@ -64,7 +64,7 @@ flightCrewAppControllers.controller('playbackController',['$scope','$http','$int
    $scope.form = {
          //id: 'Enter id here'
          //, time: 'Enter time here'
-         id: '',
+         id: "",
          speed: null
          , submit: function() {
             //var msg = "ID: " + $scope.form.id + " | Time: " + $scope.form.time;
