@@ -45,7 +45,12 @@ flightCrewAppControllers.controller('playbackController',['$scope','$http','$int
          for(var i = 0; i < jsonData.length; i++) {
             crewids.push(jsonData[i].id);
          }
-         $scope.form.id += crewids.toString();
+         if($scope.form.id != null) {
+          $scope.form.id += "," + crewids.toString();
+         } else {
+          $scope.form.id = crewids.toString();
+         }
+         
          //log(flightid + ": " + crewids.toString());
          //getDataAndTraversePath($scope.form.id, $scope.dtupper.getTime(), $scope.dtlower.getTime());
       }).error(function(data, status, headers, config) {
