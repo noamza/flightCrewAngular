@@ -31,8 +31,9 @@ flightCrewAppControllers.controller('playbackController',['$scope','$http','$int
 
    var mapFirstLoaded = true;
    var gmap;
-   var crewMembers = {};
+   var crewMembers = [];
    var flightids = [];
+   var trackers = [];
 
    $scope.crewMembers = crewMembers;
    $scope.flightids = flightids;
@@ -44,24 +45,28 @@ flightCrewAppControllers.controller('playbackController',['$scope','$http','$int
          for(var i = 0; i < jsonData.length; i++) {
             crewids.push(jsonData[i].id);
          }
-         $scope.form.id = crewids.toString();
+         $scope.form.id += crewids.toString();
          //log(flightid + ": " + crewids.toString());
-         getDataAndTraversePath($scope.form.id, $scope.dtupper.getTime(), $scope.dtlower.getTime());
+         //getDataAndTraversePath($scope.form.id, $scope.dtupper.getTime(), $scope.dtlower.getTime());
       }).error(function(data, status, headers, config) {
          console.log("Error gleaning crew ids data");
       });
    }
 
+   $scope.isPlaying = false;
+
   /* Angular data for the forms. Initial values are set to double-bind. */
    $scope.form = {
          //id: 'Enter id here'
          //, time: 'Enter time here'
-         id: 'Enter IDs',
-         speed: '1'
+         id: '',
+         speed: null
          , submit: function() {
             //var msg = "ID: " + $scope.form.id + " | Time: " + $scope.form.time;
             //alert(msg);
-            getDataAndTraversePath($scope.form.id, $scope.form.timeUpper, $scope.form.timeLower);
+          if(!$scope.isPlaying) {
+            getDataAndTraversePath($scope.form.id, $scope.dtupper.getTime(), $scope.dtlower.getTime());
+          }
          }
    }
 
@@ -83,6 +88,7 @@ flightCrewAppControllers.controller('playbackController',['$scope','$http','$int
                gmap = map;
                if(mapFirstLoaded) {
                   initFlights();
+                  initCrew();
                }
                mapFirstLoaded = false;
             });
@@ -93,23 +99,24 @@ flightCrewAppControllers.controller('playbackController',['$scope','$http','$int
    
    /* Queries the path data associated with the id string, then plays back the paths which correspond to the IDs */
    function getDataAndTraversePath(id, timeUpper, timeLower){
+    if(!$scope.isPlaying) {
+      $scope.isPlaying = true;
       var ids = parseID(id.replace(/\s+/g, '')); //removes whitespace from id before parsing...can add commas to query
-      //log(ids);
       var queryID = makeQueryID(ids); //generates string to query
-      //log(queryID);
-      
-      $http.get("ajax/playback.php?" + "id=" +  queryID + "&timeUpper=" + timeUpper + "&timeLower=" + timeLower).success(function(pathData, status, headers, config) {
-         var msg = "ajax/playback.php?" + "id=" + queryID + "&time=" + timeUpper + "&timeLower=" + timeLower;
-         var trackers = [];
+      $http.get("ajax/playback.php?" + "id=" +  queryID + "&timeUpper=" + $scope.dtupper.getTime() + "&timeLower=" + $scope.dtlower.getTime()).success(function(pathData, status, headers, config) {
          if(pathData != "null") {
-            traversePaths(pathData, trackers, 0, pathData.length, 0);
+            traversePaths(pathData, 0, pathData.length, 0);
+            //$scope.form.id="";
          } else {
             alert("No data found for IDs: \"" + ids + "\" between time " + $scope.dtlower + " and " + $scope.dtupper + ".")
+            $scope.isPlaying=false;
+            $scope.form.speed=null;
+            $scope.form.id="";
          }
       }).error(function(data, status, headers, config) {
          console.log("Error gleaning path data");
       });
-      
+    }
    }
 
 
@@ -137,7 +144,7 @@ flightCrewAppControllers.controller('playbackController',['$scope','$http','$int
    }
 
    /* Given the pathData queried according to the pathData.php script, traverses paths with a calculated pause time of timeDiff*/
-   function traversePaths(pathData, trackers, i, limit, timeDiff) {
+   function traversePaths(pathData, i, limit, timeDiff) {
       setTimeout(function() {
          var latitude = pathData[i].latitudeDegree;
          var longitude = pathData[i].longitudeDegree;
@@ -149,26 +156,33 @@ flightCrewAppControllers.controller('playbackController',['$scope','$http','$int
 
          i++;
 
-         if(i < limit) {
+         if(i < limit && $scope.form.speed != null) {
             //log(pathData[i].timeSecond - pathData[i-1].timeSecond);
-            traversePaths(pathData, trackers, i, limit, pathData[i].timeSecond-pathData[i-1].timeSecond);
+            traversePaths(pathData, i, limit, pathData[i].timeSecond-pathData[i-1].timeSecond);
          } else {
+            $scope.isPlaying=false;
             log("All paths finished.")
-            setTimeout(function() { 
-               clearMap(trackers); //can't clear one at a time since we don't know when it next shows up
-            }, 5000);
+            if($scope.form.speed != null) {
+              setTimeout(function() { 
+                 clearMap(); //can't clear one at a time since we don't know when it next shows up
+              }, 5000);
+            } else {
+              clearMap();
+            }
          } 
 
       }, timeDiff/$scope.form.speed); //simulated delay = realtime difference (in ms) divided by user-specified multiplier
    }
 
    /* Clears the map of all markers and polyLines */
-   function clearMap(trackers) {
+   function clearMap() {
       for(var i = 0; i < trackers.length; i++) {
          trackers[i].marker.setMap(null);
          trackers[i].gpath.setMap(null);
          trackers[i].route.setMap(null);
       }
+      var trackers2 = [];
+      trackers = trackers2;
    }
 
    /* Returns the tracker that corresponds to the id, or makes a new tracker if one does not exist. */
@@ -286,6 +300,19 @@ flightCrewAppControllers.controller('playbackController',['$scope','$http','$int
             flightids.push(flightiddata[i].flightid);
          }
          //log(flightids.toString());
+      }).error(function(data, status, headers, config) {
+         console.log("Error gleaning flightids data");
+      });
+   }
+
+   /* Gets all the crewmembers */
+   function initCrew() {
+      var crew = $scope.crewMembers;
+      $http.get("ajax/getCrewIDs.php").success(function(crewiddata, status, headers, config) {
+         for(var i = 0; i < crewiddata.length; i++) {
+            crew.push(crewiddata[i].id);
+         }
+         //log(crew.toString());
       }).error(function(data, status, headers, config) {
          console.log("Error gleaning flightids data");
       });
