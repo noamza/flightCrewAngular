@@ -929,7 +929,7 @@ flightCrewAppControllers.controller('mapController',['$scope','$http','$interval
 
    function readGoogleRouteFromDB()
    {
-    
+
    }
 
    /*Calculates the route using Google Maps*/
@@ -969,7 +969,7 @@ flightCrewAppControllers.controller('mapController',['$scope','$http','$interval
                 latLon[i] = pointsArray[j].lng();
                 i++;
 
-                path.push(pointsArray[j].lat(),pointsArray[j].lng());
+                path.push(pointsArray[j].lat(),pointsArray[j].lng(),"|");
               }
 
               $scope.googleRoute = path;

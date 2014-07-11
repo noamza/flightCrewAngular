@@ -25,6 +25,14 @@
 	else
 	{
 		echo "Table exists. ";
+
+		$query = "DROP TABLE routes";
+		$q=mysql_query($query);
+
+		$query = "CREATE TABLE routes (id VARCHAR(25) NOT NULL, timeSecond BIGINT(20) NOT NULL, route LONGTEXT NOT NULL)";
+		$q=mysql_query($query);
+
+		echo "Table deleted and then re-created. ";
 	}
 
 	$id=$_REQUEST['id'];
@@ -39,7 +47,7 @@
 
 	if($result)
 	{
-		echo "Data inserted successfuly.";
+		echo "Data inserted successfuly. ";
 	}
 	else 
 	{
