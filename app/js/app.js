@@ -9,7 +9,7 @@ var flightCrewApp = angular.module('FlightCrewApp', [
   'FlightCrewApp.directives', 
   'FlightCrewApp.controllers',
   'google-maps',
-  'ui-bootstrap'
+  'ui.bootstrap'
 ], 
   function($httpProvider) 
   {
