@@ -1,13 +1,11 @@
 <?php 
 	require_once 'db.php'; // The mysql database connection script
-	$id=$_REQUEST['id'];
+	$id="'".stripslashes($_REQUEST['id'])."'";
 	$time=$_REQUEST['time'];
 	$lat=$_REQUEST['latitude'];
 	$lon=$_REQUEST['longitude']; //
 	$destlat=$_REQUEST['destlat'];
 	$destlong=$_REQUEST['destlong'];
-	//$route=$_REQUEST['route']; //change this
-	//$eta=$_REQUEST['eta'];
 
 	$url = "http://maps.googleapis.com/maps/api/directions/json?origin="  . $lat . "," . $lon . "&destination=" . $destlat . "," . $destlong . "&sensor=false&units=metric&mode=driving";
 
@@ -58,11 +56,17 @@
        	$first = false;
     }
 
+    $polyline = "'" . $polyline . "'"; //add quotes around polyline
+
     //print($polyline); //I THINK THIS WORKS!!!
 
+    $eta=(string)$routes->routes[0]->legs[0]->duration->value;
+    //print_r($eta);
     
-
+    
     $query="INSERT INTO androidnavtable (id, timeSecond, latitudeDegree, longitudeDegree, route, eta) VALUES(".$id.",".$time.",".$lat.",".$lon.",".$polyline.",".$eta.")";
+
+    //print($query); check this if something breaks
 
 	$q=mysql_query($query);
 	if (!$q) {
