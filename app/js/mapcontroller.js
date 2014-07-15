@@ -812,14 +812,14 @@ flightCrewAppControllers.controller('mapController',['$scope','$http','$interval
       //log(dest);
       var point = dest.split(",");
       //log(point);
-      // var destLat = point[0];
-      // var destLon = point[1];
-      // log("lat: " + destLat);
-      // log("lon: " + destLon);
+      var destLat = point[0];
+      var destLon = point[1];
+      // log("dest lat: " + destLat);
+      // log("dest lon: " + destLon);
+      // log("dest time: " + jsonData.timeSecond); 
 
       return point;
    }
-
 
    function getPolyPath(jsonData) {
       var route = (jsonData.route).split("|");
@@ -839,16 +839,17 @@ flightCrewAppControllers.controller('mapController',['$scope','$http','$interval
    
    function addCrewMember(jsonData)
    {
+      log("diagnostic data, id: " + jsonData.id + " time " + jsonData.timeSecond + " lat " + jsonData.latitudeDegree + " lon " + jsonData.longitudeDegree);
+
       var dest_point = getDestPoint(jsonData);
 
       calculateRoute(jsonData, dest_point, function(result)
       {
-          //log("Google route: " + result);
+          //log("Record Google route: " + result);
       });
-
-      //var polyPath = readGoogleRouteFromDB(); //overwrite polyPath variable
-
+  
       var polyPath = getPolyPath(jsonData);
+      //var polyPath = [];
       var prevPath = [];
       farValue = calculateFAR();
 
@@ -909,7 +910,6 @@ flightCrewAppControllers.controller('mapController',['$scope','$http','$interval
             infoWindow.content = makeWindowContent(crewMember, false);
             infoWindow.open(gmap, marker);
             crewMember.showWindow = true;
-            //crewMember.gpath.
             crewMember.gpath.setMap(gmap);
             crewMember.prevPath.setMap(gmap);
       });
@@ -918,6 +918,7 @@ flightCrewAppControllers.controller('mapController',['$scope','$http','$interval
          crewMember.gpath.setMap(null);
          crewMember.prevPath.setMap(null);
       });
+      //readGoogleRouteFromDB(jsonData.id, crewMember);
       initPrevPath(crewMember);
   
       crewMembers[crewMember.id]=crewMember;
@@ -927,19 +928,54 @@ flightCrewAppControllers.controller('mapController',['$scope','$http','$interval
 
    }
 
-   function readGoogleRouteFromDB()
+   function readGoogleRouteFromDB(jsonData, crewMember)
    {
+      //log("Google route crew id: " + jsonData);
+      var path = [];
 
+      $http.get("ajax/readGoogleRoute.php?id=" + jsonData).success(function(pathData, status, headers, config) 
+      {
+        var numPoints = pathData.length;
+
+        for(var i = 0; i < numPoints; i++) 
+        {
+            var crewRoute = pathData[i].route;
+            crewRoute = (crewRoute).split("|");
+            
+            for(var i = 0; i<crewRoute.length; i++)
+            {
+              var point = crewRoute[i].split(",");
+              //log("lat: "+point[0]);
+              //log("lon: "+point[1]);
+
+              //ignore Lat or Lng = 0, which would produce a horizontal line
+              if(point[0] != 0 && point[1] != 0)
+              {
+                path.push(new google.maps.LatLng(point[0],point[1]));
+              }
+            }            
+        }
+        log("Get Google path: " + path);
+        crewMember.gpath.setPath(path);
+        //crewMember.gpath.setMap(gmap);
+
+
+      }).error(function(data, status, headers, config) 
+      {
+           console.log("Error retrieving Google routes.");
+      });
    }
 
    /*Calculates the route using Google Maps*/
    function calculateRoute(jsonData, dest_point, callback)
-   {
-     
+   { 
+     log("calc route ID check: " + jsonData.id);
+
      var start = new google.maps.LatLng(jsonData.latitudeDegree, jsonData.longitudeDegree);
      var end = new google.maps.LatLng(dest_point[0], dest_point[1]); 
 
      var latLon = [];
+     var promises = [];
      
      var request = 
      {
@@ -953,6 +989,9 @@ flightCrewAppControllers.controller('mapController',['$scope','$http','$interval
 
       if(status == google.maps.DirectionsStatus.OK) 
       {
+         log("2nd ID check: " + jsonData.id);
+         var deferred = $q.defer();
+     
           //directionsDisplay.setDirections(result);
           for(var i = 0; i < result.routes[0].legs.length; i++) 
           {
@@ -969,18 +1008,21 @@ flightCrewAppControllers.controller('mapController',['$scope','$http','$interval
                 latLon[i] = pointsArray[j].lng();
                 i++;
 
-                path.push(pointsArray[j].lat(),pointsArray[j].lng(),"|");
+                path.push(pointsArray[j].lat(),",",pointsArray[j].lng(),"|");
               }
 
               $scope.googleRoute = path;
+              promises.push($scope.googleRoute);
 
               var getRoute = function()
               {
                   callback($scope.googleRoute);
+                  $q.all(promises).then(deferred.resolve());
+                  return deferred.promises;
               };
 
-              getRoute(); 
-
+              getRoute();
+              
               writeRouteToDatabase(jsonData, $scope.googleRoute);
 
           }
@@ -993,7 +1035,6 @@ flightCrewAppControllers.controller('mapController',['$scope','$http','$interval
    function writeRouteToDatabase(jsonData, route)
    {
       log("DB data: " + jsonData.id + " " + jsonData.timeSecond + " " + $scope.googleRoute);
-
       var input = 
       {
             id:jsonData.id,
@@ -1075,6 +1116,7 @@ flightCrewAppControllers.controller('mapController',['$scope','$http','$interval
 
    function updateCrewMember(jsonData){
       var dest_point = getDestPoint(jsonData);
+      var polyPath = [];
       var polyPath = getPolyPath(jsonData);
     
       calculateDistance(jsonData.latitudeDegree,jsonData.longitudeDegree,37.615223,-122.389979); //calculate distance to SFO
@@ -1085,9 +1127,12 @@ flightCrewAppControllers.controller('mapController',['$scope','$http','$interval
       crewMember.eta = parseFloat(jsonData.eta);
       crewMember.route = jsonData.route;
       crewMember.time=jsonData.timeSecond;
+
+      //readGoogleRouteFromDB(jsonData.id, crewMember); //polyPath now set using Google routes 
       crewMember.gpath.setPath(polyPath);
       crewMember.crewFlightId = jsonData.flightid;
       crewMember.distanceToDest = distance;
+
 
       if(Math.random()<0.2) crewMember.late = !crewMember.late;
       var icon = 'img/mapIconSmall.svg';

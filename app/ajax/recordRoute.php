@@ -39,7 +39,7 @@
 	$timeSecond=$_REQUEST['timeSecond'];
 	$route=$_REQUEST['route'];
 
-	$route = implode(",", $route); //makes a string
+	$route = implode("", $route); //makes a string
 
     $sql="INSERT INTO routes(id, timeSecond, route)VALUES('$id', '$timeSecond', '$route')";
    
