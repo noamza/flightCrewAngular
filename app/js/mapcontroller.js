@@ -67,7 +67,7 @@ flightCrewAppControllers.controller('mapController',['$scope','$http','$interval
    $scope.currAirport = "";
    $scope.currentPage = 0;
    $scope.currentPageCrew = 0;
-   $scope.pageSize = 5;
+   $scope.pageSize = 20;
    $scope.data = data;
    $scope.data.length = 0;
    $scope.crewCounter = crewCounter;
@@ -76,14 +76,27 @@ flightCrewAppControllers.controller('mapController',['$scope','$http','$interval
     
    $scope.numberOfPages=function()
    {
+        var temp = Math.ceil(data.length/$scope.pageSize);
+        
+        if(temp == 0)
+        {
+          return 1;
+        }  
+        return temp;
         //log("check data length: " + data.length);
-        return Math.ceil(data.length/$scope.pageSize);               
+        //return Math.ceil(data.length/$scope.pageSize);               
    }
 
    $scope.numberOfPagesCrew=function()
    {
-        return Math.ceil(crewData.length/$scope.pageSize);
-        //return Math.ceil(crewCounter/$scope.pageSize);               
+        var temp = Math.ceil(crewData.length/$scope.pageSize);
+
+        if(temp == 0)
+        {
+          return 1;
+        }  
+        return temp;
+        //return Math.ceil(crewData.length/$scope.pageSize);             
    }
 
    google.maps.visualRefresh = true;

@@ -1,47 +1,43 @@
-
 <div class = "container-fluid">	
-<link rel="stylesheet" href="css/map.css"/>
-<div class = "row-fluid">
 
-	<div class = "span2">
 	<div class="mapMenu">
-	<button type="button" ng-click="toggleAirportVisibility()">Show/Hide Airports</button>
-	<br>
-	<br>
+
 							<!-- FLIGHT LIST TABLE -->
 							<div class="flightTable">
-					       	<table id="flightControl" class="table">
+					       	<table id="flightControl" class="table table-striped table-hover">
 					       		<thead>
 					       		  <tr><th colspan="6">Flights departing from: {{currAirport}}</th></tr>
 					       		  <tr>
-										<td style="width:60em">Status</td>
-									 	<td style="width:60em">ID</td> 
-									 	<td style="width:60em">Dest</td>
-									 	<td style="width:400em">STD</td>
-									 	<td style="width:400em">PDT</td>
-									 	<td style="width:60em">Delay</td>
+										<td id='firstItem' width="70%">Status</td>
+									 	<td>ID</td> 
+									 	<td>Dest</td>
+									 	<td>STD</td>
+									 	<td>PDT</td>
+									 	<td>Delay</td>
 								  </tr>
 					       		  </thead>
 					       		  <tbody id="flightControlBody">
 					       		  	  <tr ng-repeat="flight in localFlights | startFrom:currentPage*pageSize | limitTo:pageSize"
 						       		  ng-show="flight" ng-click="populateCrewTable(flight)">
-							              <td> <img src="img/{{flight.delayStatus}}.png"/> </td>
+							              <td> <img src="img/{{flight.delayStatus}}.svg"/> </td>
 							              <td>{{flight.flightId}}&nbsp;</td>
 							              <td>{{flight.arrivalAirport}}&nbsp;</td>
-							              <td>{{flight.departureTime}}&nbsp;</td>
-							              <td>{{flight.flightPTD}}&nbsp;</td>
+							              <td nowrap="nowrap">{{flight.departureTime}}&nbsp;</td>
+							              <td nowrap="nowrap">{{flight.flightPTD}}&nbsp;</td>
 							              <td style="color:{{delayColor(flight)}}">{{flight.flightDelay}}&nbsp;</td>
 							          </tr>
 							       </tbody>   
 							       <tfoot>    
 							          <tr>
-	  									<button ng-disabled="currentPage == 0" ng-click="currentPage=currentPage-1">
-	        								Previous
-									    </button>
-										    {{currentPage+1}}/{{numberOfPages()}}
-									    <button ng-disabled="currentPage >= localFlights.length/pageSize - 1" ng-click="currentPage=currentPage+1">
-										    Next
-									    </button>
+							          	<th colspan="6">
+		  									<button type="button" class="btn btn-primary btn-success btn-xs" ng-disabled="currentPage == 0" ng-click="currentPage=currentPage-1">
+		        								Previous
+										    </button>
+											    {{currentPage+1}}/{{numberOfPages()}}
+										    <button type="button" class="btn btn-primary btn-success btn-xs" ng-disabled="currentPage >= localFlights.length/pageSize - 1" ng-click="currentPage=currentPage+1">
+											    Next
+										    </button>
+									</th>
 							          </tr>
 							       </tfoot>  
 					       	</table>
@@ -51,22 +47,22 @@
 					
 					       	<!-- CREW CONTROL TABLE -->
 					       	<div class= "crewTable">
-                            <table id="crewControl" class="table">
+                            <table id="crewControl" class="table table-striped table-hover">
 						          <thead>
 						          	<tr><th colspan="6">Crew information for flight: {{selectedFlights}}</th></tr>
 						            <tr>
-										<td style="width:60em">Status</td>
-									 	<td style="width:60em">ID</td> 
-									 	<td style="width:60em">Delay</td>
-									 	<td style="width:400em">Distance</td>
-									 	<td style="width:400em">FAR-117</td>
-									 	<td style="width:400em">Flight ID</td>
+										<td>Status</td>
+									 	<td>ID</td> 
+									 	<td>Delay</td>
+									 	<td>Distance</td>
+									 	<td nowrap="nowrap">FAR-117</td>
+									 	<td nowrap="nowrap">Flight ID</td>
 								    </tr>
 						          </thead>
 						          <tbody id="crewControlBody">
 						            <tr ng-repeat="crew in crewData | startFrom:currentPageCrew*pageSize | limitTo:pageSize | orderBy:['crewFlightId']" 
 						            ng-click="crewTableClick(crew)" ng-show="crew">
-							              <td> <img src="img/{{crew.delayStatus}}.png"/></td>
+							              <td> <img src="img/{{crew.delayStatus}}.svg"/></td>
 							              <td>{{crew.id}}&nbsp;</td>
 							              <td>{{toHMS(crew.eta)}}&nbsp;</td>   <!-- crew delay = crew.eta -->
 							              <td>{{crew.distanceToDest}}&nbsp;</td>
@@ -75,19 +71,21 @@
 							          </tr>
 							       </tbody>  
 							         <tfoot>
-								         <tr>     
-							              <button ng-disabled="currentPageCrew == 0" ng-click="currentPageCrew=currentPageCrew-1">
-		        						  	   Previous
-									      </button>
-										  	  {{currentPageCrew+1}}/{{numberOfPagesCrew()}}
-										  <button ng-disabled="currentPageCrew >= crewData.length/pageSize - 1" ng-click="currentPageCrew=currentPageCrew+1">
-										  	   Next
-										  </button>
+								         <tr>  
+									         <th colspan="6">   
+								              <button type="button" class="btn btn-primary btn-success btn-xs" ng-disabled="currentPageCrew == 0" ng-click="currentPageCrew=currentPageCrew-1">
+			        						  	  Previous
+										      </button>
+											  	  {{currentPageCrew+1}}/{{numberOfPagesCrew()}}
+											  <button type="button" class="btn btn-primary btn-success btn-xs" ng-disabled="currentPageCrew >= crewData.length/pageSize - 1" ng-click="currentPageCrew=currentPageCrew+1">
+											  	   Next
+											  </button>
+										  </th>
 							              </tr>
 						          	  </tfoot>
 						        </table>
 						    </div>
-	</div>
+						    <button type="button" class="btn btn=-primary btn-info btn-xs" ng-click="toggleAirportVisibility()">Show/Hide Airports</button>
 	</div>
 	<!-- Noam's Sidebar -->
 <!-- 	<div class = "span2">
@@ -124,7 +122,6 @@
 	</div>	 -->
 
 	<!-- Body -->
-	<div class="span10">
 		<div class="theMap">
 			<google-map 
 			center="map.center" 
@@ -140,11 +137,8 @@
 			<!--markers models="map.dynamicMarkers" coords="'self'" icon="'icon'" ng-cloak></markers-->
 			</google-map>
 		</div>
-	</div>	
 	
-    <footer></footer>
 
-</div>
 </div>
 
 

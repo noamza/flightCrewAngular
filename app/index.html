@@ -12,11 +12,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
     <!-- CSS -->
-    <link rel="stylesheet" href="css/bootstrap.min.css"/>
-    <link rel="stylesheet" href="css/normalize.css"/> <!--take out?-->
-    <link rel="stylesheet" href="css/app.css"/>
-    <link rel="stylesheet" href="css/crewControlPanel.css"/>       
-    <link rel="stylesheet" type="text/css" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.7.1/themes/base/jquery-ui.css"/>
+    <link rel="stylesheet" href="css/bootstrap.css"/>
+    <link rel="stylesheet" href="css/crewControlPanel.css"/>  
+    <link rel="stylesheet" href="css/map.css"/>     
 
     <!-- Javascript -->
     <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.16/angular.min.js"></script>
@@ -47,25 +45,23 @@
   <body ng-controller="mainController">
     
     <nav class="navbar navbar-default">
-      <div class="container">
         <div class="navbar-header">
-          <a class="navbar-brand" href="#">Flight Crew - Situational Fleet Management</a>
+          <div class="navbar-brand">Flight Crew - Situational Fleet Management</div>
         </div>
         <ul class="nav navbar-nav navbar-right">
           <li><a href="#"><i class="fa fa-home"></i> Map</a></li>
           <li><a href="#about"><i class="fa fa-shield"></i> About</a></li>
-          <li><a href="#contacts"><i class="fa fa-comment"></i> Contact</a></li>
+    <!--       <li><a href="#contacts"><i class="fa fa-comment"></i> Contact</a></li> -->
           <li><a href="#playback"><i class="fa fa-comment"></i> Playback</a></li> 
         </ul>
-      </div>
     </nav>
 
     <div id="main">
       <div ng-view ></div> 
     </div>
 
-    <footer> <!-- class="text-center"-->
-      <p class="footerp"> An AFO production | {{1+1}} = 2  {{status}} </p>
+    <footer> 
+     <!--  <p class="footerp"> An AFO production | {{1+1}} = 2  {{status}} </p> -->
     </footer>
 
   </body>

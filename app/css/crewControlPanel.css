@@ -1,40 +1,39 @@
 /* crew control panel css stylesheet */
 
-.table {
-    width: 500px;
-    padding: 0 20px;
-    border: 1px solid;
-	border-radius: 6px;
-	border-color: #C9C9C9;
-	box-shadow: 5px 5px 5px 5px #888888;
-}
-
 .crewTable
 {
-	height: 500px; 
-	width:  520px; 
 	overflow-y: auto;
+	width:500px; 
+/*	color: white;*/
+	/*background-color: #5D6061;*/
 }
 
-.crewTable thead th
+.crewTable thead
 {
-	background-color: #C9C9C9;
-    border-radius:6px;
-    -moz-border-radius:6px;
+	font-size: 16px;
 }
 
 .flightTable
 {
-	height: 300px; 
-	width:  520px; 
-	overflow-y: auto;
+	overflow-y: auto;	
+	width:500px; 
+/*	color: white;*/
+/*	background-color: #5D6061;*/
 }
 
-.flightTable thead th
+.flightTable td
 {
-	background-color: #C9C9C9;
-	border-radius:6px;
-    -moz-border-radius:6px;
+	width: 5%;
+}
+
+.flightTable th
+{
+	white-space: nowrap;
+}
+
+.flightTable thead
+{
+	font-size: 16px;
 }
 
 .playbackControlPanel
@@ -44,7 +43,25 @@
 	overflow-y: auto;
 }
 
-body.ng-scope
-{
-	font-size: 12px; 
+@media all and (max-width: 699px) and (min-width: 520px) {
+    td{
+        width:100%;
+    }
+    #firstItem{
+        display:block;
+    }
+    #responsiveItem{
+        float:left;
+    }
 }
+.container-fluid {
+  padding-left: 0px;
+  padding-right: 0px;/*
+  background-color: #5D6061; */
+}
+
+.navbar
+{
+}
+
+
