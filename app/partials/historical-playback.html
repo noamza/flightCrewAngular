@@ -37,15 +37,16 @@
 		<div class="mapMenu">
 
 	<!-- Tabs with Widget Options -->
-	Playback Speed: <input type="range" min="1" max="15000" name="speed" ng-model="form.speed" style="width:350px;">
+	Playback Speed:  {{form.speed}}x<br>
+	<br>
 	<div class="btn-group">
-   		<label class="btn btn-primary" ng-model="form.speed" ng-click="form.submit()" btn-radio="'1'" uncheckable>Real-Time</label>
-   		<label class="btn btn-danger" ng-model="form.speed" ng-click="form.submit()" btn-radio="'10'" uncheckable>Slow</label>
+   		<label class="btn btn-success" ng-model="form.speed" ng-click="form.submit()" btn-radio="'1'" uncheckable>Real-Time</label>
        	<label class="btn btn-warning" ng-model="form.speed" ng-click="form.submit()" btn-radio="'100'" uncheckable>Medium</label>
-        <label class="btn btn-success" ng-model="form.speed" ng-click="form.submit()" btn-radio="'1000'" uncheckable>Fast</label>
-        <label class="btn btn-info" ng-model="form.speed" ng-click="form.submit()" btn-radio="'15000'" uncheckable>Warp</label>
+        <label class="btn btn-danger" ng-model="form.speed" ng-click="form.submit()" btn-radio="'1000'" uncheckable>Fast</label>
+        <label class="btn btn-info" ng-model="form.speed" ng-click="form.submit()" btn-radio="'15000'" uncheckable>Warp (debug)</label>
     </div>
-	{{form.speed}}x
+	
+	
 	<hr />
 	<br>
 
