@@ -1,6 +1,7 @@
 <?php 
 	require_once 'db.php'; // The mysql database connection script
-	$id="'".stripslashes($_REQUEST['id'])."'";
+	//$id="'".stripslashes($_REQUEST['id'])."'";
+    $id=$_REQUEST['id'];
 	$time=$_REQUEST['time'];
 	$lat=$_REQUEST['latitude'];
 	$lon=$_REQUEST['longitude']; //
