@@ -31,24 +31,17 @@
 							           
 							          <tr>
 							          	<th colspan="6">
-							          	 <!-- <ul class="pager"> -->
-		  									<button type="button" class="btn btn-primary btn-info btn-xs" ng-disabled="currentPage == 0" ng-click="currentPage=currentPage-1">
+		  									<button type="button" class="btn btn-info btn-xs" ng-disabled="currentPage == 0" ng-click="currentPage=currentPage-1">
 		        								Previous
-										    </button>
-											    {{currentPage+1}}/{{numberOfPages()}}
-										    <button type="button" class="btn btn-primary btn-info btn-xs" ng-disabled="currentPage >= localFlights.length/pageSize - 1" ng-click="currentPage=currentPage+1">
+										    </button> 
+											   {{currentPage+1}}/{{numberOfPages()}} 
+										    <button type="button" class="btn btn-info btn-xs" ng-disabled="currentPage >= data.length/pageSize - 1" ng-click="currentPage=currentPage+1">
 											    Next
 										    </button>
-										<!-- </ul> -->
-										  <!--   <ul class="pager">
-											  <li ng-disabled="currentPage == 0" ng-click="currentPage=currentPage-1" href="#">Previous</li>
-											  <li ng-disabled="currentPage >= localFlights.length/pageSize - 1" ng-click="currentPage=currentPage+1" href="#">Next</a></li>
-											</ul> -->
 										</th>
 							          </tr>
-							       </tfoot>  
+							       </tfoot>
 					       	</table>
-  						<!-- 	<pagination total-items="totalItems" ng-model="currentPage" ng-change="pageChanged()"></pagination> -->
 					       	
 					       	</div>	
 					       	<br>
@@ -82,19 +75,22 @@
 							         <tfoot>
 								         <tr>  
 									         <th colspan="6">   
-								              <button type="button" class="btn btn-info btn-xs" ng-disabled="currentPageCrew == 0" ng-click="currentPageCrew=currentPageCrew-1">
-			        						  	  Previous
-										      </button>
-											  	  {{currentPageCrew+1}}/{{numberOfPagesCrew()}}
-											  <button type="button" class="btn btn-info btn-xs" ng-disabled="currentPageCrew >= crewData.length/pageSize - 1" ng-click="currentPageCrew=currentPageCrew+1">
-											  	   Next
-											  </button>
-										  </th>
+									              <button type="button" class="btn btn-info btn-xs" ng-disabled="currentPageCrew == 0" ng-click="currentPageCrew=currentPageCrew-1">
+				        						  	  Previous
+											      </button>
+												  	  {{currentPageCrew+1}}/{{numberOfPagesCrew()}}
+												  <button type="button" class="btn btn-info btn-xs" ng-disabled="currentPageCrew >= crewData.length/pageSize - 1" ng-click="currentPageCrew=currentPageCrew+1">
+												  	   Next
+												  </button> 
+												  <br>
+												  <br>
+												  <button id="airportsButton" type="button" class="btn btn-primary btn-info btn-xs" ng-click="toggleAirportVisibility()">Show/Hide Airports</button>
+										  	 </th>
 							              </tr>
 						          	  </tfoot>
 						        </table>
 						    </div>
-						    <button type="button" class="btn btn-primary btn-info btn-xs" ng-click="toggleAirportVisibility()">Show/Hide Airports</button>
+						   
 	</div>
 	<!-- Noam's Sidebar -->
 <!-- 	<div class = "span2">

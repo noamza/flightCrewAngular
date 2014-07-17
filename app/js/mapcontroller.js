@@ -268,7 +268,9 @@ flightCrewAppControllers.controller('mapController',['$scope','$http','$interval
             }
             var infoWindow = airport.gwindow;
             var marker = airport.airportMarker;
-            google.maps.event.addListener(marker, 'click', function(){
+            google.maps.event.addListener(marker, 'click', function()
+            {
+            
               $scope.selectedFlights = "";
               //$scope.specificCrew.length = 0;
               $scope.crewData.length = 0;
@@ -284,6 +286,7 @@ flightCrewAppControllers.controller('mapController',['$scope','$http','$interval
               //hideOtherAirports(marker.title);
               $scope.currAirport = marker.title;
               showCrewForAirport(marker.title);
+              
              });
             google.maps.event.addListener(infoWindow,'closeclick',function(){ //resets the view when the window is closed.
                airport.showWindow = false;
@@ -385,9 +388,8 @@ flightCrewAppControllers.controller('mapController',['$scope','$http','$interval
         localFlights.push(flight);
       }
       });
-
-      $scope.data.length = localFlights.length;
   
+      $scope.data.length = localFlights.length; /*do this for pagination*/
       return localFlights;
    }
 
