@@ -43,24 +43,6 @@
 	<form id="playbackForm" name = "input"  ng-submit="form.submit()">
 	IDs (comma-separated): <input type="text" name="id" ng-model="form.id"typeahead="crew for crew in crewMembers | filter:$viewValue">
 	<hr/>
-	<div>
-    	Lower Time Bound: <em>{{dtlower | date:'short' }} {{test}}</em>
-
-	    <div class="row">
-			
-	   		<div class="col-md-6" id = "datepicker">
-	            		<p class="input-group">
-			              	<input type="text" class="form-control" datepicker-popup="{{format}}" ng-model="dtlower" is-open="opened2" date-disabled="disabled(date, mode)" ng-required="true" close-text="Close" />
-			              	<span class="input-group-btn">
-			                	<button type="button" class="btn btn-default" ng-click="open2($event)"><i class="glyphicon glyphicon-calendar"></i></button>
-			             	</span>
-			            </p>
-	        		</div>
-	        		<div class="col-md-6" id = "timepicker">
-	   					<timepicker ng-model="dtlower" show-meridian="false"></timepicker>
-	   				</div>
-	    		</div>
-			</div>
 			<div>
     			Upper Time Bound: <em>{{dtupper | date:'short' }}</em>
 
@@ -76,6 +58,24 @@
 	        		<div class="col-md-6" id = "timepicker">
 	    				<timepicker ng-model="dtupper" show-meridian="false"></timepicker>
 	    			</div>
+	    		</div>
+			</div>
+			<div>
+    	Lower Time Bound: <em>{{dtlower | date:'short' }} {{test}}</em>
+
+	    <div class="row">
+			
+	   		<div class="col-md-6" id = "datepicker">
+	            		<p class="input-group">
+			              	<input type="text" class="form-control" datepicker-popup="{{format}}" ng-model="dtlower" is-open="opened2" date-disabled="disabled(date, mode)" ng-required="true" close-text="Close" />
+			              	<span class="input-group-btn">
+			                	<button type="button" class="btn btn-default" ng-click="open2($event)"><i class="glyphicon glyphicon-calendar"></i></button>
+			             	</span>
+			            </p>
+	        		</div>
+	        		<div class="col-md-6" id = "timepicker">
+	   					<timepicker ng-model="dtlower" show-meridian="false"></timepicker>
+	   				</div>
 	    		</div>
 			</div>
 			<hr/>
@@ -94,12 +94,12 @@
 			</form>
 		</div >
 
-	<div id="playbackSpeed">Playback Speed:  {{form.speed}}x </div>
+	<div id="playbackSpeed">Playback Speed:  {{form.speed}}{{x}} </div>
 	<div class="btn-group">
-   		<label class="btn btn-info" ng-model="form.speed" ng-click="form.submit()" btn-radio="'1'" uncheckable>&#9654; &nbsp; Real-Time</label>
-       	<label class="btn btn-success" ng-model="form.speed" ng-click="form.submit()" btn-radio="'100'" uncheckable>Medium</label>
-        <label class="btn btn-warning" ng-model="form.speed" ng-click="form.submit()" btn-radio="'1000'" uncheckable>Fast</label>
-        <label class="btn btn-danger" ng-model="form.speed" ng-click="form.submit()" btn-radio="'10000'" uncheckable>Warp &nbsp; &#9654;&#9654; </label>
+   		<label id="speedcontrol" class="btn btn-info" ng-model="form.speed" ng-click="form.submit()" btn-radio="'1'" uncheckable>&#9654; &nbsp; Real-Time</label>
+       	<label id="speedcontrol" class="btn btn-success" ng-model="form.speed" ng-click="form.submit()" btn-radio="'100'" uncheckable>Medium</label>
+        <label id="speedcontrol" class="btn btn-warning" ng-model="form.speed" ng-click="form.submit()" btn-radio="'1000'" uncheckable>Fast</label>
+        <label id="speedcontrol" class="btn btn-danger" ng-model="form.speed" ng-click="form.submit()" btn-radio="'10000'" uncheckable>Warp &nbsp; &#9654;&#9654; </label>
     </div>
 
 	</div>

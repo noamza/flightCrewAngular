@@ -13,6 +13,7 @@ flightCrewAppControllers.controller('playbackController',['$scope','$http','$int
   $scope.dtlower = new Date();
   $scope.dtlower.setTime($scope.dtlower.getTime() - 1296000000); //sets the lower bound as low as possible
   $scope.dtupper = new Date(); //upper bound is the current times
+  $scope.x = "";
 
   $scope.open = function($event) {
     $event.preventDefault();
@@ -106,6 +107,7 @@ flightCrewAppControllers.controller('playbackController',['$scope','$http','$int
    function getDataAndTraversePath(id, timeUpper, timeLower){
     if(!$scope.isPlaying) {
       $scope.isPlaying = true;
+      $scope.x = "x";
       var ids = parseID(id.replace(/\s+/g, '')); //removes whitespace from id before parsing...can add commas to query
       var queryID = makeQueryID(ids); //generates string to query
       $http.get("ajax/playback.php?" + "id=" +  queryID + "&timeUpper=" + $scope.dtupper.getTime() + "&timeLower=" + $scope.dtlower.getTime()).success(function(pathData, status, headers, config) {
@@ -115,6 +117,7 @@ flightCrewAppControllers.controller('playbackController',['$scope','$http','$int
          } else {
             alert("No data found for IDs: \"" + ids + "\" between time " + $scope.dtlower + " and " + $scope.dtupper + ".")
             $scope.isPlaying=false;
+            $scope.x="";
             $scope.form.speed=null;
             $scope.form.id="";
          }
@@ -169,9 +172,14 @@ flightCrewAppControllers.controller('playbackController',['$scope','$http','$int
             log("All paths finished.")
             if($scope.form.speed != null) {
               setTimeout(function() { 
+                 $scope.x="";
+                 $scope.form.speed=null;
+                 $scope.$apply();
                  clearMap(); //can't clear one at a time since we don't know when it next shows up
               }, 5000);
             } else {
+              $scope.x="";
+              $scope.$apply();
               clearMap();
             }
          } 
