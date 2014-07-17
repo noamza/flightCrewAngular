@@ -11,7 +11,7 @@ flightCrewAppControllers.controller('playbackController',['$scope','$http','$int
   /* For date pickers */
 
   $scope.dtlower = new Date();
-  $scope.dtlower.setTime(0); //sets the lower bound as low as possible
+  $scope.dtlower.setTime($scope.dtlower.getTime() - 1296000000); //sets the lower bound as low as possible
   $scope.dtupper = new Date(); //upper bound is the current times
 
   $scope.open = function($event) {
