@@ -1,11 +1,8 @@
 /* crew control panel css stylesheet */
-
 .crewTable
 {
 	overflow-y: auto;
 	width:500px; 
-/*	color: white;*/
-/*	background-color: #5D6061;*/
 }
 
 .crewTable thead
@@ -17,8 +14,6 @@
 {
 	overflow-y: auto;	
 	width:500px; 
-/*	color: white;*/
-/*	background-color: #5D6061;*/
 }
 
 .flightTable td
@@ -57,17 +52,16 @@
 .container-fluid {
   padding-left: 0px;
   padding-right: 0px;
-/*  background-color: #5D6061; */
 }
 
 .navbar-default .navbar-brand {
-  color: orange;
-  font-size: 20px;
+  font-family: 'Ubuntu', sans-serif;
+  color: #FA8B2A;
+  font-size: 30px;
 }
 
 #airportsButton
 {
 	padding-left: 2px;
 }
-
 
