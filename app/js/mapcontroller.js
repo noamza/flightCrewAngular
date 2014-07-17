@@ -1259,8 +1259,8 @@ flightCrewAppControllers.controller('mapController',['$scope','$http','$interval
       var content = "<div class=\"infoWindow\">id: " + crewMember.id +
              "<br>lat: " + crewMember.latitude + 
              "<br>lon: " + crewMember.longitude + 
-             "<br>time of update: " + dateT.toLocaleTimeString() + " "+ dateT.toLocaleDateString() + 
-             "<p "+style+">eta: " + secToHMS(crewMember.eta) +"</p></div>";
+             "<br>time of update: " + dateT.toLocaleTimeString() + " "+ dateT.toLocaleDateString(); 
+             // "<p "+style+">eta: " + secToHMS(crewMember.eta) +"</p></div>";
 
       //console.log(content);
       return content;
