@@ -5,7 +5,7 @@
 	overflow-y: auto;
 	width:500px; 
 /*	color: white;*/
-	/*background-color: #5D6061;*/
+/*	background-color: #5D6061;*/
 }
 
 .crewTable thead
@@ -56,12 +56,17 @@
 }
 .container-fluid {
   padding-left: 0px;
-  padding-right: 0px;/*
-  background-color: #5D6061; */
+  padding-right: 0px;
+/*  background-color: #5D6061; */
 }
 
-.navbar
-{
+.navbar {
+/*    background-color: #375a7f;
+    background-image: linear-gradient(to top, black, #375a7f);
+    background-repeat: repeat-x;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.067);*/
 }
+
+
 
 

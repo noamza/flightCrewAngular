@@ -30,14 +30,14 @@
 							       <tfoot>    
 							          <tr>
 							          	<th colspan="6">
-		  									<button type="button" class="btn btn-primary btn-success btn-xs" ng-disabled="currentPage == 0" ng-click="currentPage=currentPage-1">
+		  									<button type="button" class="btn btn-primary btn-info btn-xs" ng-disabled="currentPage == 0" ng-click="currentPage=currentPage-1">
 		        								Previous
 										    </button>
 											    {{currentPage+1}}/{{numberOfPages()}}
-										    <button type="button" class="btn btn-primary btn-success btn-xs" ng-disabled="currentPage >= localFlights.length/pageSize - 1" ng-click="currentPage=currentPage+1">
+										    <button type="button" class="btn btn-primary btn-info btn-xs" ng-disabled="currentPage >= localFlights.length/pageSize - 1" ng-click="currentPage=currentPage+1">
 											    Next
 										    </button>
-									</th>
+										</th>
 							          </tr>
 							       </tfoot>  
 					       	</table>
@@ -73,11 +73,11 @@
 							         <tfoot>
 								         <tr>  
 									         <th colspan="6">   
-								              <button type="button" class="btn btn-primary btn-success btn-xs" ng-disabled="currentPageCrew == 0" ng-click="currentPageCrew=currentPageCrew-1">
+								              <button type="button" class="btn btn-info btn-xs" ng-disabled="currentPageCrew == 0" ng-click="currentPageCrew=currentPageCrew-1">
 			        						  	  Previous
 										      </button>
 											  	  {{currentPageCrew+1}}/{{numberOfPagesCrew()}}
-											  <button type="button" class="btn btn-primary btn-success btn-xs" ng-disabled="currentPageCrew >= crewData.length/pageSize - 1" ng-click="currentPageCrew=currentPageCrew+1">
+											  <button type="button" class="btn btn-info btn-xs" ng-disabled="currentPageCrew >= crewData.length/pageSize - 1" ng-click="currentPageCrew=currentPageCrew+1">
 											  	   Next
 											  </button>
 										  </th>
@@ -85,7 +85,7 @@
 						          	  </tfoot>
 						        </table>
 						    </div>
-						    <button type="button" class="btn btn=-primary btn-info btn-xs" ng-click="toggleAirportVisibility()">Show/Hide Airports</button>
+						    <button type="button" class="btn btn-primary btn-info btn-xs" ng-click="toggleAirportVisibility()">Show/Hide Airports</button>
 	</div>
 	<!-- Noam's Sidebar -->
 <!-- 	<div class = "span2">

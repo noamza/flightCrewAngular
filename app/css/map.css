@@ -1,14 +1,11 @@
 /* map page css stylesheet */
 
 .mapMenu{
-	
 	width:500px; 
 	float:left;
 	background-color: white;
-}
-
-.theMap
-{
+	margin-left: 5px;
+	margin-right: 5px;
 }
 
 .angular-google-map-container 

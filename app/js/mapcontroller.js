@@ -67,7 +67,7 @@ flightCrewAppControllers.controller('mapController',['$scope','$http','$interval
    $scope.currAirport = "";
    $scope.currentPage = 0;
    $scope.currentPageCrew = 0;
-   $scope.pageSize = 20;
+   $scope.pageSize = 10;
    $scope.data = data;
    $scope.data.length = 0;
    $scope.crewCounter = crewCounter;

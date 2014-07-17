@@ -1,44 +1,35 @@
 /* flight playback panel spreadsheet */
-.flightPlaybackHeader
+.playbackMenu
 {
-  height:     20px;
-  background: #A30319;
-  color:      white;
-  text-align: center;
+  width:500px; 
+  float:left;
+  background-color: white;
+  margin-left: 20px;
+  margin-right: 20px;
 }
 
-.flightPlaybackBody
+.angular-google-map-container 
 {
-  background: white;
-  text-align: center;
-  border: 2px solid;
-
+  height: 100vh;
+  border: 1px solid;
+  border-color: #C9C9C9;
 }
 
-.flightPlaybackPanel
+#playbackOptions
 {
-  width:      600px;
-  margin:     auto;
-  padding-top: 20px;
+  font-size: 20px;
+  font-style: bold;
+  font-weight: bold;
+  margin-bottom: 2px;
+}
 
+#playbackSpeed
+{
+  font-style: bold;
   font-size: 16px;
 }
 
-.flightPlaybackPanel thead th
+#playbackForm
 {
-  font-size: 16px;
-  font-weight: bolder;
-  text-align: center;
-  font-color: #000970;
-}
-
-.flightPlaybackPanel thead td
-{
-  font-weight: bolder;
-  font-color: blue;
-}
-
-.flightPlaybackPanel td
-{
-  padding-right: 2px;
+  
 }

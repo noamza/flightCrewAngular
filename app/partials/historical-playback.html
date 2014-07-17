@@ -2,7 +2,7 @@
 <head>
 	<script script type="text/javascript" src="../js/playbackcontroller.js"></script>
 	<div class = "container-fluid">	
-	<link rel="stylesheet" href="css/map.css"/>
+	<link rel="stylesheet" href="css/flightPlaybackPanel.css"/>
 	<script src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.10/angular.js"></script>
     <script src="//angular-ui.github.io/bootstrap/ui-bootstrap-tpls-0.11.0.js"></script>
     
@@ -32,32 +32,15 @@
 
 <div class = "row-fluid">
 
-	<!-- Sidebar -->
-	<div class = "span2">
-		<div class="mapMenu">
+<!-- Sidebar -->
+<div class = "span2">
+<div class="playbackMenu">
 
 	<!-- Tabs with Widget Options -->
-	<br>
-	Playback Speed:  {{form.speed}}x<br>
-	<br>
-	<div class="btn-group">
-   		<label class="btn btn-success" ng-model="form.speed" ng-click="form.submit()" btn-radio="'1'" uncheckable>Real-Time</label>
-       	<label class="btn btn-warning" ng-model="form.speed" ng-click="form.submit()" btn-radio="'100'" uncheckable>Medium</label>
-        <label class="btn btn-danger" ng-model="form.speed" ng-click="form.submit()" btn-radio="'1000'" uncheckable>Fast</label>
-        <label class="btn btn-info" ng-model="form.speed" ng-click="form.submit()" btn-radio="'10000'" uncheckable>Warp (debug)</label>
-    </div>
+	<div id="playbackOptions"> Playback Options </div>
 	
-	
-	<hr />
-	<br>
-
-	<b>Playback Options:</b>
-	<hr />
-	<br>
-	<form name = "input"  ng-submit="form.submit()">
+	<form id="playbackForm" name = "input"  ng-submit="form.submit()">
 	IDs (comma-separated): <input type="text" name="id" ng-model="form.id"typeahead="crew for crew in crewMembers | filter:$viewValue">
-	<br>
-	<hr />
 	<br>
 	<div>
     	Lower Time Bound: <em>{{dtlower | date:'short' }} {{test}}</em>
@@ -76,7 +59,6 @@
 	        		</div>
 	    		</div>
 			</div>
-			<hr />
 			<br>
 			<div>
     			Upper Time Bound: <em>{{dtupper | date:'short' }}</em>
@@ -112,6 +94,15 @@
     		<div>
 			</form>
 		</div >
+
+	<div id="playbackSpeed">Playback Speed:  {{form.speed}}x </div>
+	<div class="btn-group">
+   		<label class="btn btn-success" ng-model="form.speed" ng-click="form.submit()" btn-radio="'1'" uncheckable>Real-Time</label>
+       	<label class="btn btn-warning" ng-model="form.speed" ng-click="form.submit()" btn-radio="'100'" uncheckable>Medium</label>
+        <label class="btn btn-danger" ng-model="form.speed" ng-click="form.submit()" btn-radio="'1000'" uncheckable>Fast</label>
+        <label class="btn btn-info" ng-model="form.speed" ng-click="form.submit()" btn-radio="'10000'" uncheckable>Warp (debug)</label>
+    </div>
+
 	</div>
 </div>
 
