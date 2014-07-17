@@ -265,7 +265,7 @@ flightCrewAppControllers.controller('playbackController',['$scope','$http','$int
             geodesic: false
          }),          
          gwindow : new google.maps.InfoWindow({
-            content : "ID: " + id + "<br> Position: " + pos
+            content : "ID: " + id //+ "<br> Position: " + pos
          })
       }
       var infoWindow = tracker.gwindow;
@@ -298,7 +298,7 @@ flightCrewAppControllers.controller('playbackController',['$scope','$http','$int
      var infoWindow = tracker.gwindow;
      var newRoute = getPolyPath(pointData);
 
-     infoWindow.content = "ID: " + tracker.id + "<br> Position: " + marker.position;
+     infoWindow.content = "ID: " + tracker.id; //+ "<br> Position: " + marker.position;
      marker.setPosition(pos);
      path.push(pos);
      tracker.route.setPath(newRoute);
