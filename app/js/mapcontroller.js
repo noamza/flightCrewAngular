@@ -270,7 +270,8 @@ flightCrewAppControllers.controller('mapController',['$scope','$http','$interval
             var marker = airport.airportMarker;
             google.maps.event.addListener(marker, 'click', function(){
               $scope.selectedFlights = "";
-              $scope.specificCrew.length = 0;
+              //$scope.specificCrew.length = 0;
+              $scope.crewData.length = 0;
               // gmap.panTo(marker.position);
               // gmap.setZoom(8);
               angular.forEach(airports, function(airport) {
@@ -293,7 +294,8 @@ flightCrewAppControllers.controller('mapController',['$scope','$http','$interval
                $scope.currAirport="";
                $scope.localFlights = flights;
                $scope.selectedFlights="";
-               $scope.specificCrew = {}; //I don't know if this is necessary, but just to be safe...
+               //$scope.specificCrew = {}; //I don't know if this is necessary, but just to be safe...
+               $scope.crewData.length = 0;
             });
             airports[airport.airportId]=airport;
           });
@@ -589,7 +591,7 @@ flightCrewAppControllers.controller('mapController',['$scope','$http','$interval
             //log("check crew id and flight id: " + specificCrewMember.id + " " + specificCrewMember.crewFlightId);
          }
       }
-      $scope.specificCrew = specificCrew;
+      //$scope.specificCrew = specificCrew;
 
       var currFlight = getFlightByID(selectedFlight);
       hideOtherCrew(currFlight.crew);
@@ -856,11 +858,13 @@ flightCrewAppControllers.controller('mapController',['$scope','$http','$interval
 
       var dest_point = getDestPoint(jsonData);
 
+      /*
       calculateRoute(jsonData, dest_point, function(result)
       {
           //log("Record Google route: " + result);
       });
-  
+      */
+      
       var polyPath = getPolyPath(jsonData);
       //var polyPath = [];
       var prevPath = [];
