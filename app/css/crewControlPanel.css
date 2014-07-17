@@ -60,13 +60,10 @@
 /*  background-color: #5D6061; */
 }
 
-.navbar {
-/*    background-color: #375a7f;
-    background-image: linear-gradient(to top, black, #375a7f);
-    background-repeat: repeat-x;
-    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.067);*/
+.navbar-default .navbar-brand {
+  color: orange;
+  font-size: 20px;
 }
-
 
 
 
