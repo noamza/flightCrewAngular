@@ -7,7 +7,7 @@
 	$route=$_REQUEST['route'];
 	$eta=$_REQUEST['eta'];
 
-	$query="INSERT INTO androidnavtable (id, timeSecond, latitudeDegree, longitudeDegree, route, eta) VALUES(".$id.",".$time.",".$lat.",".$lon.",".$route.",".$eta.")";
+	$query="INSERT INTO androidnavtable (id, timeSecond, latitudeDegree, longitudeDegree, route, eta, flightid) VALUES(".$id.",".$time.",".$lat.",".$lon.",".$route.",".$eta.",'test')";
 
 	$q=mysql_query($query);
 	if (!$q) {
