@@ -119,7 +119,7 @@ flightCrewAppControllers.controller('playbackController',['$scope','$http','$int
             $scope.isPlaying=false;
             $scope.x="";
             $scope.form.speed=null;
-            $scope.form.id="";
+            //$scope.form.id="";
          }
       }).error(function(data, status, headers, config) {
          console.log("Error gleaning path data");
