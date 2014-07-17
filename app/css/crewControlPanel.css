@@ -56,12 +56,12 @@
 
 .navbar-default .navbar-brand {
   font-family: 'Ubuntu', sans-serif;
-  color: #FA8B2A;
+  color: white;
   font-size: 30px;
 }
 
 #airportsButton
 {
-	padding-left: 2px;
+  padding-left: 3.5px;
 }
 

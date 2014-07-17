@@ -55,10 +55,10 @@
 						            <tr>
 										<td>Status</td>
 									 	<td>ID</td> 
-									 	<td>Delay</td>
+									 	<td>ETA</td>
 									 	<td>Distance</td>
 									 	<td nowrap="nowrap">FAR-117</td>
-									 	<td nowrap="nowrap">Flight ID</td>
+									 	<td nowrap="nowrap">Delay</td>
 								    </tr>
 						          </thead>
 						          <tbody id="crewControlBody">
@@ -66,10 +66,10 @@
 						            ng-click="crewTableClick(crew)" ng-show="crew">
 							              <td> <img src="img/{{crew.delayStatus}}.svg"/></td>
 							              <td>{{crew.id}}&nbsp;</td>
-							              <td>{{toHMS(crew.eta)}}&nbsp;</td>   <!-- crew delay = crew.eta -->
+							              <td>{{crew.newETA}}&nbsp;</td>   
 							              <td>{{crew.distanceToDest}}&nbsp;</td>
 							              <td>{{crew.far}}&nbsp;</td>
-							              <td>{{crew.crewFlightId}}&nbsp;</td>
+							              <td>{{toHM(crew.eta)}}&nbsp;</td>
 							          </tr>
 							       </tbody>  
 							         <tfoot>

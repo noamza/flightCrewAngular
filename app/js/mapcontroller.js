@@ -20,6 +20,15 @@ function secToHMS(totalSec) {
   return hms;
 }
 
+function secToHM(totalSec)
+{
+  var hours = parseInt( totalSec / 3600 ) % 24;
+  var minutes = parseInt( totalSec / 60 ) % 60;
+
+  var hm = "+"+hours + ":" + (minutes < 10 ? "0" + minutes : minutes);
+  return hm;
+}
+
 function log(s){
    console.log(s);
 }
@@ -29,6 +38,7 @@ flightCrewAppControllers.controller('mapController',['$scope','$http','$interval
    var mapFirstLoaded = true;
    var gmap;
    var PDT;
+   var STD;
    var delay;
    var crewDelay;
    var flightDelayStatus;
@@ -55,6 +65,7 @@ flightCrewAppControllers.controller('mapController',['$scope','$http','$interval
    var directionsDisplay;
    var directionsService = new google.maps.DirectionsService();
    var googleRoute;
+   var newCrewETA;
 
    $scope.crewMembers = crewMembers;
    $scope.flights = flights;
@@ -62,6 +73,7 @@ flightCrewAppControllers.controller('mapController',['$scope','$http','$interval
    $scope.allFlights = [];
    $scope.orderProp = 'id';
    $scope.toHMS = secToHMS;
+   $scope.toHM = secToHM;
    $scope.specificCrew = specificCrew;
    $scope.localFlights = flights;
    $scope.currAirport = "";
@@ -73,6 +85,9 @@ flightCrewAppControllers.controller('mapController',['$scope','$http','$interval
    $scope.crewCounter = crewCounter;
    $scope.crewData = crewData;
    $scope.googleRoute = googleRoute;
+   $scope.PDT = PDT;
+   $scope.STD = STD;
+   $scope.newCrewETA = newCrewETA;
     
    $scope.numberOfPages=function()
    {
@@ -443,7 +458,10 @@ flightCrewAppControllers.controller('mapController',['$scope','$http','$interval
          for(var i=0; i<flights.length; i++)
          {
 
-            calculatePTD(flights[i]);
+            STD = flights[i].departuretime;
+            // log("STD test:" + STD);
+
+            calculatePDT(flights[i]);
             addFlights(flights[i], PDT, delay, flightDelayStatus);
          }
 
@@ -475,6 +493,9 @@ flightCrewAppControllers.controller('mapController',['$scope','$http','$interval
             departureAirport : jsonData.departureairport,
             arrivalAirport : jsonData.arrivalairport,
             departureTime :  hma,
+            hours: hours,
+            minutes: minutes,
+            amPM: amPM,
             arrivalTime : jsonData.arrivaltime,
             flightPTD : PDT,
             flightDelay : delay,
@@ -545,6 +566,29 @@ flightCrewAppControllers.controller('mapController',['$scope','$http','$interval
       //reset();
 
    }
+   
+   function calculateNewCrewETA(specificCrewMember, selectedFlight)
+   {
+      var localFlight;
+      localFlight = flights[selectedFlight];
+
+      var hours = localFlight.hours;
+      var minutes = localFlight.minutes;
+      var amPM = localFlight.amPM;
+
+      var hoursETA = parseInt(specificCrewMember.eta / 3600 ) % 24;
+      var minutesETA = parseInt(specificCrewMember.eta / 60 ) % 60;
+      var seconds = parseInt(specificCrewMember.eta % 60, 10);
+
+      var newETAHours = hours+hoursETA;
+      var newETAMinutes = minutes+minutesETA;
+      // log("ETA data: " + hoursETA + " " + minutesETA + " " + hours + " " + minutes + " " + amPM + " " + selectedFlight);
+
+      var localETA = formatTime(newETAHours,newETAMinutes, amPM);
+      // log("local ETA: " + localETA);
+    
+      return localETA;
+   }
 
    function getSpecificCrew()
    {
@@ -560,6 +604,9 @@ flightCrewAppControllers.controller('mapController',['$scope','$http','$interval
             crewCounter++;
             var latitude = specificCrewMember.latitude;
             var longitude = specificCrewMember.longitude;
+
+            newCrewETA = calculateNewCrewETA(specificCrewMember, selectedFlight);
+            
             calculateDistance(latitude, longitude,37.615223,-122.389979);
             //log("specific crew distance: " + distance);
 
@@ -571,6 +618,7 @@ flightCrewAppControllers.controller('mapController',['$scope','$http','$interval
                   crewFlightId : specificCrewMember.crewFlightId,
                   crewDelay : specificCrewMember.crewDelay,
                   delayStatus : specificCrewMember.delayStatus,
+                  newETA : newCrewETA,
                   far : farValue,
                   distanceToDest : distance,
                   position : new google.maps.LatLng(latitude, longitude),
@@ -702,7 +750,7 @@ flightCrewAppControllers.controller('mapController',['$scope','$http','$interval
    }
 
    //Generating dummy PTD values for now
-   function calculatePTD(jsonData)
+   function calculatePDT(jsonData)
    {
       //Format: Wed 10:49AM EDT
       var randomValue = Math.floor((Math.random() * 60) + 1); //max delay is 60 minutes
@@ -736,7 +784,8 @@ flightCrewAppControllers.controller('mapController',['$scope','$http','$interval
 
       PDT = hma;
 
-      //console.log("PDT: "+PDT); 
+      return hma;
+      //console.log("PDT: "+$scope.PDT); 
    }
 
    function calculateDistance(originLat, originLong, destLat, destLong)
@@ -854,6 +903,7 @@ flightCrewAppControllers.controller('mapController',['$scope','$http','$interval
       return polyPath;
    }
    
+  
    function addCrewMember(jsonData)
    {
       log("diagnostic data, id: " + jsonData.id + " time " + jsonData.timeSecond + " lat " + jsonData.latitudeDegree + " lon " + jsonData.longitudeDegree);
@@ -882,6 +932,7 @@ flightCrewAppControllers.controller('mapController',['$scope','$http','$interval
          crewFlightId : jsonData.flightid,
          crewDelay : crewDelay,
          delayStatus : crewDelayStatus,
+         newCrewETA : newCrewETA,
          far : farValue,
          showWindow: false,
          late:false,
@@ -918,9 +969,8 @@ flightCrewAppControllers.controller('mapController',['$scope','$http','$interval
             geodesic: false
          }) 
       };
-
-      /*Temporarily set crew delay equal to ETA*/       
-      crewDelay = secToHMS(crewMember.eta);
+      
+      crewDelay = secToHM(crewMember.eta);
       parseCrewDelay(crewDelay, crewMember); 
 
       var marker = crewMember.gmarker;
