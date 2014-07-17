@@ -1225,8 +1225,8 @@ flightCrewAppControllers.controller('mapController',['$scope','$http','$interval
       var parsedDelay = crewDelay.slice(0,8);
       //console.log("parsed crew delay: " + parsedDelay);
 
-      var parsedMinutes = parseInt(crewDelay.slice(5,8));
-      //console.log("parsed minutes: " + parsedMinutes);
+      var parsedMinutes = parsedDelay.slice(3,4);
+      console.log("parsed crew delay minutes: " + parsedMinutes);
 
       /*Set crew delay status*/
       if(parsedMinutes <= 10)
@@ -1234,7 +1234,7 @@ flightCrewAppControllers.controller('mapController',['$scope','$http','$interval
          crewMember.delayStatus = "green";
          crewDelayStatus = crewMember.delayStatus;
       }
-      else if(crewDelay > 10 && crewDelay <= 30)
+      else if(parsedMinutes > 10 && parsedMinutes <= 30)
       {
          crewMember.delayStatus = "yellow";
          crewDelayStatus = crewMember.delayStatus;
