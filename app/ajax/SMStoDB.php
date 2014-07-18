@@ -1,21 +1,24 @@
 <?php
 	require_once 'mysql.php';
 	require_once 'GoogleVoice.php';
-	$tableName = "gpstest";
+	$tableName = "androidnavtable";
+	$filler = ",0,0,'test'";
 
-	$voice = new GoogleVoice($_POST['user'], $_POST['pass']);
+	$voice = new GoogleVoice($_GET['user'], $_GET['pass']);
 	$stop = false;
 
 //while(true) { //this is super buggy...for persistence try JS events
+	/*
 	if(isset($_POST['kill']))
 		$stop = true;
 	if($stop) {
 		mysql_query("stop");
 		echo "Stopped...";
 	}
+	*/ 
 	$sms = $voice->getUnreadSMS();
 	$msgIDs = array();
-	$query = "insert into " . $tableName . "(id, time, lat, lng) values "; //edit as needed
+	$query = "insert into " . $tableName . " values "; //edit as needed
 	$first = true;
 	if($sms[0]!=null) {
 		foreach($sms as $s) {
@@ -42,7 +45,7 @@
 			else
 				$first = false;
 
-			$query = $query . " (" . $id . "," . $time . "," . $lat . "," . $lng . ")"; //probably needs more parsing, etc. 
+			$query = $query . " (" . $id . "," . $time . "," . $lat . "," . $lng . $filler . ")"; //probably needs more parsing, etc. 
 			
 		}
 		
