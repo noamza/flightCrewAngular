@@ -33,7 +33,7 @@ function log(s){
    console.log(s);
 }
 
-flightCrewAppControllers.controller('mapController',['$scope','$http','$interval', '$q', function($scope, $http, $interval, $q) {
+flightCrewAppControllers.controller('mapController',['$scope','$http','$interval', '$q','$rootScope', function($scope, $http, $interval, $q, $rootScope) {
 	
    var mapFirstLoaded = true;
    var gmap;
@@ -121,8 +121,8 @@ flightCrewAppControllers.controller('mapController',['$scope','$http','$interval
    var USLatLng = new google.maps.LatLng(32.8282, -98.5795);
 
    $scope.map = {
-         center: USCenter //{latitude: 37.414468, longitude: -122.056862},
-       , zoom: 4
+         center: {latitude: $rootScope.centerGlobal.k, longitude: $rootScope.centerGlobal.B} //{latitude: 37.414468, longitude: -122.056862},
+       , zoom: $rootScope.zoomGlobal
        , control: {}
        , dragging: true
        , bounds: {}
@@ -140,6 +140,8 @@ flightCrewAppControllers.controller('mapController',['$scope','$http','$interval
                   getMatchingFlights();
                }
                mapFirstLoaded = false;
+               $rootScope.zoomGlobal = map.getZoom();
+               $rootScope.centerGlobal = map.getCenter();
             });
          }
       }

@@ -58,7 +58,20 @@ var flightCrewApp = angular.module('FlightCrewApp', [
     return angular.isObject(data) && String(data) !== '[object File]' ? param(data) : data;
   }];
   
-});      
+});
+
+/* an alternative way to do globals
+flightCrewApp.factory('Global', function(){
+  return {};
+ });
+*/
+
+flightCrewApp.run(function($rootScope) {
+  $rootScope.zoomGlobal = 4;
+  var USCenter = {k: 32.8282, B: -98.5795};
+  $rootScope.centerGlobal = USCenter;
+});
+      
 
 flightCrewApp.config(['$routeProvider', 
 	function($routeProvider) {

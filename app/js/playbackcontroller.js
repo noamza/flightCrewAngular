@@ -3,10 +3,10 @@
 var flightCrewAppControllers = angular.module('FlightCrewApp.controllers');
 
 function log(s){
-   console.log(s);
+   //console.log(s);
 }
 
-flightCrewAppControllers.controller('playbackController',['$scope','$http','$interval', '$q', function($scope, $http, $interval, $q) {
+flightCrewAppControllers.controller('playbackController',['$scope','$http','$interval', '$q','$rootScope', function($scope, $http, $interval, $q, $rootScope) {
   
   /* For date pickers */
 
@@ -80,8 +80,8 @@ flightCrewAppControllers.controller('playbackController',['$scope','$http','$int
    var n210 = {latitude: 37.414468, longitude: -122.056862};
 
    $scope.map = {
-         center: n210 //{latitude: 37.414468, longitude: -122.056862},
-       , zoom: 7
+         center: {latitude: $rootScope.centerGlobal.k, longitude: $rootScope.centerGlobal.B}//n210 //{latitude: 37.414468, longitude: -122.056862},
+       , zoom: $rootScope.zoomGlobal
        , control: {}
        , dragging: true
        , bounds: {}
@@ -97,6 +97,8 @@ flightCrewAppControllers.controller('playbackController',['$scope','$http','$int
                   initCrew();
                }
                mapFirstLoaded = false;
+               $rootScope.zoomGlobal = map.getZoom();
+               $rootScope.centerGlobal = map.getCenter();
             });
          }
       }
