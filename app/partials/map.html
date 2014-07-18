@@ -19,7 +19,7 @@
 					       		  <tbody id="flightControlBody">
 					       		  	  <tr ng-repeat="flight in localFlights | startFrom:currentPage*pageSize | limitTo:pageSize"
 						       		  ng-show="flight" ng-click="populateCrewTable(flight)">
-							              <td> <img src="img/{{flight.delayStatus}}.svg"/> </td>
+							              <td> <img ng-src="img/{{flight.delayStatus}}.svg"/> </td>
 							              <td>{{flight.flightId}}&nbsp;</td>
 							              <td>{{flight.arrivalAirport}}&nbsp;</td>
 							              <td nowrap="nowrap">{{flight.departureTime}}&nbsp;</td>
@@ -64,7 +64,7 @@
 						          <tbody id="crewControlBody">
 						            <tr ng-repeat="crew in crewData | startFrom:currentPageCrew*pageSize | limitTo:pageSize | orderBy:['crewFlightId']" 
 						            ng-click="crewTableClick(crew)" ng-show="crew">
-							              <td> <img src="img/{{crew.delayStatus}}.svg"/></td>
+							              <td> <img ng-src="img/{{crew.delayStatus}}.svg"/></td>
 							              <td>{{crew.id}}&nbsp;</td>
 							              <td>{{crew.newETA}}&nbsp;</td>   
 							              <td>{{crew.distanceToDest}}&nbsp;</td>

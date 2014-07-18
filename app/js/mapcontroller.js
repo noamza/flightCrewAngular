@@ -876,14 +876,17 @@ flightCrewAppControllers.controller('mapController',['$scope','$http','$interval
    //This function will be unnecessary when we update the phone apps to send destination as well
    function getDestPoint(jsonData) {
     
-        var dest_route = (jsonData.route).split("|");
+        if(jsonData.route != undefined)
+        {  
+          var dest_route = (jsonData.route).split("|");
 
-        var dest = dest_route[dest_route.length - 1];
+          var dest = dest_route[dest_route.length - 1];
 
-        var point = dest.split(",");
+          var point = dest.split(",");
 
-        var destLat = point[0];
-        var destLon = point[1];
+          var destLat = point[0];
+          var destLon = point[1];
+        }
         // log("dest lat: " + destLat);
         // log("dest lon: " + destLon);
         // log("dest time: " + jsonData.timeSecond); 
@@ -892,19 +895,23 @@ flightCrewAppControllers.controller('mapController',['$scope','$http','$interval
    }
 
    function getPolyPath(jsonData) {
-      var route = (jsonData.route).split("|");
-      var numPoints = route.length;
-      var polyPath = [];
 
-      for(var i = 0; i < numPoints; i++) {
-         var point = route[i].split(",");
-         //log(point[0]);
-         //log(point[1]);
-         polyPath.push(new google.maps.LatLng(point[0],point[1]));
-         //log(polyPath);
+      if(jsonData.route != undefined)
+      {
+        var route = (jsonData.route).split("|");
+        var numPoints = route.length;
+        var polyPath = [];
+
+        for(var i = 0; i < numPoints; i++) {
+           var point = route[i].split(",");
+           //log(point[0]);
+           //log(point[1]);
+           polyPath.push(new google.maps.LatLng(point[0],point[1]));
+           //log(polyPath);
+        }
+
+        return polyPath;
       }
-
-      return polyPath;
    }
    
   
@@ -919,60 +926,61 @@ flightCrewAppControllers.controller('mapController',['$scope','$http','$interval
           //log("Record Google route: " + result);
       });
       */
-      
-      var polyPath = getPolyPath(jsonData);
-      //var polyPath = [];
-      var prevPath = [];
-      farValue = calculateFAR();
+      if (dest_point != null)
+      {
+        var polyPath = getPolyPath(jsonData);
+        //var polyPath = [];
+        var prevPath = [];
+        farValue = calculateFAR();
 
-      var crewMember = {
-         id : jsonData.id,
-         eta : parseFloat(jsonData.eta),
-         route :  jsonData.route,
-         latitude : jsonData.latitudeDegree,
-         longitude : jsonData.longitudeDegree,
-         time: jsonData.timeSecond,
-         crewFlightId : jsonData.flightid,
-         crewDelay : crewDelay,
-         delayStatus : crewDelayStatus,
-         newCrewETA : newCrewETA,
-         far : farValue,
-         showWindow: false,
-         late:false,
-         /*templateUrl: 'partials/info.html',*/
-         destination : new google.maps.LatLng(dest_point[0], dest_point[1]),
-         gmarker: new google.maps.Marker({
-            position: new google.maps.LatLng(
-               jsonData.latitudeDegree, 
-               jsonData.longitudeDegree),
-            title:jsonData.id,
-            icon:'img/mapIconSmall.svg'
-         }),
-         gwindow: new google.maps.InfoWindow({
-                  content: jsonData.id
-         }),
-         gpath : new google.maps.Polyline({
-            path : polyPath,
-            strokeColor : '#FF0000',
-            strokeOpacity : 0.7,
-            strokeWeight: 2,
-            clickable: true,
-            draggable: false,
-            editable: false,
-            geodesic: false
-         }),
-         prevPath : new google.maps.Polyline({ //basically everywhere they've been; update this with new points if need be
-            path : prevPath,
-            strokeColor : '#0033CC',
-            strokeOpacity : 0.7,
-            strokeWeight: 2,
-            clickable: true,
-            draggable: false,
-            editable: false,
-            geodesic: false
-         }) 
-      };
-      
+        var crewMember = {
+           id : jsonData.id,
+           eta : parseFloat(jsonData.eta),
+           route :  jsonData.route,
+           latitude : jsonData.latitudeDegree,
+           longitude : jsonData.longitudeDegree,
+           time: jsonData.timeSecond,
+           crewFlightId : jsonData.flightid,
+           crewDelay : crewDelay,
+           delayStatus : crewDelayStatus,
+           newCrewETA : newCrewETA,
+           far : farValue,
+           showWindow: false,
+           late:false,
+           /*templateUrl: 'partials/info.html',*/
+           destination : new google.maps.LatLng(dest_point[0], dest_point[1]),
+           gmarker: new google.maps.Marker({
+              position: new google.maps.LatLng(
+                 jsonData.latitudeDegree, 
+                 jsonData.longitudeDegree),
+              title:jsonData.id,
+              icon:'img/mapIconSmall.svg'
+           }),
+           gwindow: new google.maps.InfoWindow({
+                    content: jsonData.id
+           }),
+           gpath : new google.maps.Polyline({
+              path : polyPath,
+              strokeColor : '#FF0000',
+              strokeOpacity : 0.7,
+              strokeWeight: 2,
+              clickable: true,
+              draggable: false,
+              editable: false,
+              geodesic: false
+           }),
+           prevPath : new google.maps.Polyline({ //basically everywhere they've been; update this with new points if need be
+              path : prevPath,
+              strokeColor : '#0033CC',
+              strokeOpacity : 0.7,
+              strokeWeight: 2,
+              clickable: true,
+              draggable: false,
+              editable: false,
+              geodesic: false
+           }) 
+        };
+
       crewDelay = secToHM(crewMember.eta);
       parseCrewDelay(crewDelay, crewMember); 
 
@@ -990,6 +998,7 @@ flightCrewAppControllers.controller('mapController',['$scope','$http','$interval
          crewMember.gpath.setMap(null);
          crewMember.prevPath.setMap(null);
       });
+    
       //readGoogleRouteFromDB(jsonData.id, crewMember);
       initPrevPath(crewMember);
   
@@ -997,6 +1006,7 @@ flightCrewAppControllers.controller('mapController',['$scope','$http','$interval
 
       /*check for duplicates here */
       globalCrewIDs.push(crewMember.id);
+    }
 
    }
 
@@ -1168,19 +1178,23 @@ flightCrewAppControllers.controller('mapController',['$scope','$http','$interval
     Generates the prevPath field for a particular crewMember (i.e. all data logged for said crew member)
     prior to the starting of the application. 
   */
-   function initPrevPath(crewMember) {
-      $http.get("ajax/getPrevPath.php?id=" + crewMember.id).success(function(pathData, status, headers, config) {
-         var path = [];
-         for(var i = 0; i < pathData.length; i++) {
-            var latitude = pathData[i].latitudeDegree;
-            var longitude = pathData[i].longitudeDegree;
-            var point = new google.maps.LatLng(latitude, longitude);
-            path.push(point);
-         }
-         crewMember.prevPath.setPath(path);
-      }).error(function(data, status, headers, config) {
-         //console.log("Error gleaning path data");
-      });
+   function initPrevPath(crewMember) 
+   {
+      if(crewMember != null && crewMember != undefined)
+      {
+        $http.get("ajax/getPrevPath.php?id=" + crewMember.id).success(function(pathData, status, headers, config) {
+           var path = [];
+           for(var i = 0; i < pathData.length; i++) {
+              var latitude = pathData[i].latitudeDegree;
+              var longitude = pathData[i].longitudeDegree;
+              var point = new google.maps.LatLng(latitude, longitude);
+              path.push(point);
+           }
+           crewMember.prevPath.setPath(path);
+        }).error(function(data, status, headers, config) {
+           //console.log("Error gleaning path data");
+        });
+      }
    }
 
    function updateCrewMember(jsonData){
@@ -1191,32 +1205,36 @@ flightCrewAppControllers.controller('mapController',['$scope','$http','$interval
       calculateDistance(jsonData.latitudeDegree,jsonData.longitudeDegree,37.615223,-122.389979); //calculate distance to SFO
       
       var crewMember = crewMembers[jsonData.id];
-      crewMember.latitude = jsonData.latitudeDegree;
-      crewMember.longitude = jsonData.longitudeDegree;
-      crewMember.eta = parseFloat(jsonData.eta);
-      crewMember.route = jsonData.route;
-      crewMember.time=jsonData.timeSecond;
 
-      //readGoogleRouteFromDB(jsonData.id, crewMember); //polyPath now set using Google routes 
-      crewMember.gpath.setPath(polyPath);
-      crewMember.crewFlightId = jsonData.flightid;
-      crewMember.distanceToDest = distance;
+      if(crewMember != null && crewMember != undefined)
+      {
+        crewMember.latitude = jsonData.latitudeDegree;
+        crewMember.longitude = jsonData.longitudeDegree;
+        crewMember.eta = parseFloat(jsonData.eta);
+        crewMember.route = jsonData.route;
+        crewMember.time=jsonData.timeSecond;
+    
+        //readGoogleRouteFromDB(jsonData.id, crewMember); //polyPath now set using Google routes 
+        crewMember.gpath.setPath(polyPath);
+        crewMember.crewFlightId = jsonData.flightid;
+        crewMember.distanceToDest = distance;
+        
 
+        if(Math.random()<0.2) crewMember.late = !crewMember.late;
+        var icon = 'img/mapIconSmall.svg';
+        if(crewMember.late) icon = 'img/mapIconSmall.svg';
 
-      if(Math.random()<0.2) crewMember.late = !crewMember.late;
-      var icon = 'img/mapIconSmall.svg';
-      if(crewMember.late) icon = 'img/mapIconSmall.svg';
+        var currPos = new google.maps.LatLng(
+                 jsonData.latitudeDegree, 
+                 jsonData.longitudeDegree);
 
-      var currPos = new google.maps.LatLng(
-               jsonData.latitudeDegree, 
-               jsonData.longitudeDegree);
-
-      crewMember.gmarker.setPosition(currPos);
-      crewMember.gmarker.setIcon(icon);
-      var prevPath = crewMember.prevPath.getPath(); //these two lines push the new point into the traversed data
-      prevPath.push(currPos);
-      crewMember.gwindow.content = makeWindowContent(crewMember, crewMember.late);
-      if(crewMember.showWindow)crewMember.gwindow.open(gmap, crewMember.gmarker);
+        crewMember.gmarker.setPosition(currPos);
+        crewMember.gmarker.setIcon(icon);
+        var prevPath = crewMember.prevPath.getPath(); //these two lines push the new point into the traversed data
+        prevPath.push(currPos);
+        crewMember.gwindow.content = makeWindowContent(crewMember, crewMember.late);
+        if(crewMember.showWindow)crewMember.gwindow.open(gmap, crewMember.gmarker);
+      }
 
    }
 
@@ -1320,8 +1338,12 @@ flightCrewAppControllers.controller('mapController',['$scope','$http','$interval
             //console.log(crew[i].id);
             promises.push(
                $http.get("ajax/getLatestCrew.php?id="+crewIds[i].id).success(function(data,status,headers,config){
-                  $scope.status = status;    
-                  updateCrewMember(data[0]);
+                  $scope.status = status;  
+
+                  if(data[0] != undefined && data[0] != null)
+                  {  
+                    updateCrewMember(data[0]);
+                  }
 
                }).error(function(data, status, headers, config){
                   $scope.status = status;
