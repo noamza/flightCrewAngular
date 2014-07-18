@@ -213,7 +213,7 @@ flightCrewAppControllers.controller('mapController',['$scope','$http','$interval
          //google.maps.event.trigger(crewMember.gmarker, 'closeclick');
          //crewMember.showWindow = false;
       }
-      log("tableClick more like " + crewMember.showWindow);
+      //log("tableClick more like " + crewMember.showWindow);
    };
    
    /* Centers the map on a crewmember and zooms in. Only applies when the 
@@ -248,7 +248,7 @@ flightCrewAppControllers.controller('mapController',['$scope','$http','$interval
     specificCrew = {}; //clears out old entries in case there is something already there
     $scope.crewData = [];
 
-    log("clear crew table: " + flight.flightId + ": " + flight.crew);
+    //log("clear crew table: " + flight.flightId + ": " + flight.crew);
     
     $scope.selectedFlights=flight.flightId;
     selectedFlight = flight.flightId;
@@ -469,7 +469,7 @@ flightCrewAppControllers.controller('mapController',['$scope','$http','$interval
 
          deferred.reject(flights);
 
-         console.log("Error in initFlights");
+         //console.log("Error in initFlights");
       });
    }
 
@@ -542,7 +542,7 @@ flightCrewAppControllers.controller('mapController',['$scope','$http','$interval
           
             $scope.allFlights.push(matchingFlights[i].id);
          
-            console.log("Matching flights: " + matchingFlights[i].id);
+            //console.log("Matching flights: " + matchingFlights[i].id);
          }
          
          //only called when all asynchrounous calls are finished
@@ -550,7 +550,7 @@ flightCrewAppControllers.controller('mapController',['$scope','$http','$interval
 
       }).error(function(data, status, headers, config){
          $scope.status = status;
-         console.log("Error in getMatchingFlights " + data);
+         //console.log("Error in getMatchingFlights " + data);
       });
    }
 
@@ -559,7 +559,7 @@ flightCrewAppControllers.controller('mapController',['$scope','$http','$interval
      
       selectedFlight = $scope.selectedFlights;
 
-      console.log("Flight selected:" + selectedFlight);
+      //console.log("Flight selected:" + selectedFlight);
 
       getSpecificCrew();
 
@@ -636,9 +636,8 @@ flightCrewAppControllers.controller('mapController',['$scope','$http','$interval
             specificCrew[specificCrewMember.id] = specificCrewMember;  
             
             $scope.crewData.push(specificCrewMember); //for pagination in the crew control table
-            log("check crewData length: " + crewData.length + " id: " + specificCrewMember.id);
+            //log("check crewData length: " + crewData.length + " id: " + specificCrewMember.id);
 
-            //log("check crew id and flight id: " + specificCrewMember.id + " " + specificCrewMember.crewFlightId);
          }
       }
       //$scope.specificCrew = specificCrew;
@@ -648,7 +647,7 @@ flightCrewAppControllers.controller('mapController',['$scope','$http','$interval
       saveCrewIDs = globalCrewIDs.slice(0); //copies contents to saveCrewIDs
 
       $scope.crewCounter = crewCounter; 
-      log("Number of crew members: " + crewCounter);
+      //log("Number of crew members: " + crewCounter);
 
    } 
 
@@ -872,17 +871,18 @@ flightCrewAppControllers.controller('mapController',['$scope','$http','$interval
 
    //This function will be unnecessary when we update the phone apps to send destination as well
    function getDestPoint(jsonData) {
-      var dest_route = (jsonData.route).split("|");
-      //log(dest_route);
-      var dest = dest_route[dest_route.length - 1];
-      //log(dest);
-      var point = dest.split(",");
-      //log(point);
-      var destLat = point[0];
-      var destLon = point[1];
-      // log("dest lat: " + destLat);
-      // log("dest lon: " + destLon);
-      // log("dest time: " + jsonData.timeSecond); 
+    
+        var dest_route = (jsonData.route).split("|");
+
+        var dest = dest_route[dest_route.length - 1];
+
+        var point = dest.split(",");
+
+        var destLat = point[0];
+        var destLon = point[1];
+        // log("dest lat: " + destLat);
+        // log("dest lon: " + destLon);
+        // log("dest time: " + jsonData.timeSecond); 
 
       return point;
    }
@@ -906,8 +906,7 @@ flightCrewAppControllers.controller('mapController',['$scope','$http','$interval
   
    function addCrewMember(jsonData)
    {
-      log("diagnostic data, id: " + jsonData.id + " time " + jsonData.timeSecond + " lat " + jsonData.latitudeDegree + " lon " + jsonData.longitudeDegree);
-
+      //log("diagnostic data, id: " + jsonData.id + " time " + jsonData.timeSecond + " lat " + jsonData.latitudeDegree + " lon " + jsonData.longitudeDegree);
       var dest_point = getDestPoint(jsonData);
 
       /*
@@ -1024,22 +1023,20 @@ flightCrewAppControllers.controller('mapController',['$scope','$http','$interval
               }
             }            
         }
-        log("Get Google path: " + path);
+        //log("Get Google path: " + path);
         crewMember.gpath.setPath(path);
         //crewMember.gpath.setMap(gmap);
 
 
       }).error(function(data, status, headers, config) 
       {
-           console.log("Error retrieving Google routes.");
+        //console.log("Error retrieving Google routes.");
       });
    }
 
    /*Calculates the route using Google Maps*/
    function calculateRoute(jsonData, dest_point, callback)
    { 
-     log("calc route ID check: " + jsonData.id);
-
      var start = new google.maps.LatLng(jsonData.latitudeDegree, jsonData.longitudeDegree);
      var end = new google.maps.LatLng(dest_point[0], dest_point[1]); 
 
@@ -1058,7 +1055,6 @@ flightCrewAppControllers.controller('mapController',['$scope','$http','$interval
 
       if(status == google.maps.DirectionsStatus.OK) 
       {
-         log("2nd ID check: " + jsonData.id);
          var deferred = $q.defer();
      
           //directionsDisplay.setDirections(result);
@@ -1113,19 +1109,19 @@ flightCrewAppControllers.controller('mapController',['$scope','$http','$interval
 
       $http.post("ajax/recordRoute.php", input).success(function(data, status, headers, config) 
       {
-          console.log('post success');
-          console.log('data');
-          console.log(data);
-          console.log('status');
-          console.log(status);
+          // console.log('post success');
+          // console.log('data');
+          // console.log(data);
+          // console.log('status');
+          // console.log(status);
 
       }).error(function(data, status, headers, config) 
       {
-          console.log('post error');
-          console.log('data');
-          console.log(data);
-          console.log('status');
-          console.log(status);
+          // console.log('post error');
+          // console.log('data');
+          // console.log(data);
+          // console.log('status');
+          // console.log(status);
     });
 
    }
@@ -1179,7 +1175,7 @@ flightCrewAppControllers.controller('mapController',['$scope','$http','$interval
          }
          crewMember.prevPath.setPath(path);
       }).error(function(data, status, headers, config) {
-         console.log("Error gleaning path data");
+         //console.log("Error gleaning path data");
       });
    }
 
@@ -1229,7 +1225,7 @@ flightCrewAppControllers.controller('mapController',['$scope','$http','$interval
       var parsedHours = parsedDelay.slice(1,2);
       parsedHours = parseInt(parsedHours);
       parsedMinutes = parseInt(parsedMinutes);
-      console.log("parsed crew delay minutes: " + parsedDelay + " " + parsedHours + " " + parsedMinutes);
+      //console.log("parsed crew delay minutes: " + parsedDelay + " " + parsedHours + " " + parsedMinutes);
 
       /*Set crew delay status*/
       if(parsedMinutes <= 10 && parsedHours <= 0)
@@ -1237,7 +1233,7 @@ flightCrewAppControllers.controller('mapController',['$scope','$http','$interval
          crewMember.delayStatus = "green";
          crewDelayStatus = crewMember.delayStatus;
       }
-      else if(parsedMinutes > 10 && parsedMinutes <= 30 && parsedHours <=0 )
+      else if(parsedMinutes > 10 && parsedMinutes <= 30 && parsedHours <=0)
       {
          crewMember.delayStatus = "yellow";
          crewDelayStatus = crewMember.delayStatus;
