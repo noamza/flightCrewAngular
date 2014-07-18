@@ -15,8 +15,8 @@ angular.module('FlightCrewApp.filters', [])
   	}])
 
      .filter('startFrom', function() {
-
       return function(input, start) {
+        if(start == 0) return;
         start = +start; //parse to int
         return input.slice(start);  
       };

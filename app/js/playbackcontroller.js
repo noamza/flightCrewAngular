@@ -169,7 +169,7 @@ flightCrewAppControllers.controller('playbackController',['$scope','$http','$int
             traversePaths(pathData, i, limit, pathData[i].timeSecond-pathData[i-1].timeSecond);
          } else {
             $scope.isPlaying=false;
-            log("All paths finished.")
+            //log("All paths finished.")
             if($scope.form.speed != null) {
               setTimeout(function() { 
                  $scope.x="";
