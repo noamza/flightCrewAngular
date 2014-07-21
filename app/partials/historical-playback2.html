@@ -1,0 +1,123 @@
+<html ng-app="flightCrewApp">
+<head>
+	<script script type="text/javascript" src="../js/playbackcontroller.js"></script>
+	<div class = "container-fluid">	
+	<link rel="stylesheet" href="css/flightPlaybackPanel.css"/>
+	<script src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.10/angular.js"></script>
+    <script src="//angular-ui.github.io/bootstrap/ui-bootstrap-tpls-0.11.0.js"></script>
+    
+</head>
+
+ <style type="text/css">
+   .labels {
+     color: black;
+     font-family: "Lucida Grande", "Arial", sans-serif;
+     font-size: 12px;
+     text-align: center;    
+     white-space: nowrap;
+     text-shadow: 2px 2px white;
+     background-color:#FFFFFF;
+   }
+   #datepicker {
+ 	position: relative; 
+ 	float: left;
+ 	width: 50%;
+    top: 45px;
+	}
+	#span2 {
+		margin: auto;
+		display: inline-block;
+	}
+ </style>
+
+<div class = "row-fluid">
+
+<!-- Sidebar -->
+<div class = "span2">
+<div class="playbackMenu">
+
+	<!-- Tabs with Widget Options -->
+	<br>
+	<div id="playbackOptions"> Playback Options </div>
+	<hr/>
+	<input type="range" min="0" max="{{limit}}" name="i" ng-model="i" style="width:350px;"> {{i}}
+	<hr/>
+	<form id="playbackForm" name = "input"  ng-submit="form.submit()">
+	IDs (comma-separated): <input type="text" name="id" ng-model="form.id"typeahead="crew for crew in crewMembers | filter:$viewValue">
+	<hr/>
+		<div>
+    	Lower Time Bound: <em>{{dtlower | date:'short' }} {{test}}</em>
+
+	    <div class="row">
+			
+	   		<div class="col-md-6" id = "datepicker">
+	            		<p class="input-group">
+			              	<input type="text" class="form-control" datepicker-popup="{{format}}" ng-model="dtlower" is-open="opened2" date-disabled="disabled(date, mode)" ng-required="true" close-text="Close" />
+			              	<span class="input-group-btn">
+			                	<button type="button" class="btn btn-default" ng-click="open2($event)"><i class="glyphicon glyphicon-calendar"></i></button>
+			             	</span>
+			            </p>
+	        		</div>
+	        		<div class="col-md-6" id = "timepicker">
+	   					<timepicker ng-model="dtlower" show-meridian="false"></timepicker>
+	   				</div>
+	    		</div>
+			</div>
+			<div>
+    			Upper Time Bound: <em>{{dtupper | date:'short' }}</em>
+
+	    		<div class="row">
+	        		<div class="col-md-6" id = "datepicker">
+	            		<p class="input-group">
+			              	<input type="text" class="form-control" datepicker-popup="{{format}}" ng-model="dtupper" is-open="opened" date-disabled="disabled(date, mode)" ng-required="true" close-text="Close" />
+			              	<span class="input-group-btn">
+			                	<button type="button" class="btn btn-default" ng-click="open($event)"><i class="glyphicon glyphicon-calendar"></i></button>
+			             	</span>
+			            </p>
+	        		</div>
+	        		<div class="col-md-6" id = "timepicker">
+	    				<timepicker ng-model="dtupper" show-meridian="false"></timepicker>
+	    			</div>
+	    		</div>
+			</div>
+			</form>
+			<hr/>
+
+	<div id="playbackSpeed">Playback Speed:  {{form.speed}}{{x}} </div>
+	<div class="btn-group">
+   		<label id="speedcontrol" class="btn btn-info" ng-model="form.speed" ng-click="form.submit()" btn-radio="'1'" uncheckable>&#9654; &nbsp; Real-Time</label>
+       	<label id="speedcontrol" class="btn btn-success" ng-model="form.speed" ng-click="form.submit()" btn-radio="'100'" uncheckable>Medium</label>
+        <label id="speedcontrol" class="btn btn-warning" ng-model="form.speed" ng-click="form.submit()" btn-radio="'1000'" uncheckable>Fast</label>
+        <label id="speedcontrol" class="btn btn-danger" ng-model="form.speed" ng-click="form.submit()" btn-radio="'10000'" uncheckable>Warp &nbsp; &#9654;&#9654; </label>
+    </div>
+
+	</div>
+</div>
+
+
+	<!-- Body -->
+	<div class="span10">
+		<div class="theMap">
+			<google-map 
+			center="map.center" 
+			zoom="map.zoom" 
+			draggable="true" 
+		    dragging="map.dragging" 
+		    bounds="map.bounds" 
+		    events="map.events" 
+		    options="map.options" 
+		    pan="true" 
+		    control="map.control"   
+			>
+			<!--markers models="map.dynamicMarkers" coords="'self'" icon="'icon'" ng-cloak></markers-->
+			</google-map>
+		</div>
+	</div>	
+
+
+  
+    <footer></footer>
+
+</div>
+</div>
+</html>
