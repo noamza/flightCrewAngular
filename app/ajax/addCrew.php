@@ -3,12 +3,12 @@
 	//$id="'".stripslashes($_REQUEST['id'])."'";
     $id=$_REQUEST['id'];
 	$time=$_REQUEST['time'];
-	$lat=$_REQUEST['latitude'];
-	$lon=$_REQUEST['longitude']; //
+	$lat=$_REQUEST['lat'];
+	$lon=$_REQUEST['lon']; //
 	$destlat=$_REQUEST['destlat'];
-	$destlong=$_REQUEST['destlong'];
+	$destlon=$_REQUEST['destlon'];
 
-	$url = "http://maps.googleapis.com/maps/api/directions/json?origin="  . $lat . "," . $lon . "&destination=" . $destlat . "," . $destlong . "&sensor=false&units=metric&mode=driving";
+	$url = "http://maps.googleapis.com/maps/api/directions/json?origin="  . $lat . "," . $lon . "&destination=" . $destlat . "," . $destlon . "&sensor=false&units=metric&mode=driving";
 
 	//print($url); //URL working
 
