@@ -1,8 +1,8 @@
 <?php
 	require_once 'mysql.php';
 	require_once 'GoogleVoice.php';
-	$tableName = "androidnavtable";
-	$filler = ",null,null,'test'";
+	$tableName = "posaltspd";
+	//$filler = ",null,null,'test'";
 
 	//$voice = new GoogleVoice($_GET['user'], $_GET['pass']);
 	$voice = new GoogleVoice('user', 'pass');
@@ -36,9 +36,14 @@
 			$voice->deleteMessage($s->id); //delete msg from inbox
 			//echo 'Message from: '.$s->phoneNumber.' on '.$s->displayStartDateTime.': '.$s->messageText."<br><br>\n"; //for debug
 			$comma = strpos($message, ",");
+			$comma2= strpos(substr($message, $comma+1), ",");
+			$comma3= strpos(substr($message, $comma2+1), ",");
+			$comma4= strpos(substr($message, $comma3+1), ",");
 			$lat = generateCoordFloat(substr($message, 0, $comma));
-			$lng = generateCoordFloat(substr($message, $comma + 1));
-			echo 'lat: ' . $lat . ' lng: ' . $lng . '<br><br>';
+			$lng = generateCoordFloat(substr($message, $comma + 1, $comma2));
+			$alt = substr($message, $comma2+1, $comma3);
+			$speed = substr($message, $comma3+1, $comma4);
+			//echo 'lat: ' . $lat . ' lng: ' . $lng . '<br><br>';
 
 			
 			if(!$first) //adds comma if this isn't the first value
@@ -46,7 +51,7 @@
 			else
 				$first = false;
 
-			$query = $query . " (" . $id . "," . $time . "," . $lat . "," . $lng . $filler . ")"; //probably needs more parsing, etc. 
+			$query = $query . " (" . $id . "," . $time . "," . $lat . "," . $lng . "," . $alt . "," . $speed . ")"; //probably needs more parsing, etc. 
 			
 		}
 		
