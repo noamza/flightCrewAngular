@@ -110,6 +110,7 @@ flightCrewAppControllers.controller('playbackController',['$scope','$http','$int
     if(!$scope.isPlaying) {
       $scope.isPlaying = true;
       $scope.x = "x";
+      $scope.$apply();
       var ids = parseID(id.replace(/\s+/g, '')); //removes whitespace from id before parsing...can add commas to query
       var queryID = makeQueryID(ids); //generates string to query
       $http.get("ajax/playback.php?" + "id=" +  queryID + "&timeUpper=" + $scope.dtupper.getTime() + "&timeLower=" + $scope.dtlower.getTime()).success(function(pathData, status, headers, config) {
@@ -120,6 +121,7 @@ flightCrewAppControllers.controller('playbackController',['$scope','$http','$int
             alert("No data found for IDs: \"" + ids + "\" between time " + $scope.dtlower + " and " + $scope.dtupper + ".")
             $scope.isPlaying=false;
             $scope.x="";
+            $scope.$apply();
             $scope.form.speed=null;
             //$scope.form.id="";
          }
@@ -175,8 +177,8 @@ flightCrewAppControllers.controller('playbackController',['$scope','$http','$int
             if($scope.form.speed != null) {
               setTimeout(function() { 
                  $scope.x="";
-                 $scope.form.speed=null;
                  $scope.$apply();
+                 $scope.form.speed=null;
                  clearMap(); //can't clear one at a time since we don't know when it next shows up
               }, 5000);
             } else {
@@ -281,6 +283,7 @@ flightCrewAppControllers.controller('playbackController',['$scope','$http','$int
 
    /* Returns the polypath associated to a single line of queried path data. */
    function getPolyPath(jsonData) {
+      if(jsonData.route==null) return [];
       var route = (jsonData.route).split("|");
       var numPoints = route.length;
       var polyPath = [];
