@@ -9,8 +9,7 @@ function log(s){
 flightCrewAppControllers.controller('playbackController',['$scope','$http','$interval', '$q','$rootScope', function($scope, $http, $interval, $q, $rootScope) {
   
   /* For date pickers */
-  $scope.i = 0;
-  $scope.limit = 0;
+
   $scope.dtlower = new Date();
   $scope.dtlower.setTime($scope.dtlower.getTime() - 1296000000); //sets the lower bound as low as possible
   $scope.dtupper = new Date(); //upper bound is the current times
@@ -111,17 +110,18 @@ flightCrewAppControllers.controller('playbackController',['$scope','$http','$int
     if(!$scope.isPlaying) {
       $scope.isPlaying = true;
       $scope.x = "x";
+      $scope.$apply();
       var ids = parseID(id.replace(/\s+/g, '')); //removes whitespace from id before parsing...can add commas to query
       var queryID = makeQueryID(ids); //generates string to query
       $http.get("ajax/playback.php?" + "id=" +  queryID + "&timeUpper=" + $scope.dtupper.getTime() + "&timeLower=" + $scope.dtlower.getTime()).success(function(pathData, status, headers, config) {
          if(pathData != "null") {
-            $scope.limit = pathData.length;
-            traversePaths(pathData, 0);
+            traversePaths(pathData, 0, pathData.length, 0);
             //$scope.form.id="";
          } else {
             alert("No data found for IDs: \"" + ids + "\" between time " + $scope.dtlower + " and " + $scope.dtupper + ".")
             $scope.isPlaying=false;
             $scope.x="";
+            $scope.$apply();
             $scope.form.speed=null;
             //$scope.form.id="";
          }
@@ -156,24 +156,36 @@ flightCrewAppControllers.controller('playbackController',['$scope','$http','$int
    }
 
    /* Given the pathData queried according to the pathData.php script, traverses paths with a calculated pause time of timeDiff*/
-   function traversePaths(pathData, timeDiff) {
+   function traversePaths(pathData, i, limit, timeDiff) {
       setTimeout(function() {
-         var latitude = pathData[$scope.i].latitudeDegree;
-         var longitude = pathData[$scope.i].longitudeDegree;
-         var id = pathData[$scope.i].id
-         var currTime = pathData[$scope.i].timeSecond;
+         var latitude = pathData[i].latitudeDegree;
+         var longitude = pathData[i].longitudeDegree;
+         var id = pathData[i].id
+         var currTime = pathData[i].timeSecond;
          var tracker = getTracker(id, trackers);
-         updateMarker(pathData[$scope.i], tracker);
+         updateMarker(pathData[i], tracker);
          //log(tracker.gpath);
 
-         $scope.i++;
-         $scope.$apply();
+         i++;
 
-         if($scope.i < $scope.limit && $scope.form.speed != null) {
+         if(i < limit && $scope.form.speed != null) {
             //log(pathData[i].timeSecond - pathData[i-1].timeSecond);
-            traversePaths(pathData, pathData[$scope.i].timeSecond-pathData[$scope.i-1].timeSecond);
+            traversePaths(pathData, i, limit, pathData[i].timeSecond-pathData[i-1].timeSecond);
          } else {
             $scope.isPlaying=false;
+            //log("All paths finished.")
+            if($scope.form.speed != null) {
+              setTimeout(function() { 
+                 $scope.x="";
+                 $scope.$apply();
+                 $scope.form.speed=null;
+                 clearMap(); //can't clear one at a time since we don't know when it next shows up
+              }, 5000);
+            } else {
+              $scope.x="";
+              $scope.$apply();
+              clearMap();
+            }
          } 
 
       }, timeDiff/$scope.form.speed); //simulated delay = realtime difference (in ms) divided by user-specified multiplier
@@ -271,6 +283,7 @@ flightCrewAppControllers.controller('playbackController',['$scope','$http','$int
 
    /* Returns the polypath associated to a single line of queried path data. */
    function getPolyPath(jsonData) {
+      if(jsonData.route==null) return [];
       var route = (jsonData.route).split("|");
       var numPoints = route.length;
       var polyPath = [];

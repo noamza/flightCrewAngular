@@ -40,8 +40,6 @@
 	<br>
 	<div id="playbackOptions"> Playback Options </div>
 	<hr/>
-	<input type="range" min="0" max="{{limit}}" name="i" ng-model="i" style="width:350px;"> {{i}}
-	<hr/>
 	<form id="playbackForm" name = "input"  ng-submit="form.submit()">
 	IDs (comma-separated): <input type="text" name="id" ng-model="form.id"typeahead="crew for crew in crewMembers | filter:$viewValue">
 	<hr/>
