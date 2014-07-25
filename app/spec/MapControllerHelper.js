@@ -4,7 +4,7 @@ https://github.com/markcoleman/angular-unittest/blob/b37249a70bd0b67363746e50eb1
 describe("mapController", function() 
 {
     var scope, ctrl, $httpBackend;
-    beforeEach(module('FlightCrewApp'));
+    beforeEach(module('FlightCrewApp.controllers'));
 
     var coords,$httpBackend;
 
@@ -14,7 +14,7 @@ describe("mapController", function()
 
     describe("initAirportMarkers", function(){
     it("should make an http call to data/airportpositions.json", function(){
-        //$httpBackend.whenGET("data/airportpositions.json").respond(coords);
+        $httpBackend.whenGET("data/airportpositions.json").respond(coords);
         //expect(coords).toBeDefined();
         console.log("jasmine coords:" + coords);
     })
