@@ -45,13 +45,13 @@
 	<br>
 	<input type="range" min="0" max="{{limit}}" name="i" ng-model="i" style="width:350px;" ng-mouseup="refreshLowerTimeBound()">
 	<div class="btn-group">
-		<label id="play" class="btn btn-success" ng-model="form.isPlaying" ng-click="toggle()">{{play}}</label>
-		<label id="ffw" class="btn btn-danger" ng-model="form.speed" ng-mousedown="step()" uncheckable> &#9654;&#9654; </label>
+		<label id="play" class="btn btn-info" ng-click="toggle()">{{play}}</label>
+		<label id="ffw" class="btn btn-primary" ng-model="form.speed" ng-mousedown="step()" uncheckable> &#9654;&#9654; </label>
 	</div>
 	<hr/>
 	<form id="playbackForm" name = "input"  ng-submit="form.submit()">
 	IDs: <input type="text" name="id" ng-model="form.id"typeahead="crew for crew in crewMembers | filter:$viewValue"> 
-	<button type="submit">Submit IDs</button>
+	<input type="submit" value="Submit IDs"></button>
 	<br>
 	<br>
 	IDs in query: {{queryID}}

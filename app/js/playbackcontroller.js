@@ -138,29 +138,19 @@ ffw.addEventListener("mouseout", mouseup);
          } else {
           $scope.form.id = crewids.toString();
          }
-         
-         //log(flightid + ": " + crewids.toString());
-         //getData($scope.form.id, $scope.dtupper.getTime(), $scope.dtlower.getTime());
+
       }).error(function(data, status, headers, config) {
          console.log("Error gleaning crew ids data");
       });
    }
 
-   $scope.isPlaying = false;
-
   /* Angular data for the forms. Initial values are set to double-bind. */
    $scope.form = {
-         //id: 'Enter id here'
-         //, time: 'Enter time here'
          id: "",
          speed: 1,
          defaultspeed:1
          , submit: function() {
-            //var msg = "ID: " + $scope.form.id + " | Time: " + $scope.form.time;
-            //alert(msg);
-          //if(!$scope.isPlaying) {
             getData($scope.dtupper.getTime(), $scope.dtlower.getTime());
-          //}
          }
    }
 
@@ -195,8 +185,6 @@ ffw.addEventListener("mouseout", mouseup);
    
    /* Queries the path data associated with the id string, then plays back the paths which correspond to the IDs */
    function getData(timeUpper, timeLower){
-    //if(!$scope.isPlaying) {
-      //$scope.isPlaying = true;
       var ids = parseID(($scope.form.id).replace(/\s+/g, '')); //removes whitespace from id before parsing...can add commas to query
       $scope.queryID = makeQueryID(ids); //generates string to query
       $http.get("ajax/playback.php?" + "id=" +  $scope.queryID + "&timeUpper=" + $scope.dtupper.getTime() + "&timeLower=" + $scope.dtlower.getTime()).success(function(pathData, status, headers, config) {
@@ -205,9 +193,6 @@ ffw.addEventListener("mouseout", mouseup);
             $scope.pathData=pathData;
             $scope.form.speed=$scope.form.defaultspeed;
             //$scope.refreshLowerTimeBound();
-            //alert(JSON.stringify($scope.pathData)); //seems to be working
-            //traversePaths(pathData, 0);
-            //$scope.form.id="";
             $scope.playbackTime = pathData[0].timeSecond;
             $scope.resetSlider();
          } else {
@@ -219,7 +204,6 @@ ffw.addEventListener("mouseout", mouseup);
       }).error(function(data, status, headers, config) {
          console.log("Error gleaning path data");
       });
-    //}
    }
 
 
@@ -271,6 +255,7 @@ ffw.addEventListener("mouseout", mouseup);
               clearMap();
               $scope.playbackTime = pathData[0].timeSecond;
               $scope.resetSlider();
+              $scope.$apply();
           }, 3000);
          } 
 
