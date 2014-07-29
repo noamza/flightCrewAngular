@@ -9,40 +9,11 @@ function log(s){
 flightCrewAppControllers.controller('playbackController',['$scope','$http','$interval', '$q','$rootScope', function($scope, $http, $interval, $q, $rootScope) {
   
   /* For date pickers */
-  $scope.i = 0;
-  $scope.limit = 0;
+
   $scope.dtlower = new Date();
-  //$scope.dtlower.setTime($scope.dtlower.getTime() - 1296000000); //sets the lower bound as low as possible
-  $scope.dtlower.setTime(0);
+  $scope.dtlower.setTime($scope.dtlower.getTime() - 1296000000); //sets the lower bound as low as possible
   $scope.dtupper = new Date(); //upper bound is the current times
-  $scope.isFFW = false;
-  $scope.queryID = "";
-  $scope.pathData=[];
-
-  /* for play/pause/ffw buttons */
-  $scope.play = '\u25BA';
-  $scope.playbackTime=0;
-
-  $scope.toggle = function() {
-    if($scope.play=='\u25BA')
-      $scope.play='\u275A\u275A';
-    else
-      $scope.play='\u25BA';
-  }
-
-  $scope.ffw = function() {
-    while(true) {
-      $scope.speed*=1.001;
-    }
-  }
-
-  $scope.refreshLowerTimeBound = function() {
-    if($scope.pathData.length > 0) {
-      var time = parseInt($scope.pathData[$scope.i].timeSecond);
-      $scope.playbackTime=time;
-      $scope.dtlower=time;
-    }
-  }
+  $scope.x = "";
 
   $scope.open = function($event) {
     $event.preventDefault();
@@ -82,7 +53,7 @@ flightCrewAppControllers.controller('playbackController',['$scope','$http','$int
          }
          
          //log(flightid + ": " + crewids.toString());
-         //getData($scope.form.id, $scope.dtupper.getTime(), $scope.dtlower.getTime());
+         //getDataAndTraversePath($scope.form.id, $scope.dtupper.getTime(), $scope.dtlower.getTime());
       }).error(function(data, status, headers, config) {
          console.log("Error gleaning crew ids data");
       });
@@ -99,9 +70,9 @@ flightCrewAppControllers.controller('playbackController',['$scope','$http','$int
          , submit: function() {
             //var msg = "ID: " + $scope.form.id + " | Time: " + $scope.form.time;
             //alert(msg);
-          //if(!$scope.isPlaying) {
-            getData($scope.form.id, $scope.dtupper.getTime(), $scope.dtlower.getTime());
-          //}
+          if(!$scope.isPlaying) {
+            getDataAndTraversePath($scope.form.id, $scope.dtupper.getTime(), $scope.dtlower.getTime());
+          }
          }
    }
 
@@ -135,28 +106,29 @@ flightCrewAppControllers.controller('playbackController',['$scope','$http','$int
    };
    
    /* Queries the path data associated with the id string, then plays back the paths which correspond to the IDs */
-   function getData(id, timeUpper, timeLower){
-    //if(!$scope.isPlaying) {
-      //$scope.isPlaying = true;
+   function getDataAndTraversePath(id, timeUpper, timeLower){
+    if(!$scope.isPlaying) {
+      $scope.isPlaying = true;
+      $scope.x = "x";
+      $scope.$apply();
       var ids = parseID(id.replace(/\s+/g, '')); //removes whitespace from id before parsing...can add commas to query
-      $scope.queryID = makeQueryID(ids); //generates string to query
-      $http.get("ajax/playback.php?" + "id=" +  $scope.queryID + "&timeUpper=" + $scope.dtupper.getTime() + "&timeLower=" + $scope.dtlower.getTime()).success(function(pathData, status, headers, config) {
+      var queryID = makeQueryID(ids); //generates string to query
+      $http.get("ajax/playback.php?" + "id=" +  queryID + "&timeUpper=" + $scope.dtupper.getTime() + "&timeLower=" + $scope.dtlower.getTime()).success(function(pathData, status, headers, config) {
          if(pathData != "null") {
-            $scope.limit = pathData.length;
-            $scope.pathData=pathData;
-            //alert(JSON.stringify($scope.pathData)); //seems to be working
-            //traversePaths(pathData, 0);
+            traversePaths(pathData, 0, pathData.length, 0);
             //$scope.form.id="";
          } else {
             alert("No data found for IDs: \"" + ids + "\" between time " + $scope.dtlower + " and " + $scope.dtupper + ".")
             $scope.isPlaying=false;
+            $scope.x="";
+            $scope.$apply();
             $scope.form.speed=null;
             //$scope.form.id="";
          }
       }).error(function(data, status, headers, config) {
          console.log("Error gleaning path data");
       });
-    //}
+    }
    }
 
 
@@ -184,26 +156,36 @@ flightCrewAppControllers.controller('playbackController',['$scope','$http','$int
    }
 
    /* Given the pathData queried according to the pathData.php script, traverses paths with a calculated pause time of timeDiff*/
-   function traversePaths(pathData, timeDiff) {
+   function traversePaths(pathData, i, limit, timeDiff) {
       setTimeout(function() {
-         var latitude = pathData[$scope.i].latitudeDegree;
-         var longitude = pathData[$scope.i].longitudeDegree;
-         var id = pathData[$scope.i].id
-         var currTime = pathData[$scope.i].timeSecond;
+         var latitude = pathData[i].latitudeDegree;
+         var longitude = pathData[i].longitudeDegree;
+         var id = pathData[i].id
+         var currTime = pathData[i].timeSecond;
          var tracker = getTracker(id, trackers);
-         updateMarker(pathData[$scope.i], tracker);
+         updateMarker(pathData[i], tracker);
          //log(tracker.gpath);
 
-         $scope.i++;
-         $scope.dtlower, playbackTime = currTime;
+         i++;
 
-         if($scope.i < $scope.limit && $scope.form.speed != null) {
+         if(i < limit && $scope.form.speed != null) {
             //log(pathData[i].timeSecond - pathData[i-1].timeSecond);
-            traversePaths(pathData, pathData[$scope.i].timeSecond-pathData[$scope.i-1].timeSecond);
+            traversePaths(pathData, i, limit, pathData[i].timeSecond-pathData[i-1].timeSecond);
          } else {
             $scope.isPlaying=false;
-            $scope.dtlower.setTime(0);
-            clearMap();
+            //log("All paths finished.")
+            if($scope.form.speed != null) {
+              setTimeout(function() { 
+                 $scope.x="";
+                 $scope.$apply();
+                 $scope.form.speed=null;
+                 clearMap(); //can't clear one at a time since we don't know when it next shows up
+              }, 5000);
+            } else {
+              $scope.x="";
+              $scope.$apply();
+              clearMap();
+            }
          } 
 
       }, timeDiff/$scope.form.speed); //simulated delay = realtime difference (in ms) divided by user-specified multiplier
@@ -301,7 +283,7 @@ flightCrewAppControllers.controller('playbackController',['$scope','$http','$int
 
    /* Returns the polypath associated to a single line of queried path data. */
    function getPolyPath(jsonData) {
-      if(jsonData.route==null) return []; //handles null paths
+      if(jsonData.route==null) return [];
       var route = (jsonData.route).split("|");
       var numPoints = route.length;
       var polyPath = [];

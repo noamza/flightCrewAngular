@@ -40,21 +40,8 @@
 	<br>
 	<div id="playbackOptions"> Playback Options </div>
 	<hr/>
-	Playback time: {{playbackTime | date:'short'}}
-	<br>
-	<br>
-	<input type="range" min="0" max="{{limit}}" name="i" ng-model="i" style="width:350px;" ng-mouseup="refreshLowerTimeBound()"> {{i}}
-	<div class="btn-group">
-		<label id="play" class="btn btn-success" ng-model="form.isPlaying" ng-click="toggle()">{{play}}</label>
-		<label id="ffw" class="btn btn-danger" ng-model="form.speed" ng-checked="ffw" btn-radio="form.speed*1.1" uncheckable> &#9654;&#9654; </label>
-	</div>
-	<hr/>
 	<form id="playbackForm" name = "input"  ng-submit="form.submit()">
-	IDs: <input type="text" name="id" ng-model="form.id"typeahead="crew for crew in crewMembers | filter:$viewValue"> 
-	<button type="submit">Submit IDs</button>
-	<br>
-	<br>
-	IDs queried: {{queryID}}
+	IDs (comma-separated): <input type="text" name="id" ng-model="form.id"typeahead="crew for crew in crewMembers | filter:$viewValue">
 	<hr/>
 		<div>
     	Lower Time Bound: <em>{{dtlower | date:'short' }} {{test}}</em>
@@ -94,12 +81,12 @@
 			</form>
 			<hr/>
 
-	<div id="playbackSpeed">Playback Speed:  {{form.speed}} </div>
+	<div id="playbackSpeed">Playback Speed:  {{form.speed}}{{x}} </div>
 	<div class="btn-group">
-   		<label id="speedcontrol" class="btn btn-info" ng-model="form.speed" ng-click="form.submit()" btn-radio="'1'" uncheckable>Real-Time</label>
+   		<label id="speedcontrol" class="btn btn-info" ng-model="form.speed" ng-click="form.submit()" btn-radio="'1'" uncheckable>&#9654; &nbsp; Real-Time</label>
        	<label id="speedcontrol" class="btn btn-success" ng-model="form.speed" ng-click="form.submit()" btn-radio="'100'" uncheckable>Medium</label>
         <label id="speedcontrol" class="btn btn-warning" ng-model="form.speed" ng-click="form.submit()" btn-radio="'1000'" uncheckable>Fast</label>
-        <label id="speedcontrol" class="btn btn-danger" ng-model="form.speed" ng-click="form.submit()" btn-radio="'10000'" uncheckable>Warp</label>
+        <label id="speedcontrol" class="btn btn-danger" ng-model="form.speed" ng-click="form.submit()" btn-radio="'10000'" uncheckable>Warp &nbsp; &#9654;&#9654; </label>
     </div>
 
 	</div>
