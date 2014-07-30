@@ -11,7 +11,7 @@ flightCrewAppControllers.controller('playbackController',['$scope','$http','$int
   window.addEventListener("keyup", spaceBar, false);
 
   function spaceBar(e) {
-    if(e.keyCode=="32") {
+    if(e.keyCode=="80") {
       $scope.toggle();
       $scope.$apply();
     }
