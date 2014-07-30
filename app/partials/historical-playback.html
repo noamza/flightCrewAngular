@@ -40,7 +40,7 @@
 	<br>
 	<div id="playbackOptions"> Playback Options </div>
 	<hr/>
-	Playback time: {{playbackTime | date:'short'}}
+	Playback time: {{playbackTime | date:'medium'}}
 	<br>
 	<br>
 	<input type="range" min="0" max="{{limit}}" name="i" ng-model="i" style="width:350px;" ng-mouseup="refreshLowerTimeBound()">
@@ -51,7 +51,7 @@
 	<hr/>
 	<form id="playbackForm" name = "input"  ng-submit="form.submit()">
 	IDs: <input type="text" name="id" ng-model="form.id"typeahead="crew for crew in crewMembers | filter:$viewValue"> 
-	<input type="submit" value="Submit IDs"></button>
+	<input type="submit" value="Submit IDs">
 	<br>
 	<br>
 	IDs in query: {{queryID}}
