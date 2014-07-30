@@ -7,30 +7,15 @@ function log(s){
 }
 
 flightCrewAppControllers.controller('playbackController',['$scope','$http','$interval', '$q','$rootScope', function($scope, $http, $interval, $q, $rootScope) {
-  
-var mousedownID = -1;  //Global ID of mouse down interval
-function mousedown(event) {
-  if(mousedownID==-1) {  //Prevent multimple loops!
-     mousedownID = setInterval($scope.ffw, 25 /*execute every 25ms*/);
-  }
-}
-function mouseup(event) {
-   if(mousedownID!=-1) {  //Only stop if exists
-     clearInterval(mousedownID);
-     mousedownID=-1;
-     $scope.form.speed=$scope.form.defaultspeed;
-   }
 
-}
-function whilemousedown() {
-   /*here put your code*/
-}
-//Assign events
-var ffw = document.getElementById("ffw");
-ffw.addEventListener("mousedown", mousedown);
-ffw.addEventListener("mouseup", mouseup);
-//Also clear the interval when user leaves the window with mouse
-ffw.addEventListener("mouseout", mouseup);
+  window.addEventListener("keyup", spaceBar, false);
+
+  function spaceBar(e) {
+    if(e.keyCode=="32") {
+      $scope.toggle();
+      $scope.$apply();
+    }
+  }
 
   /* For date pickers */
   $scope.i = 0;
@@ -84,8 +69,8 @@ ffw.addEventListener("mouseout", mouseup);
   }
 
   $scope.ffw = function() {
-    if($scope.form.speed < 10000)
-      $scope.form.speed*=1.05;
+    $scope.step();
+    $scope.form.speed*=(1+9/$scope.form.speed);
   }
 
   $scope.refreshLowerTimeBound = function() {

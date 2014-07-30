@@ -28,6 +28,10 @@
 		margin: auto;
 		display: inline-block;
 	}
+	label {
+		width: 75px;
+		text-align: center;
+	}
  </style>
 
 <div class = "row-fluid">
@@ -46,7 +50,7 @@
 	<input type="range" min="0" max="{{limit}}" name="i" ng-model="i" style="width:350px;" ng-mouseup="refreshLowerTimeBound()">
 	<div class="btn-group">
 		<label id="play" class="btn btn-info" ng-click="toggle()">{{play}}</label>
-		<label id="ffw" class="btn btn-primary" ng-model="form.speed" ng-mousedown="step()" uncheckable> &#9654;&#9654; </label>
+		<label id="ffw" class="btn btn-primary" ng-model="form.speed" ng-click="ffw()" uncheckable> &#9654;&#9654; </label>
 	</div>
 	<hr/>
 	<form id="playbackForm" name = "input"  ng-submit="form.submit()">
@@ -93,14 +97,6 @@
 			</div>
 			</form>
 			<hr/>
-
-	<div id="playbackSpeed">Default speed:  {{form.defaultspeed}}x </div>
-	<div class="btn-group">
-   		<label id="speedcontrol" class="btn btn-success" ng-model="form.defaultspeed" btn-radio="'1'" ng-change="form.speed=form.defaultspeed" ng-click="step()">Real-Time</label>
-       	<label id="speedcontrol" class="btn btn-warning" ng-model="form.defaultspeed" btn-radio="'10'" ng-change="form.speed=form.defaultspeed" ng-click="step()">Medium</label>
-        <label id="speedcontrol" class="btn btn-danger" ng-model="form.defaultspeed" btn-radio="'100'" ng-change="form.speed=form.defaultspeed" ng-click="step()">Fast</label>
-    </div>
-
 	</div>
 </div>
 
