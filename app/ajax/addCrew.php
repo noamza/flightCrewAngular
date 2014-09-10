@@ -10,7 +10,7 @@
     print($id);
     print("lat " + $lat);
     echo "lon " + $lon;
-    print();
+    print("\n");
 
 	$url = "http://maps.googleapis.com/maps/api/directions/json?origin="  . $lat . "," . $lon . "&destination=" . $destlat . "," . $destlon . "&sensor=false&units=metric&mode=driving";
 
@@ -23,6 +23,7 @@
 	$encoded = (string) $routes->routes[0]->overview_polyline->points;
 	//print($encoded); //OMG I GOT THE STRING
 	
+    /*
 
 	$polyline = "";
 	$len = strlen($encoded);
@@ -30,6 +31,7 @@
 	$first = true;
     $lat2 = $lat;
     $lon2 = $lon;
+
 	while ($index < $len) {
         $b = 0; 
         $shift = 0;
@@ -64,6 +66,53 @@
 
     $polyline = "'" . $polyline . "'"; //add quotes around polyline
 
+*/
+
+
+    $polyline = "";
+    $index = 0;
+    $len = strlen($encoded);
+    $lat2 = 0; 
+    $lng2 = 0;
+    $counter = 0;
+    while ($index < $len) {
+        $counter++;
+        int $b; 
+        $shift = 0; 
+        $result = 0;
+        do {
+            $b = $encoded[$index++] - 63;
+            $result |= ($b & 0x1f) << $shift;
+            $shift += 5;
+        } while ($b >= 0x20);
+        $dlat = (($result & 1) != 0 ? ~($result >> 1) : ($result >> 1));
+        $lat2 += $dlat;
+        $shift = 0;
+        $result = 0;
+        do {
+            $b = $encoded[$index++] - 63;
+            $result |= ($b & 0x1f) << $shift;
+            $shift += 5;
+        } while ($b >= 0x20);
+        $dlng = (($result & 1) != 0 ? ~($result >> 1) : ($result >> 1));
+        $lng2 += $dlng;
+        //LatLng position = new LatLng((double) lat / 1E5, (double) lng / 1E5);
+        $latf = $lat2 / 1E5;
+        $lonf = $lng2 / 1E5;
+        if (($counter % 5) == 0) {
+            //NSString * temp = [NSString stringWithFormat:@"%f,%f|",latf, lonf];
+            //[poly appendString:temp];
+            $polyline += $latf +","+$lonf+"|";
+        }
+        else {
+            continue;
+        }
+        
+    }
+    $polyline = "'" . $polyline . "'";
+
+
+
     //print($polyline); //I THINK THIS WORKS!!!
 
     $eta=(string)$routes->routes[0]->legs[0]->duration->value;
@@ -71,6 +120,9 @@
     
     
     //$query="INSERT INTO androidnavtable (id, timeSecond, latitudeDegree, longitudeDegree, route, eta) VALUES(".$id.",".$time.",".$lat.",".$lon.",".$polyline.",".$eta.")";
+    print("lat " + $lat);
+    echo "lon " + $lon;
+    print("\n");
     $query="INSERT INTO androidnavtable (id, timeSecond, latitudeDegree, longitudeDegree, route, eta, flightid) VALUES(".$id.",".$time.",".$lat.",".$lon.",".$polyline.",".$eta.",'test')";
 
     print($query); # check this if something breaks
