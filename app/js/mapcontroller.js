@@ -355,7 +355,7 @@ flightCrewAppControllers.controller('mapController',['$scope','$http','$interval
    */
    function showCrewForAirport(id) {
       var localCrew = getCrewIDsForAirport(id);
-      console.log(id + " local crew: " + localCrew.toString());
+      //console.log(id + " local crew: " + localCrew.toString());
       hideOtherCrew(localCrew);
    }
 
@@ -373,8 +373,8 @@ flightCrewAppControllers.controller('mapController',['$scope','$http','$interval
 
         angular.forEach(crewMembers, function(crewMember) {
           if(crewMember.id==id){
-            console.log("trying to show " + crewMember.id);
-            console.log(crewMember);
+            //console.log("trying to show " + crewMember.id);
+            //console.log(crewMember);
             crewMember.gmarker.setMap(gmap);
           }
         });
@@ -394,7 +394,7 @@ flightCrewAppControllers.controller('mapController',['$scope','$http','$interval
             localCrew.push(flight.crew[i]);
         }
       });
-      return localCrew;
+      return localCrew; 
    }
 
    /*
