@@ -594,15 +594,21 @@ flightCrewAppControllers.controller('mapController',['$scope','$http','$interval
 
    function getSpecificCrew()
    {
+      log("getSpecificCrew");
+
       showHideAllCrew(false); 
-      for(var i=0; i<globalCrewIDs.length; i++) 
+      for(var i=0; i<globalCrewIDs.length; i++)
       {
          specificCrewMember = crewMembers[globalCrewIDs[i]];
+         
+         log(specificCrewMember.id + " is in globalCrewIDs");
 
          farValue = calculateFAR();
 
          if(specificCrewMember.crewFlightId == selectedFlight)
          {
+            log(specificCrewMember.id + " is in selectedFlight " + selectedFlight);
+
             crewCounter++;
             var latitude = specificCrewMember.latitude;
             var longitude = specificCrewMember.longitude;
