@@ -8,6 +8,9 @@
 	$destlat=$_REQUEST['destlat'];
 	$destlon=$_REQUEST['destlon'];
 
+    print("lat " + $lat);
+    echo "lon " + $lon;
+
 	$url = "http://maps.googleapis.com/maps/api/directions/json?origin="  . $lat . "," . $lon . "&destination=" . $destlat . "," . $destlon . "&sensor=false&units=metric&mode=driving";
 
 	//print($url); //URL working
