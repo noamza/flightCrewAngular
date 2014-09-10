@@ -7,9 +7,10 @@
 	$lon=$_REQUEST['lon']; //
 	$destlat=$_REQUEST['destlat'];
 	$destlon=$_REQUEST['destlon'];
-
+    print($id);
     print("lat " + $lat);
     echo "lon " + $lon;
+    print();
 
 	$url = "http://maps.googleapis.com/maps/api/directions/json?origin="  . $lat . "," . $lon . "&destination=" . $destlat . "," . $destlon . "&sensor=false&units=metric&mode=driving";
 
@@ -27,7 +28,8 @@
 	$len = strlen($encoded);
 	$index = 0;
 	$first = true;
-
+    $lat2 = $lat;
+    $lon2 = $lon;
 	while ($index < $len) {
         $b = 0; 
         $shift = 0;
@@ -38,7 +40,7 @@
             $shift += 5;
         } while ($b >= 0x20);
         $dlat = (($result & 1) != 0 ? ~($result >> 1) : ($result >> 1));
-        $lat += $dlat;
+        $lat2 += $dlat;
         $shift = 0;
         $result = 0;
         do {
@@ -47,16 +49,16 @@
             $shift += 5;
         } while ($b >= 0x20);
         $dlng = (($result & 1) != 0 ? ~($result >> 1) : ($result >> 1));
-        $lon += $dlng;
+        $lon2 += $dlng;
 
-       	$plat = $lat / 1E5;
+       	$plat = $lat2 / 1E5;
        	$plong = $lng / 1E5;
 
        	if(!$first) {
        		$polyline = $polyline . "|";
        	}
 
-       	$polyline = $polyline . $lat . "," . $lon;
+       	$polyline = $polyline . $lat2 . "," . $lon2;
        	$first = false;
     }
 
@@ -71,19 +73,19 @@
     //$query="INSERT INTO androidnavtable (id, timeSecond, latitudeDegree, longitudeDegree, route, eta) VALUES(".$id.",".$time.",".$lat.",".$lon.",".$polyline.",".$eta.")";
     $query="INSERT INTO androidnavtable (id, timeSecond, latitudeDegree, longitudeDegree, route, eta, flightid) VALUES(".$id.",".$time.",".$lat.",".$lon.",".$polyline.",".$eta.",'test')";
 
-    //print($query); check this if something breaks
+    print($query); # check this if something breaks
 
 	$q=mysql_query($query);
 	if (!$q) {
     	die('Invalid query: ' . mysql_error());
 	}
 
-	$query = "SELECT * FROM androidnavtable limit 1";
-	$q=mysql_query($query);
-	while($e=mysql_fetch_assoc($q))
-    	$output[]=$e;
+	#$query = "SELECT * FROM androidnavtable limit 1";
+	#$q=mysql_query($query);
+	#while($e=mysql_fetch_assoc($q))
+    #	$output[]=$e;
 
-	print(json_encode($output));
+	#print(json_encode($output));
 	mysql_close();
 
 ?>
