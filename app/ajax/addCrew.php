@@ -45,8 +45,8 @@
         }
         
         for($i = 0; $i < sizeof($points); $i += 2) {
-            if($i>0){ $polyline .= "|"; }
-            $polyline .= $points[$i] . "," . $points[$i+1]
+            if( $i > 0){ $polyline = $polyline . "|"; }
+            $polyline = $polyline . $points[$i] . "," . $points[$i+1]
         }
 
     $polyline = "'" . $polyline . "'";
