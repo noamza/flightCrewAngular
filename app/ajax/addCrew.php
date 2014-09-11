@@ -22,97 +22,34 @@
 	//print_r($routes);
 	$encoded = (string) $routes->routes[0]->overview_polyline->points;
 	//print($encoded); //OMG I GOT THE STRING
-	
-    /*
 
-	$polyline = "";
-	$len = strlen($encoded);
-	$index = 0;
-	$first = true;
-    $lat2 = $lat;
-    $lon2 = $lon;
+	    $string = $encoded;
+        $points = array();
+        $index = $i = 0;
+        $previous = array(0,0);
+        while ($i < strlen($string)) {
+            $shift = $result = 0x00;
+            do {
+                $bit = ord(substr($string, $i++)) - 63;
+                $result |= ($bit & 0x1f) << $shift;
+                $shift += 5;
+            } while ($bit >= 0x20);
 
-	while ($index < $len) {
-        $b = 0; 
-        $shift = 0;
-        $result = 0;
-        do {
-            $b = $encoded[$index++] - 63;
-            $result |= ($b & 0x1f) << $shift;
-            $shift += 5;
-        } while ($b >= 0x20);
-        $dlat = (($result & 1) != 0 ? ~($result >> 1) : ($result >> 1));
-        $lat2 += $dlat;
-        $shift = 0;
-        $result = 0;
-        do {
-            $b = $encoded[$index++] - 63;
-            $result |= ($b & 0x1f) << $shift;
-            $shift += 5;
-        } while ($b >= 0x20);
-        $dlng = (($result & 1) != 0 ? ~($result >> 1) : ($result >> 1));
-        $lon2 += $dlng;
-
-       	$plat = $lat2 / 1E5;
-       	$plong = $lng / 1E5;
-
-       	if(!$first) {
-       		$polyline = $polyline . "|";
-       	}
-
-       	$polyline = $polyline . $lat2 . "," . $lon2;
-       	$first = false;
-    }
-
-    $polyline = "'" . $polyline . "'"; //add quotes around polyline
-
-*/
-
-
-    $polyline = "";
-    $index = 0;
-    $len = strlen($encoded);
-    $lat2 = 0; 
-    $lng2 = 0;
-    $counter = 0;
-    while ($index < $len) {
-        $counter++;
-        int $b; 
-        $shift = 0; 
-        $result = 0;
-        do {
-            $b = $encoded[$index++] - 63;
-            $result |= ($b & 0x1f) << $shift;
-            $shift += 5;
-        } while ($b >= 0x20);
-        $dlat = (($result & 1) != 0 ? ~($result >> 1) : ($result >> 1));
-        $lat2 += $dlat;
-        $shift = 0;
-        $result = 0;
-        do {
-            $b = $encoded[$index++] - 63;
-            $result |= ($b & 0x1f) << $shift;
-            $shift += 5;
-        } while ($b >= 0x20);
-        $dlng = (($result & 1) != 0 ? ~($result >> 1) : ($result >> 1));
-        $lng2 += $dlng;
-        //LatLng position = new LatLng((double) lat / 1E5, (double) lng / 1E5);
-        $latf = $lat2 / 1E5;
-        $lonf = $lng2 / 1E5;
-        if (($counter % 5) == 0) {
-            //NSString * temp = [NSString stringWithFormat:@"%f,%f|",latf, lonf];
-            //[poly appendString:temp];
-            $polyline += $latf +","+$lonf+"|";
-        }
-        else {
-            continue;
+            $diff = ($result & 1) ? ~($result >> 1) : ($result >> 1);
+            $number = $previous[$index % 2] + $diff;
+            $previous[$index % 2] = $number;
+            $index++;
+            $point = $number * 1 / pow(10, 5);
+                #print($point . "*");
+            $points[] = $point;
         }
         
-    }
+        for($i = 0; $i < sizeof($points); $i += 2) {
+            $polyline = $polyline . $points[$i] . "," . $points[$i+1] . "|";
+        }
+
     $polyline = "'" . $polyline . "'";
-
-
-
+    
     //print($polyline); //I THINK THIS WORKS!!!
 
     $eta=(string)$routes->routes[0]->legs[0]->duration->value;
