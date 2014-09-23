@@ -39,7 +39,6 @@ flightCrewAppControllers.controller('progressController',['$scope','$http','$int
   }
 
    function time(t){
-      console.log(t);
       /*
       var hours = parseInt( t / 3600 ) % 24;
       var minutes = parseInt( t / 60 ) % 60;
@@ -54,8 +53,9 @@ flightCrewAppControllers.controller('progressController',['$scope','$http','$int
       $http.get("ajax/getProgressIDs.php").success(function(Ids,status,headers,config){
          var deferred = $q.defer();
          var promises = [];
-         function lastTask(){
+         function lastTask(temp){
             deferred.resolve();
+            $scope.passengers = temp;
          }
          $scope.status = status;
 
@@ -80,8 +80,6 @@ flightCrewAppControllers.controller('progressController',['$scope','$http','$int
                      console.log("no passengers!");
                   }
 
-
-
                   temp.push(passenger);
                
                }).error(function(data, status, headers, config){
@@ -90,9 +88,9 @@ flightCrewAppControllers.controller('progressController',['$scope','$http','$int
                })
             );
          }
-         $q.all(promises).then(lastTask);
+         $q.all(promises).then(lastTask(temp));
 
-         $scope.passengers = temp;
+         //$scope.passengers = temp;
 
       }).error(function(data, status, headers, config){
          $scope.status = status;
