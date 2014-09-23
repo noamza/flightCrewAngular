@@ -101,6 +101,11 @@ flightCrewApp.config(['$routeProvider',
 		controller : 'playbackController'
 	})
 
+  .when('/progress', {
+    templateUrl : 'partials/progress.html',
+    controller : 'progressController'
+  })
+
 	.otherwise({ //CHEEECKKK NEEDS CONTROLLER?
 		redirectTo: 'partials/map.html'
 		});
