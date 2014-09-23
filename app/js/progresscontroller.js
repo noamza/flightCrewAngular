@@ -4,7 +4,51 @@ var flightCrewAppControllers = angular.module('FlightCrewApp.controllers');
 
 flightCrewAppControllers.controller('progressController',['$scope','$http','$interval', '$q','$rootScope', function($scope, $http, $interval, $q, $rootScope) {
 
-  var passengers = {};
+  $scope.passengers = {};
+
+   function location(l){
+      var location = l;
+      switch (l) {
+         case "1":
+            location = "Check-In";
+            break;
+         case "2":
+            location = "Security";
+            break;
+         case "3":
+            location = "Gate";
+            break;
+     }
+     return location;
+  }
+
+   function eta(l){
+      var eta = l;
+      switch (l) {
+         case "1":
+            eta = 40*60*1000;
+            break;
+         case "2":
+            eta = 20*60*1000;
+            break;
+         case "3":
+            eta = 0;
+            break;
+     }
+     return eta;
+  }
+
+   function time(t){
+      console.log(t);
+      /*
+      var hours = parseInt( t / 3600 ) % 24;
+      var minutes = parseInt( t / 60 ) % 60;
+      var seconds = parseInt(t % 60, 10);
+      var hms = hours + ":" + (minutes < 10 ? "0" + minutes : minutes) + ":" + (seconds  < 10 ? "0" + seconds : seconds);
+      //return hms; */
+      var dateT = new Date(t *1);
+      return dateT.toLocaleTimeString(); //+ " "+ dateT.toLocaleDateString(); 
+  }
 
   function update(){
       $http.get("ajax/getProgressIDs.php").success(function(Ids,status,headers,config){
@@ -14,6 +58,8 @@ flightCrewAppControllers.controller('progressController',['$scope','$http','$int
             deferred.resolve();
          }
          $scope.status = status;
+
+         var temp = [];
          
          for (var i=0; i<Ids.length; i++) {
             //console.log(crew[i].id);
@@ -23,9 +69,21 @@ flightCrewAppControllers.controller('progressController',['$scope','$http','$int
 
                   if(data[0] != undefined && data[0] != null)
                   { 
-                    console.log(data[0]);
+                     var passenger = 
+                     {
+                        id : data[0].id,
+                        location : location(data[0].locationid),
+                        time : time(data[0].time),
+                        eta : time((parseInt(data[0].time) + eta(data[0].locationid)) + "")
+                     };
+                  } else {
+                     console.log("no passengers!");
                   }
 
+
+
+                  temp.push(passenger);
+               
                }).error(function(data, status, headers, config){
                   $scope.status = status;
                   console.log(data);
@@ -34,14 +92,14 @@ flightCrewAppControllers.controller('progressController',['$scope','$http','$int
          }
          $q.all(promises).then(lastTask);
 
+         $scope.passengers = temp;
+
       }).error(function(data, status, headers, config){
          $scope.status = status;
          console.log(data);
 
       });
    }
- 
-
 
    $interval(function () {
       update();
