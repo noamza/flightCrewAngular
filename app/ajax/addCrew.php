@@ -7,6 +7,10 @@
 	$lon=$_REQUEST['lon']; //
 	$destlat=$_REQUEST['destlat'];
 	$destlon=$_REQUEST['destlon'];
+    print($id);
+    print("lat " + $lat);
+    echo "lon " + $lon;
+    print("\n");
 
 	$url = "http://maps.googleapis.com/maps/api/directions/json?origin="  . $lat . "," . $lon . "&destination=" . $destlat . "," . $destlon . "&sensor=false&units=metric&mode=driving";
 
@@ -18,46 +22,34 @@
 	//print_r($routes);
 	$encoded = (string) $routes->routes[0]->overview_polyline->points;
 	//print($encoded); //OMG I GOT THE STRING
-	
 
-	$polyline = "";
-	$len = strlen($encoded);
-	$index = 0;
-	$first = true;
+	    $string = $encoded;
+        $points = array();
+        $index = $i = 0;
+        $previous = array(0,0);
+        while ($i < strlen($string)) {
+            $shift = $result = 0x00;
+            do {
+                $bit = ord(substr($string, $i++)) - 63;
+                $result |= ($bit & 0x1f) << $shift;
+                $shift += 5;
+            } while ($bit >= 0x20);
 
-	while ($index < $len) {
-        $b = 0; 
-        $shift = 0;
-        $result = 0;
-        do {
-            $b = $encoded[$index++] - 63;
-            $result |= ($b & 0x1f) << $shift;
-            $shift += 5;
-        } while ($b >= 0x20);
-        $dlat = (($result & 1) != 0 ? ~($result >> 1) : ($result >> 1));
-        $lat += $dlat;
-        $shift = 0;
-        $result = 0;
-        do {
-            $b = $encoded[$index++] - 63;
-            $result |= ($b & 0x1f) << $shift;
-            $shift += 5;
-        } while ($b >= 0x20);
-        $dlng = (($result & 1) != 0 ? ~($result >> 1) : ($result >> 1));
-        $lon += $dlng;
+            $diff = ($result & 1) ? ~($result >> 1) : ($result >> 1);
+            $number = $previous[$index % 2] + $diff;
+            $previous[$index % 2] = $number;
+            $index++;
+            $point = $number * 1 / pow(10, 5);
+                #print($point . "*");
+            $points[] = $point;
+        }
+        
+        for($i = 0; $i < sizeof($points); $i += 2) {
+            if( $i > 0){ $polyline = $polyline . "|"; }
+            $polyline = $polyline . $points[$i] . "," . $points[$i+1];
+        }
 
-       	$plat = $lat / 1E5;
-       	$plong = $lng / 1E5;
-
-       	if(!$first) {
-       		$polyline = $polyline . "|";
-       	}
-
-       	$polyline = $polyline . $lat . "," . $lon;
-       	$first = false;
-    }
-
-    $polyline = "'" . $polyline . "'"; //add quotes around polyline
+    $polyline = "'" . $polyline . "'";
 
     //print($polyline); //I THINK THIS WORKS!!!
 
@@ -66,21 +58,25 @@
     
     
     //$query="INSERT INTO androidnavtable (id, timeSecond, latitudeDegree, longitudeDegree, route, eta) VALUES(".$id.",".$time.",".$lat.",".$lon.",".$polyline.",".$eta.")";
+    print("lat " + $lat);
+    echo "lon " + $lon;
+    print("\n");
     $query="INSERT INTO androidnavtable (id, timeSecond, latitudeDegree, longitudeDegree, route, eta, flightid) VALUES(".$id.",".$time.",".$lat.",".$lon.",".$polyline.",".$eta.",'test')";
 
-    //print($query); check this if something breaks
+    print($query); # check this if something breaks
 
 	$q=mysql_query($query);
 	if (!$q) {
     	die('Invalid query: ' . mysql_error());
 	}
 
-	$query = "SELECT * FROM androidnavtable limit 1";
-	$q=mysql_query($query);
-	while($e=mysql_fetch_assoc($q))
-    	$output[]=$e;
+	#$query = "SELECT * FROM androidnavtable limit 1";
+	#$q=mysql_query($query);
+	#while($e=mysql_fetch_assoc($q))
+    #	$output[]=$e;
 
-	print(json_encode($output));
+	#print(json_encode($output));
 	mysql_close();
 
 ?>
+

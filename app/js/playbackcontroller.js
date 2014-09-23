@@ -32,19 +32,19 @@ flightCrewAppControllers.controller('playbackController',['$scope','$http','$int
   $scope.play = '\u25BA';
   $scope.playbackTime=0;
   $scope.nextpt=null;
-  /*
-  $scope.tempMarker = new MarkerWithLabel({
-               position: pos,
-               title : id,
+  
+  var tempMarker = new MarkerWithLabel({
+               title : 'temp',
                //icon : 'img/green_Marker.png',
-               icon : 'blue_marker.png',
+               icon : 'img/green_Marker.png',
                labelContent : "",
                labelClass : "labels",
                labelInBackground : false
-  }),
-  */
+  });
+  
 
   $scope.toggle = function() {
+    tempMarker.setMap(null);
     if($scope.play=='\u25BA') {
       if($scope.pathData.length > 0) {
         $scope.play='\u275A\u275A';
@@ -63,12 +63,14 @@ flightCrewAppControllers.controller('playbackController',['$scope','$http','$int
     if($scope.pathData.length > 0) {
       clearTimeout($scope.nextpt);
       traversePaths($scope.pathData, 0);
+      $scope.play='\u275A\u275A';
     } else {
       alert("No data to playback; please submit valid ID(s).");
     }
   }
 
   $scope.ffw = function() {
+    tempMarker.setMap(null);
     $scope.step();
     $scope.form.speed*=(1+9/$scope.form.speed);
   }
@@ -78,6 +80,8 @@ flightCrewAppControllers.controller('playbackController',['$scope','$http','$int
       var time = parseInt($scope.pathData[$scope.i].timeSecond);
       $scope.playbackTime=time;
       $scope.dtlower.setTime(time);
+      tempMarker.setPosition(new google.maps.LatLng($scope.pathData[$scope.i].latitudeDegree, $scope.pathData[$scope.i].longitudeDegree));
+      tempMarker.setOptions({labelContent: $scope.pathData[$scope.i].id});
     }
   }
 
@@ -180,6 +184,9 @@ flightCrewAppControllers.controller('playbackController',['$scope','$http','$int
             //$scope.refreshLowerTimeBound();
             $scope.playbackTime = pathData[0].timeSecond;
             $scope.resetSlider();
+            tempMarker.setPosition(new google.maps.LatLng(pathData[0].latitudeDegree, pathData[0].longitudeDegree));
+            tempMarker.setOptions({labelContent: pathData[0].id});
+            tempMarker.setMap(gmap);
          } else {
             alert("No data found for IDs: \"" + ids + "\" between time " + $scope.dtlower + " and " + $scope.dtupper + ".")
             $scope.form.speed=null;
