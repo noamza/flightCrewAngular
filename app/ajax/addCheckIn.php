@@ -5,7 +5,7 @@
 	$time=$_REQUEST['time'];
 	$locationid=$_REQUEST['locationid'];
 
-	$query="INSERT INTO checkinlocation (id, time, locationid) VALUES('".$id."',".$time.",".$locationid.")";
+	$query="INSERT INTO checkinlocation (id, time, locationid) VALUES(".$id.",".$time.",".$locationid.")";
 
 	$q=mysql_query($query);
 	if (!$q) {
